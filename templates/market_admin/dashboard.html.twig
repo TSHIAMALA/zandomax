@@ -1,0 +1,296 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de Bord - ZANDO Market{% endblock %}
+{% block header %}Tableau de Bord{% endblock %}
+{% block subtitle %}Vue d'ensemble de votre marché{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- Stats Cards Compactes -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2.5 mb-3">
+    <!-- Card Marchands -->
+    <div class="card-hover bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-sm p-2.5 text-white">
+        <div class="flex items-center justify-between mb-2">
+            <div class="w-7 h-7 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                <i class="fas fa-users text-lg"></i>
+            </div>
+            <span class="text-xs bg-white bg-opacity-20 px-2 py-0.5 rounded-full">+12%</span>
+        </div>
+        <h3 class="text-base font-bold mb-0.5">{{ stats.merchants.total }}</h3>
+        <p class="text-blue-100 text-xs mb-2">Total Marchands</p>
+        <div class="flex items-center text-xs space-x-1.5">
+            <span><i class="fas fa-check-circle mr-0.5"></i>{{ stats.merchants.active }}</span>
+            <span><i class="fas fa-clock mr-0.5"></i>{{ stats.merchants.pending }}</span>
+        </div>
+    </div>
+
+    <!-- Card Espaces -->
+    <div class="card-hover bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-sm p-2.5 text-white">
+        <div class="flex items-center justify-between mb-2">
+            <div class="w-7 h-7 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                <i class="fas fa-store text-lg"></i>
+            </div>
+            <span class="text-xs bg-white bg-opacity-20 px-2 py-0.5 rounded-full">{{ ((stats.spaces.occupied / stats.spaces.total) * 100)|round }}%</span>
+        </div>
+        <h3 class="text-base font-bold mb-0.5">{{ stats.spaces.total }}</h3>
+        <p class="text-purple-100 text-xs mb-2">Espaces Totaux</p>
+        <div class="flex items-center text-xs space-x-1.5">
+            <span><i class="fas fa-check-circle mr-0.5"></i>{{ stats.spaces.occupied }}</span>
+            <span><i class="fas fa-door-open mr-0.5"></i>{{ stats.spaces.available }}</span>
+        </div>
+    </div>
+
+    <!-- Card Contrats -->
+    <div class="card-hover bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-sm p-2.5 text-white">
+        <div class="flex items-center justify-between mb-2">
+            <div class="w-7 h-7 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                <i class="fas fa-file-contract text-lg"></i>
+            </div>
+            <span class="text-xs bg-white bg-opacity-20 px-2 py-0.5 rounded-full">Actif</span>
+        </div>
+        <h3 class="text-base font-bold mb-0.5">{{ stats.contracts.total }}</h3>
+        <p class="text-green-100 text-xs mb-2">Contrats</p>
+        <div class="flex items-center text-xs">
+            <span><i class="fas fa-check-circle mr-0.5"></i>{{ stats.contracts.active }} actifs</span>
+        </div>
+    </div>
+
+    <!-- Card Paiements -->
+    <div class="card-hover bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-sm p-2.5 text-white">
+        <div class="flex items-center justify-between mb-2">
+            <div class="w-7 h-7 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                <i class="fas fa-credit-card text-lg"></i>
+            </div>
+            <span class="text-xs bg-white bg-opacity-20 px-2 py-0.5 rounded-full">{{ stats.payments.total }}</span>
+        </div>
+        <h3 class="text-base font-bold mb-0.5">{{ stats.payments.completed }}</h3>
+        <p class="text-orange-100 text-xs mb-2">Paiements Complétés</p>
+        <div class="flex items-center text-xs">
+            <span><i class="fas fa-clock mr-0.5"></i>{{ stats.payments.pending }} en attente</span>
+        </div>
+    </div>
+</div>
+
+<!-- Graphiques et Activités Compacts -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-2.5 mb-3">
+    <!-- Graphique Occupation -->
+    <div class="lg:col-span-2 bg-white rounded-lg shadow-sm p-2.5">
+        <div class="flex items-center justify-between mb-2">
+            <div>
+                <h3 class="text-sm font-bold text-gray-800">Occupation des Espaces</h3>
+                <p class="text-xs text-gray-500">Répartition en temps réel</p>
+            </div>
+            <div class="flex space-x-1">
+                <button class="px-2 py-1 text-xs bg-purple-100 text-purple-600 rounded font-medium">Jour</button>
+                <button class="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded">Semaine</button>
+                <button class="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded">Mois</button>
+            </div>
+        </div>
+        <div style="max-height: 220px;"><canvas id="occupationChart" height="50"></canvas></div>
+    </div>
+
+    <!-- Activités Récentes -->
+    <div class="bg-white rounded-lg shadow-sm p-2.5">
+        <h3 class="text-sm font-bold text-gray-800 mb-2">Activités Récentes</h3>
+        <div class="space-y-1.5">
+            <div class="flex items-start space-x-1.5">
+                <div class="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-user-plus text-blue-600 text-sm"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-medium text-gray-800">Nouveau marchand</p>
+                    <p class="text-xs text-gray-500">Il y a 2 heures</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start space-x-1.5">
+                <div class="w-7 h-7 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-check text-green-600 text-sm"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-medium text-gray-800">Paiement validé</p>
+                    <p class="text-xs text-gray-500">Il y a 3 heures</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start space-x-1.5">
+                <div class="w-7 h-7 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-file-contract text-purple-600 text-sm"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-medium text-gray-800">Contrat signé</p>
+                    <p class="text-xs text-gray-500">Il y a 5 heures</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start space-x-1.5">
+                <div class="w-7 h-7 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-store text-orange-600 text-sm"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-medium text-gray-800">Espace libéré</p>
+                    <p class="text-xs text-gray-500">Il y a 1 jour</p>
+                </div>
+            </div>
+        </div>
+        
+        <button class="w-full mt-3 py-1.5 text-xs text-purple-600 hover:bg-purple-50 rounded font-medium transition">
+            Voir toutes les activités →
+        </button>
+    </div>
+</div>
+
+<!-- Graphique Paiements Compact -->
+<div class="bg-white rounded-lg shadow-sm p-2.5">
+    <div class="flex items-center justify-between mb-2">
+        <div>
+            <h3 class="text-sm font-bold text-gray-800">Évolution des Paiements</h3>
+            <p class="text-xs text-gray-500">Statistiques mensuelles</p>
+        </div>
+        <select class="px-3 py-1 border border-gray-200 rounded text-xs focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <option>2024</option>
+            <option>2023</option>
+        </select>
+    </div>
+    <canvas id="paymentsChart" height="50"></canvas>
+</div>
+
+<script>
+// Configuration commune
+Chart.defaults.font.family = 'Inter';
+Chart.defaults.color = '#6B7280';
+Chart.defaults.font.size = 9;
+
+// Graphique Occupation (Doughnut moderne)
+const occupationCtx = document.getElementById('occupationChart').getContext('2d');
+new Chart(occupationCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Occupés', 'Disponibles', 'Maintenance'],
+        datasets: [{
+            data: [{{ stats.spaces.occupied }}, {{ stats.spaces.available }}, 0],
+            backgroundColor: [
+                'rgba(139, 92, 246, 0.8)',
+                'rgba(59, 130, 246, 0.8)',
+                'rgba(251, 146, 60, 0.8)'
+            ],
+            borderWidth: 0,
+            hoverOffset: 8
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 4,
+                    usePointStyle: true,
+                    font: {
+                        size: 9,
+                        weight: '500'
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 4,
+                cornerRadius: 6,
+                titleFont: {
+                    size: 10,
+                    weight: 'bold'
+                },
+                bodyFont: {
+                    size: 9
+                }
+            }
+        },
+        cutout: '60%'
+    }
+});
+
+// Graphique Paiements (Line moderne)
+const paymentsCtx = document.getElementById('paymentsChart').getContext('2d');
+const gradient = paymentsCtx.createLinearGradient(0, 0, 0, 300);
+gradient.addColorStop(0, 'rgba(139, 92, 246, 0.3)');
+gradient.addColorStop(1, 'rgba(139, 92, 246, 0)');
+
+new Chart(paymentsCtx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
+        datasets: [{
+            label: 'Paiements',
+            data: [12, 19, 15, 25, 22, 30, 28, 35, 32, 38, 42, 45],
+            borderColor: 'rgb(139, 92, 246)',
+            backgroundColor: gradient,
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            pointHoverBackgroundColor: 'rgb(139, 92, 246)',
+            pointHoverBorderColor: '#fff',
+            pointHoverBorderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 4,
+                cornerRadius: 6,
+                displayColors: false,
+                titleFont: {
+                    size: 9
+                },
+                bodyFont: {
+                    size: 9
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.05)',
+                    drawBorder: false
+                },
+                ticks: {
+                    padding: 4,
+                    font: {
+                        size: 9
+                    }
+                }
+            },
+            x: {
+                grid: {
+                    display: false,
+                    drawBorder: false
+                },
+                ticks: {
+                    padding: 4,
+                    font: {
+                        size: 9
+                    }
+                }
+            }
+        },
+        interaction: {
+            intersect: false,
+            mode: 'index'
+        }
+    }
+});
+</script>
+{% endblock %}

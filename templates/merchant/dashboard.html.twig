@@ -1,0 +1,170 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Espace - ZANDO Market{% endblock %}
+{% block header %}Mon Espace Marchand{% endblock %}
+{% block subtitle %}Bienvenue {{ merchant.firstname }} !{% endblock %}
+
+{% block body %}
+<!-- Carte de Bienvenue avec Gradient -->
+<div class="gradient-market rounded-2xl shadow-xl p-8 text-white mb-8">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-6">
+            <div class="w-20 h-20 bg-white rounded-2xl flex items-center justify-center text-4xl">
+                👤
+            </div>
+            <div>
+                <h2 class="text-3xl font-bold mb-2">{{ merchant.firstname }} {{ merchant.lastname }}</h2>
+                <p class="text-white text-opacity-90 mb-1">
+                    <i class="fas fa-envelope mr-2"></i>{{ merchant.email }}
+                </p>
+                <p class="text-white text-opacity-90">
+                    <i class="fas fa-phone mr-2"></i>{{ merchant.phone }}
+                </p>
+            </div>
+        </div>
+        <div class="text-right">
+            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold
+                {% if merchant.status == 'active' %}bg-green-500
+                {% elseif merchant.status == 'pending' %}bg-yellow-500
+                {% else %}bg-red-500{% endif %} bg-opacity-90">
+                <i class="fas fa-circle mr-2 text-xs"></i>
+                {{ merchant.status|upper }}
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Rapides -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6 card-hover">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-wallet text-blue-600 text-xl"></i>
+            </div>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-800 mb-1">{{ totalPaid|number_format(0, ',', ' ') }} FCFA</h3>
+        <p class="text-sm text-gray-500">Total Payé</p>
+    </div>
+
+    {% if contract %}
+    <div class="bg-white rounded-2xl shadow-lg p-6 card-hover">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-store text-purple-600 text-xl"></i>
+            </div>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-800 mb-1">{{ contract.space.code }}</h3>
+        <p class="text-sm text-gray-500">Mon Espace</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-6 card-hover">
+        <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-calendar text-green-600 text-xl"></i>
+            </div>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-800 mb-1">{{ contract.endDate|date('d/m/Y') }}</h3>
+        <p class="text-sm text-gray-500">Fin du Contrat</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Contrat et Paiements -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Mon Contrat -->
+    {% if contract %}
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-gray-800">Mon Contrat</h3>
+            <a href="{{ path('merchant_contract') }}" class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                Voir détails →
+            </a>
+        </div>
+        
+        <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-home text-purple-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Espace</p>
+                        <p class="font-semibold text-gray-800">{{ contract.space.code }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-money-bill-wave text-blue-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Loyer Mensuel</p>
+                        <p class="font-semibold text-gray-800">{{ contract.monthlyRent|number_format(0, ',', ' ') }} FCFA</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-green-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Garantie</p>
+                        <p class="font-semibold text-gray-800">{{ contract.securityDeposit|number_format(0, ',', ' ') }} FCFA</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Paiements Récents -->
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-gray-800">Paiements Récents</h3>
+            <a href="{{ path('merchant_payments') }}" class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                Voir tout →
+            </a>
+        </div>
+        
+        {% if recentPayments|length > 0 %}
+        <div class="space-y-3">
+            {% for payment in recentPayments %}
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 
+                        {% if payment.status == 'completed' %}bg-green-100
+                        {% elseif payment.status == 'pending' %}bg-yellow-100
+                        {% else %}bg-red-100{% endif %} 
+                        rounded-lg flex items-center justify-center">
+                        <i class="fas 
+                            {% if payment.status == 'completed' %}fa-check text-green-600
+                            {% elseif payment.status == 'pending' %}fa-clock text-yellow-600
+                            {% else %}fa-times text-red-600{% endif %}"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-800">{{ payment.amount|number_format(0, ',', ' ') }} FCFA</p>
+                        <p class="text-xs text-gray-500">{{ payment.createdAt|date('d/m/Y') }}</p>
+                    </div>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold
+                    {% if payment.status == 'completed' %}bg-green-100 text-green-700
+                    {% elseif payment.status == 'pending' %}bg-yellow-100 text-yellow-700
+                    {% else %}bg-red-100 text-red-700{% endif %}">
+                    {{ payment.status }}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <i class="fas fa-receipt text-gray-300 text-5xl mb-4"></i>
+            <p class="text-gray-500">Aucun paiement enregistré</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

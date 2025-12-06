@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Emplacements{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100">
+    {% include 'market_admin/_nav.html.twig' %}
+
+    <div class="py-10">
+        <header>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h1 class="text-3xl font-bold leading-tight text-gray-900">Emplacements</h1>
+            </div>
+        </header>
+        <main>
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <!-- Filtres -->
+                <div class="mt-8 bg-white shadow rounded-lg p-6">
+                    <form method="get" class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-gray-700">Statut</label>
+                            <select id="status" name="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                <option value="">Tous</option>
+                                <option value="available" {% if filters.status == 'available' %}selected{% endif %}>Disponible</option>
+                                <option value="occupied" {% if filters.status == 'occupied' %}selected{% endif %}>Occupé</option>
+                                <option value="maintenance" {% if filters.status == 'maintenance' %}selected{% endif %}>Maintenance</option>
+                                <option value="reserved" {% if filters.status == 'reserved' %}selected{% endif %}>Réservé</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="zone" class="block text-sm font-medium text-gray-700">Zone</label>
+                            <input type="text" name="zone" id="zone" value="{{ filters.zone }}" placeholder="Zone A, B..." class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                        </div>
+                        <div class="flex items-end">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Filtrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Spaces Table -->
+                <div class="mt-8 flex flex-col">
+                    <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                        <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zone</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                            <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% for space in spaces %}
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">{{ space.code }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {{ space.zone }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {{ space.spaceCategory.name }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                {% if space.status.value == 'available' %}
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Disponible</span>
+                                                {% elseif space.status.value == 'occupied' %}
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Occupé</span>
+                                                {% elseif space.status.value == 'maintenance' %}
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Maintenance</span>
+                                                {% else %}
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{{ space.status.value|title }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <a href="#" class="text-indigo-600 hover:text-indigo-900">Modifier</a>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">Aucun emplacement trouvé</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                {% if totalPages > 1 %}
+                <div class="mt-6 flex justify-between items-center">
+                    <div class="text-sm text-gray-700">
+                        Page {{ currentPage }} sur {{ totalPages }}
+                    </div>
+                    <div class="flex space-x-2">
+                        {% if currentPage > 1 %}
+                            <a href="?page={{ currentPage - 1 }}{% if filters.status %}&status={{ filters.status }}{% endif %}{% if filters.zone %}&zone={{ filters.zone }}{% endif %}" class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Précédent</a>
+                        {% endif %}
+                        {% if currentPage < totalPages %}
+                            <a href="?page={{ currentPage + 1 }}{% if filters.status %}&status={{ filters.status }}{% endif %}{% if filters.zone %}&zone={{ filters.zone }}{% endif %}" class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Suivant</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+<nav class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex">
+                <div class="flex-shrink-0 flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">ZANDO Market</h1>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                    <a href="{{ path('market_admin_dashboard') }}" class="{% if app.request.get('_route') == 'market_admin_dashboard' %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        Tableau de Bord
+                    </a>
+                    <a href="{{ path('market_admin_merchants_index') }}" class="{% if 'merchants' in app.request.get('_route') %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        Marchands
+                    </a>
+                    <a href="{{ path('market_admin_spaces_index') }}" class="{% if 'spaces' in app.request.get('_route') %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        Espaces
+                    </a>
+                    <a href="{{ path('market_admin_contracts_index') }}" class="{% if 'contracts' in app.request.get('_route') %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        Contrats
+                    </a>
+                    <a href="{{ path('market_admin_payments_index') }}" class="{% if 'payments' in app.request.get('_route') %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        Paiements
+                    </a>
+                </div>
+            </div>
+            <div class="flex items-center">
+                <span class="text-sm text-gray-700 mr-4">{{ app.user.username }}</span>
+                <a href="{{ path('app_logout') }}" class="text-sm text-gray-500 hover:text-gray-700">Déconnexion</a>
+            </div>
+        </div>
+    </div>
+</nav>

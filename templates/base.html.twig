@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ZANDO Market{% endblock %}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🏪</text></svg>">
+    
+    {% block stylesheets %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-market {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .sidebar-item {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-item.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 4px solid #fff;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .5;
+            }
+        }
+        
+        .sidebar-logo {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+    {% endblock %}
+
+    {% block javascripts %}
+        {% block importmap %}{{ importmap('app') }}{% endblock %}
+    {% endblock %}
+</head>
+<body class="bg-gray-50">
+    {% if app.user %}
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Moderne -->
+        <aside class="w-64 gradient-bg text-white flex-shrink-0 hidden md:flex flex-col">
+            <!-- Logo -->
+            <div class="sidebar-logo p-6 border-b border-white border-opacity-20">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-3xl">
+                        🏪
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">ZANDO</h1>
+                        <p class="text-xs text-white text-opacity-70">Market Management</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+                <a href="{{ path('market_admin_dashboard') }}" 
+                   class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {% if app.request.get('_route') starts with 'market_admin_dashboard' %}active{% endif %}">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span class="font-medium">Tableau de Bord</span>
+                </a>
+                
+                <a href="{{ path('market_admin_merchants_index') }}" 
+                   class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {% if app.request.get('_route') starts with 'market_admin_merchants' %}active{% endif %}">
+                    <i class="fas fa-users w-5"></i>
+                    <span class="font-medium">Marchands</span>
+                </a>
+                
+                <a href="{{ path('market_admin_spaces_index') }}" 
+                   class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {% if app.request.get('_route') starts with 'market_admin_spaces' %}active{% endif %}">
+                    <i class="fas fa-store w-5"></i>
+                    <span class="font-medium">Espaces</span>
+                </a>
+                
+                <a href="{{ path('market_admin_contracts_index') }}" 
+                   class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {% if app.request.get('_route') starts with 'market_admin_contracts' %}active{% endif %}">
+                    <i class="fas fa-file-contract w-5"></i>
+                    <span class="font-medium">Contrats</span>
+                </a>
+                
+                <a href="{{ path('market_admin_payments_index') }}" 
+                   class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {% if app.request.get('_route') starts with 'market_admin_payments' %}active{% endif %}">
+                    <i class="fas fa-credit-card w-5"></i>
+                    <span class="font-medium">Paiements</span>
+                </a>
+
+                <div class="pt-4 mt-4 border-t border-white border-opacity-20">
+                    <a href="{{ path('market_admin_settings') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg">
+                        <i class="fas fa-cog w-5"></i>
+                        <span class="font-medium">Paramètres</span>
+                    </a>
+                </div>
+            </nav>
+
+            <!-- User Profile -->
+            <div class="p-4 border-t border-white border-opacity-20">
+                <div class="flex items-center space-x-3 px-4 py-3 bg-white bg-opacity-10 rounded-lg">
+                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-purple-600 font-bold">
+                        {{ app.user.username|slice(0, 1)|upper }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium truncate">{{ app.user.username }}</p>
+                        <p class="text-xs text-white text-opacity-70">Administrateur</p>
+                    </div>
+                    <a href="{{ path('app_logout') }}" class="text-white hover:text-red-200" title="Déconnexion">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <header class="bg-white shadow-sm z-10">
+                <div class="px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">{% block header %}Dashboard{% endblock %}</h2>
+                            <p class="text-sm text-gray-500 mt-1">{% block subtitle %}Bienvenue sur votre espace de gestion{% endblock %}</p>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <button class="relative p-2 text-gray-600 hover:text-gray-800">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full pulse-animation"></span>
+                            </button>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-gray-700">{{ "now"|date("d/m/Y") }}</p>
+                                <p class="text-xs text-gray-500">{{ "now"|date("H:i") }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="flex-1 overflow-y-auto bg-gray-50 p-6">
+                {% for message in app.flashes('success') %}
+                    <div class="mb-4 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                            <p class="text-green-700">{{ message }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                {% for message in app.flashes('error') %}
+                    <div class="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                            <p class="text-red-700">{{ message }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    {% else %}
+    <!-- Page de connexion -->
+    <div class="min-h-screen gradient-bg flex items-center justify-center p-4">
+        {% block login_content %}{% endblock %}
+    </div>
+    {% endif %}
+</body>
+</html>

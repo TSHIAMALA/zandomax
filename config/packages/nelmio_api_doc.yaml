@@ -1,0 +1,39 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: Zando Market API
+            description: API documentation for Zando Market Platform
+            version: 1.0.0
+        paths: 
+            /api/login_check:
+                post:
+                    operationId: postCredentialsItem
+                    tags:
+                        - Token
+                    summary: Get JWT token to login.
+                    requestBody:
+                        description: Create new JWT Token
+                        content:
+                            application/json:
+                                schema:
+                                    type: object
+                                    properties:
+                                        username:
+                                            type: string
+                                        password:
+                                            type: string
+                    responses:
+                        '200':
+                            description: Get JWT token
+                            content:
+                                application/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            token:
+                                                type: string
+                        '401':
+                            description: Invalid credentials
+    areas: # to filter documented areas
+        path_patterns: # an array of regexps
+            - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
