@@ -1,16 +1,5 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon Contrat{% endblock %}
-{% block header %}Mon Contrat{% endblock %}
-
-{% block body %}
-<div class="max-w-4xl mx-auto">
-    {% if contract %}
-    <div class="bg-white shadow rounded-lg overflow-hidden">
-        <div class="px-6 py-4 bg-indigo-600 text-white">
-            <h2 class="text-2xl font-bold">Contrat N° {{ contract.contractNumber }}</h2>
-        </div>
-        
         <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>

@@ -1,0 +1,71 @@
+{{ form_start(form) }}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            {{ form_label(form.firstname, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.firstname) }}
+            {{ form_errors(form.firstname) }}
+        </div>
+
+        <div>
+            {{ form_label(form.lastname, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.lastname) }}
+            {{ form_errors(form.lastname) }}
+        </div>
+
+        <div>
+            {{ form_label(form.phone, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.phone) }}
+            {{ form_errors(form.phone) }}
+        </div>
+
+        <div>
+            {{ form_label(form.email, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.email) }}
+            {{ form_errors(form.email) }}
+        </div>
+
+        <div>
+            {{ form_label(form.merchantCategory, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.merchantCategory) }}
+            {{ form_errors(form.merchantCategory) }}
+        </div>
+
+        <div>
+            {{ form_label(form.personType, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.personType) }}
+            {{ form_errors(form.personType) }}
+        </div>
+
+        <div>
+            {{ form_label(form.status, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.status) }}
+            {{ form_errors(form.status) }}
+        </div>
+
+        <div>
+            {{ form_label(form.kycLevel, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.kycLevel) }}
+            {{ form_errors(form.kycLevel) }}
+        </div>
+
+        <div>
+            {{ form_label(form.accountNumber, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.accountNumber) }}
+            {{ form_errors(form.accountNumber) }}
+        </div>
+
+        <div>
+            {{ form_label(form.biometricHash, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.biometricHash) }}
+            {{ form_errors(form.biometricHash) }}
+            <p class="mt-1 text-xs text-gray-500">Laisser vide pour générer automatiquement</p>
+        </div>
+    </div>
+
+    <div class="mt-6 flex items-center justify-end">
+        <a href="{{ path('market_admin_merchants_index') }}" class="text-gray-600 hover:text-gray-900 mr-4">Annuler</a>
+        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition shadow-sm">
+            {{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
+{{ form_end(form) }}

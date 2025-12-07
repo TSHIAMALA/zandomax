@@ -1,0 +1,189 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails Réservation - ZANDO Market{% endblock %}
+{% block header %}Détails de la Réservation{% endblock %}
+{% block subtitle %}Réservation #{{ reservation.id|bin2hex|slice(0, 8) }}{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <!-- Informations principales -->
+    <div class="lg:col-span-2 space-y-4">
+        <!-- Statut -->
+        <div class="bg-white rounded-lg shadow-sm p-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-800">Statut de la réservation</h3>
+                {% if reservation.status.value == 'pending_admin' %}
+                    <span class="px-3 py-1 text-sm font-medium bg-yellow-100 text-yellow-800 rounded-full">
+                        <i class="fas fa-clock mr-1"></i>En attente de validation
+                    </span>
+                {% elseif reservation.status.value == 'approved' %}
+                    <span class="px-3 py-1 text-sm font-medium bg-green-100 text-green-800 rounded-full">
+                        <i class="fas fa-check mr-1"></i>Approuvée
+                    </span>
+                {% elseif reservation.status.value == 'rejected' %}
+                    <span class="px-3 py-1 text-sm font-medium bg-red-100 text-red-800 rounded-full">
+                        <i class="fas fa-times mr-1"></i>Rejetée
+                    </span>
+                {% endif %}
+            </div>
+
+            {% if reservation.status.value == 'rejected' and reservation.rejectionReason %}
+            <div class="bg-red-50 border-l-4 border-red-500 p-3 rounded-r">
+                <p class="text-sm font-medium text-red-800 mb-1">Motif du refus:</p>
+                <p class="text-sm text-red-700">{{ reservation.rejectionReason }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Informations Marchand -->
+        <div class="bg-white rounded-lg shadow-sm p-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                <i class="fas fa-user mr-2 text-purple-600"></i>Informations du Marchand
+            </h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-gray-500">Nom complet</p>
+                    <p class="font-medium text-gray-900">{{ reservation.merchant.firstname }} {{ reservation.merchant.lastname }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Téléphone</p>
+                    <p class="font-medium text-gray-900">{{ reservation.merchant.phone }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Email</p>
+                    <p class="font-medium text-gray-900">{{ reservation.merchant.email }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Statut</p>
+                    <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                        {{ reservation.merchant.status.value }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations Espace -->
+        <div class="bg-white rounded-lg shadow-sm p-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                <i class="fas fa-store mr-2 text-purple-600"></i>Espace Réservé
+            </h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-gray-500">Code</p>
+                    <p class="font-medium text-gray-900">{{ reservation.space.code }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Catégorie</p>
+                    <p class="font-medium text-gray-900">{{ reservation.space.spaceCategory.name }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Zone</p>
+                    <p class="font-medium text-gray-900">{{ reservation.space.zone ?? 'N/A' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Superficie</p>
+                    <p class="font-medium text-gray-900">{{ reservation.space.area ?? 'N/A' }} m²</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Détails Location -->
+        <div class="bg-white rounded-lg shadow-sm p-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                <i class="fas fa-calendar-alt mr-2 text-purple-600"></i>Détails de la Location
+            </h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-gray-500">Périodicité</p>
+                    <p class="font-medium text-gray-900">
+                        {% if reservation.periodicity.value == 'day' %}Journalier
+                        {% elseif reservation.periodicity.value == 'week' %}Hebdomadaire
+                        {% elseif reservation.periodicity.value == 'month' %}Mensuel
+                        {% elseif reservation.periodicity.value == 'quarter' %}Trimestriel
+                        {% elseif reservation.periodicity.value == 'semester' %}Semestriel
+                        {% elseif reservation.periodicity.value == 'year' %}Annuel
+                        {% endif %}
+                    </p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Durée</p>
+                    <p class="font-medium text-gray-900">{{ reservation.duration }} période(s)</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Montant premier paiement</p>
+                    <p class="font-medium text-gray-900 text-lg text-purple-600">
+                        {{ reservation.firstPaymentAmount|number_format(2, ',', ' ') }} {{ reservation.currency.code }}
+                    </p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Date de demande</p>
+                    <p class="font-medium text-gray-900">{{ reservation.createdAt|date('d/m/Y à H:i') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="lg:col-span-1">
+        {% if reservation.status.value == 'pending_admin' %}
+        <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Actions</h3>
+            
+            <!-- Approuver -->
+            <form method="post" action="{{ path('market_admin_reservations_approve', {id: reservation.id|bin2hex}) }}" 
+                  onsubmit="return confirm('Confirmer l\'approbation de cette réservation ? Un contrat sera automatiquement généré.')">
+                <button type="submit" class="w-full mb-3 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium">
+                    <i class="fas fa-check mr-2"></i>Approuver la réservation
+                </button>
+            </form>
+
+            <!-- Rejeter -->
+            <button onclick="document.getElementById('rejectModal').classList.remove('hidden')" 
+                    class="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium">
+                <i class="fas fa-times mr-2"></i>Rejeter la réservation
+            </button>
+        </div>
+
+        <!-- Modal de refus -->
+        <div id="rejectModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Motif du refus</h3>
+                <form method="post" action="{{ path('market_admin_reservations_reject', {id: reservation.id|bin2hex}) }}">
+                    <textarea name="rejection_reason" rows="4" required
+                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 mb-4"
+                              placeholder="Expliquez pourquoi cette réservation est rejetée..."></textarea>
+                    <div class="flex space-x-3">
+                        <button type="button" onclick="document.getElementById('rejectModal').classList.add('hidden')"
+                                class="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+                            Annuler
+                        </button>
+                        <button type="submit" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                            Confirmer le refus
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Informations complémentaires -->
+        <div class="bg-blue-50 rounded-lg p-4">
+            <h4 class="font-medium text-blue-900 mb-2">
+                <i class="fas fa-info-circle mr-2"></i>Informations
+            </h4>
+            <ul class="text-sm text-blue-800 space-y-1">
+                <li>• L'approbation génère automatiquement un contrat</li>
+                <li>• Le marchand sera notifié par email</li>
+                <li>• L'espace sera marqué comme occupé</li>
+                <li>• Le refus nécessite un motif obligatoire</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{{ path('market_admin_reservations_index') }}" class="text-purple-600 hover:text-purple-800 font-medium">
+        <i class="fas fa-arrow-left mr-2"></i>Retour à la liste
+    </a>
+</div>
+{% endblock %}

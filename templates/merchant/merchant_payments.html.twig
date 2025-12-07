@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes Paiements{% endblock %}
-{% block header %}Mes Paiements{% endblock %}
+{% block title %}Mes Paiements - ZANDO Market{% endblock %}
 
-{% block body %}
-<div class="max-w-7xl mx-auto">
+{% block content %}
+{% include 'merchant/_nav.html.twig' %}
+<div class="container mx-auto px-4 py-8">
     <div class="bg-white shadow rounded-lg overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200">
             <h2 class="text-xl font-semibold">Historique des Paiements</h2>

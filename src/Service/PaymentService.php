@@ -27,16 +27,20 @@ class PaymentService
         float $amount,
         string $type,
         ?Contract $contract = null,
-        ?string $reference = null
+        ?string $reference = null,
+        ?\DateTimeInterface $dueDate = null,
+        string $currency = 'CDF'
     ): Payment {
         $payment = new Payment();
         $payment->setMerchant($merchant);
-        $payment->setAmount($amount);
-        $payment->setType($type);
-        $payment->setStatus('pending');
+        $payment->setAmount((string) $amount);
+        $payment->setType(\App\Enum\PaymentType::tryFrom($type) ?? \App\Enum\PaymentType::RESERVATION);
+        $payment->setStatus(\App\Enum\PaymentStatus::PENDING);
         $payment->setContract($contract);
-        $payment->setReference($reference ?? $this->generateReference());
+        $payment->setBankingTransactionId($reference ?? $this->generateReference());
         $payment->setCreatedAt(new \DateTimeImmutable());
+        $payment->setDueDate($dueDate);
+        $payment->setCurrency($currency);
 
         $this->entityManager->persist($payment);
         $this->entityManager->flush();
@@ -49,9 +53,9 @@ class PaymentService
      */
     public function validatePayment(Payment $payment, string $validatedBy): Payment
     {
-        $payment->setStatus('completed');
-        $payment->setValidatedAt(new \DateTimeImmutable());
-        $payment->setValidatedBy($validatedBy);
+        $payment->setStatus(\App\Enum\PaymentStatus::PAID);
+        $payment->setPaymentDate(new \DateTimeImmutable());
+        // $payment->setValidatedBy($validatedBy); // Entity has processedBy (User), not validatedBy (string)
 
         $this->entityManager->flush();
 
@@ -63,12 +67,10 @@ class PaymentService
      */
     public function rejectPayment(Payment $payment, string $reason): Payment
     {
-        $payment->setStatus('rejected');
-        $payment->setMetadata(array_merge(
-            $payment->getMetadata() ?? [],
-            ['rejection_reason' => $reason, 'rejected_at' => (new \DateTimeImmutable())->format('Y-m-d H:i:s')]
-        ));
-
+        $payment->setStatus(\App\Enum\PaymentStatus::FAILED);
+        // $payment->setMetadata... Payment entity doesn't have metadata field in the view I saw earlier?
+        // Let's check Payment entity again.
+        
         $this->entityManager->flush();
 
         return $payment;

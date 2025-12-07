@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Règle de Prix - ZANDO Market{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-6 py-6">
+    <div class="max-w-3xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Nouvelle Règle de Prix</h1>
+            <p class="text-gray-600">Définir un nouveau tarif pour un espace</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            {% include 'market_admin/pricing_rules/_form.html.twig' with {'button_label': 'Créer la règle'} %}
+        </div>
+    </div>
+</div>
+{% endblock %}

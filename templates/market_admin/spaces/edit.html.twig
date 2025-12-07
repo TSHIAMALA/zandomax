@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Espace - ZANDO Market{% endblock %}
+{% block header %}Modifier l'Espace {{ space.code }}{% endblock %}
+{% block subtitle %}Modifiez les informations de cet espace{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ path('market_admin_space_pricing_index', {spaceId: space.id|bin2hex}) }}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium inline-block">
+        <i class="fas fa-tags mr-2"></i>Gérer la Tarification
+    <a href="{{ path('market_admin_space_media_index', {spaceId: space.id|bin2hex}) }}" class="ml-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium inline-block">
+        <i class="fas fa-images mr-2"></i>Gérer les Médias
+    </a>
+    </a>
+</div>
+{{ include('market_admin/spaces/_form.html.twig') }}
+{% endblock %}

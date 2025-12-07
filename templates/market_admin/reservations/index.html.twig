@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réservations - ZANDO Market{% endblock %}
+{% block header %}Gestion des Réservations{% endblock %}
+{% block subtitle %}Validez ou refusez les demandes de réservation{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+    <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Recherche</label>
+            <input type="text" name="search" value="{{ filters.search ?? '' }}" 
+                   placeholder="Marchand ou espace..." 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+            <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500">
+                <option value="">Tous</option>
+                <option value="pending_admin" {% if filters.status ?? '' == 'pending_admin' %}selected{% endif %}>En attente</option>
+                <option value="approved" {% if filters.status ?? '' == 'approved' %}selected{% endif %}>Approuvées</option>
+                <option value="rejected" {% if filters.status ?? '' == 'rejected' %}selected{% endif %}>Rejetées</option>
+                <option value="cancelled" {% if filters.status ?? '' == 'cancelled' %}selected{% endif %}>Annulées</option>
+            </select>
+        </div>
+        
+        <div class="flex items-end">
+            <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium">
+                <i class="fas fa-search mr-2"></i>Filtrer
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Marchand</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Espace</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Périodicité</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Montant</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            {% for reservation in reservations %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 text-sm">
+                    <div class="font-medium text-gray-900">
+                        {{ reservation.merchant.firstname }} {{ reservation.merchant.lastname }}
+                    </div>
+                    <div class="text-gray-500 text-xs">{{ reservation.merchant.phone }}</div>
+                </td>
+                <td class="px-4 py-3 text-sm">
+                    <div class="font-medium text-gray-900">{{ reservation.space.code }}</div>
+                    <div class="text-gray-500 text-xs">{{ reservation.space.spaceCategory.name }}</div>
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-900">
+                    {{ reservation.duration }} 
+                    {% if reservation.periodicity.value == 'day' %}jour(s)
+                    {% elseif reservation.periodicity.value == 'week' %}semaine(s)
+                    {% elseif reservation.periodicity.value == 'month' %}mois
+                    {% elseif reservation.periodicity.value == 'year' %}an(s)
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                    {{ reservation.firstPaymentAmount|number_format(2, ',', ' ') }} {{ reservation.currency.code }}
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-500">
+                    {{ reservation.createdAt|date('d/m/Y H:i') }}
+                </td>
+                <td class="px-4 py-3 text-sm">
+                    {% if reservation.status.value == 'pending_admin' %}
+                        <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
+                            <i class="fas fa-clock mr-1"></i>En attente
+                        </span>
+                    {% elseif reservation.status.value == 'approved' %}
+                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                            <i class="fas fa-check mr-1"></i>Approuvée
+                        </span>
+                    {% elseif reservation.status.value == 'rejected' %}
+                        <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                            <i class="fas fa-times mr-1"></i>Rejetée
+                        </span>
+                    {% else %}
+                        <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                            {{ reservation.status.value }}
+                        </span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3 text-sm text-right">
+                    <a href="{{ path('market_admin_reservations_show', {id: reservation.id|bin2hex}) }}" 
+                       class="text-purple-600 hover:text-purple-900 font-medium">
+                        <i class="fas fa-eye mr-1"></i>Détails
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                    <i class="fas fa-inbox text-4xl mb-2"></i>
+                    <p>Aucune réservation trouvée</p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if totalPages is defined and totalPages > 1 %}
+<div class="mt-4 flex justify-center">
+    <nav class="flex space-x-2">
+        {% for page in 1..totalPages %}
+            <a href="{{ path('market_admin_reservations_index', {page: page, status: filters.status ?? '', search: filters.search}) }}" 
+               class="px-3 py-2 text-sm rounded {% if page == currentPage %}bg-purple-600 text-white{% else %}bg-white text-gray-700 hover:bg-gray-50{% endif %}">
+                {{ page }}
+            </a>
+        {% endfor %}
+    </nav>
+</div>
+{% endif %}
+{% endblock %}

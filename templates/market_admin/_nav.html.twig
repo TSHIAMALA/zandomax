@@ -18,6 +18,9 @@
                     <a href="{{ path('market_admin_contracts_index') }}" class="{% if 'contracts' in app.request.get('_route') %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                         Contrats
                     </a>
+                    <a href="{{ path('market_admin_reservations_index') }}" class="{% if 'reservations' in app.request.get('_route') %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        Réservations
+                    </a>
                     <a href="{{ path('market_admin_payments_index') }}" class="{% if 'payments' in app.request.get('_route') %}border-indigo-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                         Paiements
                     </a>

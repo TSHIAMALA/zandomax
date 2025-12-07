@@ -1,0 +1,121 @@
+{% extends 'merchant/base_merchant.html.twig' %}
+
+{% block title %}Mes Réservations - ZANDO Market{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">Mes Réservations</h1>
+            <p class="text-gray-600 mt-1">Suivez l'état de vos demandes de réservation</p>
+        </div>
+        <a href="{{ path('merchant_spaces') }}" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+            <i class="fas fa-plus mr-2"></i>Nouvelle Réservation
+        </a>
+    </div>
+
+    <!-- Reservations List -->
+    <div class="space-y-4">
+        {% for reservation in reservations %}
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+            <div class="p-6">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                    <!-- Reservation Info -->
+                    <div class="flex-1">
+                        <div class="flex items-center mb-2">
+                            <h3 class="text-xl font-bold text-gray-800 mr-3">{{ reservation.space.code }}</h3>
+                            {% if reservation.status.value == 'pending_admin' %}
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                    <i class="fas fa-clock mr-1"></i>En attente
+                                </span>
+                            {% elseif reservation.status.value == 'approved' %}
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i>Approuvée
+                                </span>
+                            {% elseif reservation.status.value == 'rejected' %}
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                    <i class="fas fa-times-circle mr-1"></i>Rejetée
+                                </span>
+                            {% else %}
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                                    {{ reservation.status.value }}
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Zone</p>
+                                <p class="font-semibold text-gray-800">{{ reservation.space.zone }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Périodicité</p>
+                                <p class="font-semibold text-gray-800">{{ reservation.periodicity.value|capitalize }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Durée</p>
+                                <p class="font-semibold text-gray-800">{{ reservation.duration }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Montant</p>
+                                <p class="font-semibold text-purple-600">{{ reservation.firstPaymentAmount }} {{ reservation.currency.code }}</p>
+                            </div>
+                        </div>
+
+                        {% if reservation.status.value == 'rejected' and reservation.rejectionReason %}
+                        <div class="mt-4 p-3 bg-red-50 border-l-4 border-red-500 rounded-r">
+                            <p class="text-sm font-medium text-red-800">Motif du rejet:</p>
+                            <p class="text-sm text-red-700 mt-1">{{ reservation.rejectionReason }}</p>
+                        </div>
+                        {% endif %}
+
+                        {% if reservation.status.value == 'approved' %}
+                        <div class="mt-4 p-3 bg-green-50 border-l-4 border-green-500 rounded-r">
+                            <p class="text-sm text-green-700">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Votre réservation a été approuvée ! Un contrat sera généré prochainement.
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="mt-4 md:mt-0 md:ml-6 flex flex-col gap-2">
+                        <p class="text-xs text-gray-500">
+                            <i class="fas fa-calendar mr-1"></i>
+                            {{ reservation.createdAt|date('d/m/Y à H:i') }}
+                        </p>
+                        
+                        {% if reservation.status.value == 'pending_admin' %}
+                        <button onclick="cancelReservation('{{ reservation.id|bin2hex }}')" 
+                                class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition text-sm">
+                            <i class="fas fa-ban mr-1"></i>Annuler
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+            <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">Aucune réservation</h3>
+            <p class="text-gray-500 mb-4">Vous n'avez pas encore effectué de réservation</p>
+            <a href="{{ path('merchant_spaces') }}" class="inline-block px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+                <i class="fas fa-plus mr-2"></i>Réserver un espace
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function cancelReservation(reservationId) {
+    if (confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')) {
+        // TODO: Implement cancel reservation
+        alert('Fonctionnalité d\'annulation à implémenter');
+    }
+}
+</script>
+{% endblock %}

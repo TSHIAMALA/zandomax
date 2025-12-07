@@ -2,23 +2,8 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\AuditLog;
-use App\Entity\Contract;
-use App\Entity\Merchant;
-use App\Entity\MerchantCategory;
-use App\Entity\Payment;
-use App\Entity\Role;
-use App\Entity\Space;
-use App\Entity\SpaceCategory;
-use App\Entity\User;
-use App\Entity\Video;
-use App\Enum\BillingCycle;
-use App\Enum\ContractStatus;
-use App\Enum\KycLevel;
-use App\Enum\MerchantStatus;
-use App\Enum\PaymentStatus;
-use App\Enum\PaymentType;
-use App\Enum\SpaceStatus;
+use App\Entity\{User, Role, Merchant, MerchantCategory, Space, SpaceCategory, Contract, Payment, Video, AuditLog, Currency, SpaceType, PricingRule, SpaceReservation};
+use App\Enum\{MerchantStatus, KycLevel, SpaceStatus, ContractStatus, BillingCycle, PaymentStatus, PaymentType, PersonType, Periodicity, ReservationStatus};
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -37,6 +22,7 @@ class AppFixtures extends Fixture
             'ROLE_MARKET_ADMIN' => ['Administrateur du marché', 'Gestion du marché et des marchands'],
             'ROLE_CASHIER' => ['Caissier', 'Gestion des paiements au guichet'],
             'ROLE_ENROLLMENT_AGENT' => ['Agent enrôlement', 'Enrôlement biométrique sur site'],
+            'ROLE_CONTROLLER' => ['Contrôleur', 'Vérification terrain et signalement dommages'],
             'ROLE_MERCHANT' => ['Marchand', 'Accès portail marchand'],
         ];
 
@@ -65,6 +51,40 @@ class AppFixtures extends Fixture
             $cat->setDescription($desc);
             $manager->persist($cat);
             $spaceCategoryEntities[$name] = $cat;
+        }
+
+        // CURRENCIES
+        $currencies = [
+            'CDF' => ['Franc Congolais', 'FC'],
+            'USD' => ['Dollar Américain', '$'],
+        ];
+
+        $currencyEntities = [];
+        foreach ($currencies as $code => $data) {
+            $currency = new Currency();
+            $currency->setCode($code);
+            $currency->setLabel($data[0]);
+            $currency->setSymbol($data[1]);
+            $manager->persist($currency);
+            $currencyEntities[$code] = $currency;
+        }
+
+        // SPACE TYPES
+        $spaceTypes = [
+            'LOCAL' => ['Local commercial', 'Local fermé'],
+            'ETAL' => ['Étalage', 'Étal ouvert'],
+            'BOX' => ['Box', 'Petit espace fermé'],
+            'DEPOT' => ['Dépôt', 'Espace d\'entreposage'],
+        ];
+
+        $spaceTypeEntities = [];
+        foreach ($spaceTypes as $code => $data) {
+            $spaceType = new SpaceType();
+            $spaceType->setCode($code);
+            $spaceType->setLabel($data[0]);
+            $spaceType->setDescription($data[1]);
+            $manager->persist($spaceType);
+            $spaceTypeEntities[$code] = $spaceType;
         }
 
         // MERCHANT CATEGORIES
@@ -135,6 +155,7 @@ class AppFixtures extends Fixture
         $space1 = new Space();
         $space1->setCode('B-001');
         $space1->setSpaceCategory($spaceCategoryEntities['Boutique']);
+        $space1->setSpaceType($spaceTypeEntities['LOCAL']);
         $space1->setZone('Zone A');
         $space1->setArchitectureCoord(['x' => 10, 'y' => 20]);
         $space1->setStatus(SpaceStatus::OCCUPIED);
@@ -143,6 +164,7 @@ class AppFixtures extends Fixture
         $space2 = new Space();
         $space2->setCode('B-002');
         $space2->setSpaceCategory($spaceCategoryEntities['Boutique']);
+        $space2->setSpaceType($spaceTypeEntities['LOCAL']);
         $space2->setZone('Zone A');
         $space2->setArchitectureCoord(['x' => 15, 'y' => 20]);
         $space2->setStatus(SpaceStatus::AVAILABLE);
@@ -151,10 +173,30 @@ class AppFixtures extends Fixture
         $space3 = new Space();
         $space3->setCode('E-010');
         $space3->setSpaceCategory($spaceCategoryEntities['Étal']);
+        $space3->setSpaceType($spaceTypeEntities['ETAL']);
         $space3->setZone('Zone B');
         $space3->setArchitectureCoord(['x' => 5, 'y' => 30]);
         $space3->setStatus(SpaceStatus::AVAILABLE);
         $manager->persist($space3);
+
+        // PRICING RULES
+        $pricingRules = [
+            ['space' => $space1, 'periodicity' => Periodicity::MONTH, 'price' => '300.00'],
+            ['space' => $space1, 'periodicity' => Periodicity::QUARTER, 'price' => '850.00'],
+            ['space' => $space1, 'periodicity' => Periodicity::YEAR, 'price' => '3200.00'],
+            ['space' => $space2, 'periodicity' => Periodicity::MONTH, 'price' => '300.00'],
+            ['space' => $space3, 'periodicity' => Periodicity::WEEK, 'price' => '50.00'],
+            ['space' => $space3, 'periodicity' => Periodicity::DAY, 'price' => '10.00'],
+        ];
+
+        foreach ($pricingRules as $ruleData) {
+            $rule = new PricingRule();
+            $rule->setSpace($ruleData['space']);
+            $rule->setPeriodicity($ruleData['periodicity']);
+            $rule->setPrice($ruleData['price']);
+            $rule->setCurrency($currencyEntities['CDF']);
+            $manager->persist($rule);
+        }
 
         // CONTRACTS
         $contract = new Contract();
@@ -192,6 +234,27 @@ class AppFixtures extends Fixture
         $payment2->setDueDate(new \DateTime('2025-02-05'));
         $payment2->setStatus(PaymentStatus::PENDING);
         $manager->persist($payment2);
+
+        // SPACE RESERVATIONS (for testing)
+        $reservation1 = new SpaceReservation();
+        $reservation1->setMerchant($merchantJean);
+        $reservation1->setSpace($space2); // B-002 is available
+        $reservation1->setPeriodicity(Periodicity::MONTH);
+        $reservation1->setDuration(6);
+        $reservation1->setFirstPaymentAmount('1800.00'); // 300 * 6
+        $reservation1->setCurrency($currencyEntities['CDF']);
+        $reservation1->setStatus(ReservationStatus::PENDING_ADMIN);
+        $manager->persist($reservation1);
+
+        $reservation2 = new SpaceReservation();
+        $reservation2->setMerchant($merchantJean);
+        $reservation2->setSpace($space3); // E-010 is available
+        $reservation2->setPeriodicity(Periodicity::WEEK);
+        $reservation2->setDuration(4);
+        $reservation2->setFirstPaymentAmount('200.00'); // 50 * 4
+        $reservation2->setCurrency($currencyEntities['CDF']);
+        $reservation2->setStatus(ReservationStatus::PENDING_ADMIN);
+        $manager->persist($reservation2);
 
         // VIDEOS
         $video = new Video();

@@ -27,6 +27,11 @@ class Space
     #[Groups(['space:read'])]
     private ?SpaceCategory $spaceCategory = null;
 
+    #[ORM\ManyToOne(targetEntity: SpaceType::class)]
+    #[ORM\JoinColumn(name: 'space_type_id', referencedColumnName: 'id', nullable: true)]
+    #[Groups(['space:read'])]
+    private ?SpaceType $spaceType = null;
+
     #[ORM\Column(length: 100)]
     #[Groups(['space:read'])]
     private ?string $zone = null;
@@ -37,6 +42,9 @@ class Space
     #[ORM\Column(length: 50, enumType: SpaceStatus::class)]
     #[Groups(['space:read'])]
     private ?SpaceStatus $status = SpaceStatus::AVAILABLE;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isDeleted = false;
 
     public function __construct()
     {
@@ -104,6 +112,30 @@ class Space
     public function setStatus(SpaceStatus $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getSpaceType(): ?SpaceType
+    {
+        return $this->spaceType;
+    }
+
+    public function setSpaceType(?SpaceType $spaceType): static
+    {
+        $this->spaceType = $spaceType;
+
+        return $this;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(bool $isDeleted): static
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

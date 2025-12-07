@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tarification - {{ space.code }} - ZANDO Market{% endblock %}
+{% block header %}Tarification de l'Espace {{ space.code }}{% endblock %}
+{% block subtitle %}Gérez les prix selon les différentes périodicités{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <!-- Formulaire d'ajout -->
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow-sm p-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                <i class="fas fa-plus-circle mr-2 text-purple-600"></i>Ajouter un Tarif
+            </h3>
+            
+            <form method="post" action="{{ path('market_admin_space_pricing_add', {spaceId: space.id|bin2hex}) }}" class="space-y-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Périodicité</label>
+                    <select name="periodicity" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500">
+                        <option value="day">Journalier</option>
+                        <option value="week">Hebdomadaire</option>
+                        <option value="month">Mensuel</option>
+                        <option value="quarter">Trimestriel</option>
+                        <option value="semester">Semestriel</option>
+                        <option value="year">Annuel</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Montant</label>
+                    <input type="number" name="amount" step="0.01" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500"
+                           placeholder="300.00">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Devise</label>
+                    <select name="currency_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500">
+                        <option value="01e5c521d2a611f096aee86a64c2766a">CDF</option>
+                        <option value="01e5d36ed2a611f096aee86a64c2766a">USD</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Durée min</label>
+                        <input type="number" name="min_duration" min="1" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500"
+                               placeholder="1">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Durée max</label>
+                        <input type="number" name="max_duration" min="1" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500"
+                               placeholder="12">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium text-sm">
+                    <i class="fas fa-plus mr-2"></i>Ajouter
+                </button>
+            </form>
+        </div>
+
+        <div class="mt-4">
+            <a href="{{ path('market_admin_spaces_edit', {id: space.id|bin2hex}) }}" class="text-purple-600 hover:text-purple-800 font-medium text-sm">
+                <i class="fas fa-arrow-left mr-2"></i>Retour à l'espace
+            </a>
+        </div>
+    </div>
+
+    <!-- Liste des tarifs -->
+    <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-gray-200">
+                <h3 class="text-lg font-bold text-gray-800">
+                    <i class="fas fa-tags mr-2 text-purple-600"></i>Tarifs Configurés
+                </h3>
+            </div>
+
+            {% if pricings is empty %}
+            <div class="p-8 text-center text-gray-500">
+                <i class="fas fa-tag text-4xl mb-2"></i>
+                <p>Aucun tarif configuré</p>
+                <p class="text-sm mt-1">Ajoutez votre premier tarif pour cet espace</p>
+            </div>
+            {% else %}
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Périodicité</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Montant</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durée</th>
+                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for pricing in pricings %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                            {% if pricing.periodicity.value == 'day' %}
+                                <i class="fas fa-calendar-day mr-1 text-blue-600"></i>Journalier
+                            {% elseif pricing.periodicity.value == 'week' %}
+                                <i class="fas fa-calendar-week mr-1 text-green-600"></i>Hebdomadaire
+                            {% elseif pricing.periodicity.value == 'month' %}
+                                <i class="fas fa-calendar-alt mr-1 text-purple-600"></i>Mensuel
+                            {% elseif pricing.periodicity.value == 'quarter' %}
+                                <i class="fas fa-calendar mr-1 text-orange-600"></i>Trimestriel
+                            {% elseif pricing.periodicity.value == 'semester' %}
+                                <i class="fas fa-calendar mr-1 text-pink-600"></i>Semestriel
+                            {% elseif pricing.periodicity.value == 'year' %}
+                                <i class="fas fa-calendar mr-1 text-red-600"></i>Annuel
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                            <span class="font-bold text-purple-600">{{ pricing.amount|number_format(2, ',', ' ') }}</span>
+                            <span class="text-gray-500">{{ pricing.currency.code }}</span>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-600">
+                            {% if pricing.minDuration or pricing.maxDuration %}
+                                {{ pricing.minDuration ?? '∞' }} - {{ pricing.maxDuration ?? '∞' }} période(s)
+                            {% else %}
+                                <span class="text-gray-400">Non défini</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-sm text-right">
+                            <form method="post" action="{{ path('market_admin_space_pricing_delete', {spaceId: space.id|bin2hex, id: pricing.id|bin2hex}) }}" 
+                                  onsubmit="return confirm('Supprimer ce tarif ?')" class="inline">
+                                <button type="submit" class="text-red-600 hover:text-red-900 font-medium">
+                                    <i class="fas fa-trash mr-1"></i>Supprimer
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

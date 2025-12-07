@@ -1,0 +1,50 @@
+{{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+
+<div class="bg-white rounded-lg shadow-sm p-6">
+    <h3 class="text-lg font-bold text-gray-800 mb-4">
+        <i class="fas fa-info-circle mr-2 text-purple-600"></i>Informations de base
+    </h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            {{ form_label(form.code, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+            {{ form_widget(form.code) }}
+            {{ form_errors(form.code) }}
+        </div>
+
+        <div>
+            {{ form_label(form.zone, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+            {{ form_widget(form.zone) }}
+            {{ form_errors(form.zone) }}
+        </div>
+
+        <div>
+            {{ form_label(form.spaceCategory, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+            {{ form_widget(form.spaceCategory) }}
+            {{ form_errors(form.spaceCategory) }}
+        </div>
+
+        <div>
+            {{ form_label(form.spaceType, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+            {{ form_widget(form.spaceType) }}
+            {{ form_errors(form.spaceType) }}
+        </div>
+
+        <div>
+            {{ form_label(form.status, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+            {{ form_widget(form.status) }}
+            {{ form_errors(form.status) }}
+        </div>
+    </div>
+</div>
+
+<div class="flex justify-end space-x-3">
+    <a href="{{ path('market_admin_spaces_index') }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-medium">
+        <i class="fas fa-times mr-2"></i>Annuler
+    </a>
+    <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium">
+        <i class="fas fa-save mr-2"></i>Enregistrer
+    </button>
+</div>
+
+{{ form_end(form) }}

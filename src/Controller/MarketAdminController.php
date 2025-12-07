@@ -6,6 +6,8 @@ use App\Repository\MerchantRepository;
 use App\Repository\SpaceRepository;
 use App\Repository\ContractRepository;
 use App\Repository\PaymentRepository;
+use App\Repository\SpaceReservationRepository;
+use App\Service\SpaceReservationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +22,9 @@ class MarketAdminController extends AbstractController
         private MerchantRepository $merchantRepository,
         private SpaceRepository $spaceRepository,
         private ContractRepository $contractRepository,
-        private PaymentRepository $paymentRepository
+        private PaymentRepository $paymentRepository,
+        private SpaceReservationRepository $reservationRepository,
+        private SpaceReservationService $reservationService
     ) {
     }
 
@@ -68,49 +72,7 @@ class MarketAdminController extends AbstractController
         ]);
     }
 
-    #[Route('/merchants', name: 'merchants_index')]
-    public function merchantsIndex(Request $request): Response
-    {
-        $page = max(1, (int) $request->query->get('page', 1));
-        $limit = 20;
-        $offset = ($page - 1) * $limit;
 
-        $status = $request->query->get('status');
-        $search = $request->query->get('search');
-
-        $qb = $this->merchantRepository->createQueryBuilder('m')
-            ->leftJoin('m.merchantCategory', 'mc')
-            ->addSelect('mc');
-
-        if ($status) {
-            $qb->andWhere('m.status = :status')
-               ->setParameter('status', $status);
-        }
-
-        if ($search) {
-            $qb->andWhere('m.firstname LIKE :search OR m.lastname LIKE :search OR m.phone LIKE :search')
-               ->setParameter('search', '%' . $search . '%');
-        }
-
-        $totalCount = (clone $qb)->select('COUNT(m.id)')->getQuery()->getSingleScalarResult();
-
-        $merchants = $qb
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->orderBy('m.createdAt', 'DESC')
-            ->getQuery()
-            ->getResult();
-
-        return $this->render('market_admin/merchants/index.html.twig', [
-            'merchants' => $merchants,
-            'currentPage' => $page,
-            'totalPages' => ceil($totalCount / $limit),
-            'filters' => [
-                'status' => $status,
-                'search' => $search,
-            ],
-        ]);
-    }
 
     #[Route('/merchants/{id}', name: 'merchants_show')]
     public function merchantsShow(string $id): Response
@@ -141,49 +103,7 @@ class MarketAdminController extends AbstractController
         ]);
     }
 
-    #[Route('/spaces', name: 'spaces_index')]
-    public function spacesIndex(Request $request): Response
-    {
-        $page = max(1, (int) $request->query->get('page', 1));
-        $limit = 20;
-        $offset = ($page - 1) * $limit;
 
-        $status = $request->query->get('status');
-        $zone = $request->query->get('zone');
-
-        $qb = $this->spaceRepository->createQueryBuilder('s')
-            ->leftJoin('s.spaceCategory', 'sc')
-            ->addSelect('sc');
-
-        if ($status) {
-            $qb->andWhere('s.status = :status')
-               ->setParameter('status', $status);
-        }
-
-        if ($zone) {
-            $qb->andWhere('s.zone = :zone')
-               ->setParameter('zone', $zone);
-        }
-
-        $totalCount = (clone $qb)->select('COUNT(s.id)')->getQuery()->getSingleScalarResult();
-
-        $spaces = $qb
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->orderBy('s.code', 'ASC')
-            ->getQuery()
-            ->getResult();
-
-        return $this->render('market_admin/spaces/index.html.twig', [
-            'spaces' => $spaces,
-            'currentPage' => $page,
-            'totalPages' => ceil($totalCount / $limit),
-            'filters' => [
-                'status' => $status,
-                'zone' => $zone,
-            ],
-        ]);
-    }
 
     #[Route('/contracts', name: 'contracts_index')]
     public function contractsIndex(Request $request): Response
@@ -307,7 +227,96 @@ class MarketAdminController extends AbstractController
             ],
         ]);
     }
+
+    #[Route('/reservations', name: 'reservations_index')]
+    public function reservationsIndex(Request $request): Response
+    {
+        $status = $request->query->get('status', 'pending_admin');
+        
+        $qb = $this->reservationRepository->createQueryBuilder('r')
+            ->leftJoin('r.merchant', 'm')
+            ->leftJoin('r.space', 's')
+            ->leftJoin('s.spaceCategory', 'sc')
+            ->addSelect('m', 's', 'sc')
+            ->where('r.isDeleted = :deleted')
+            ->setParameter('deleted', false);
+
+        if ($status) {
+            $qb->andWhere('r.status = :status')
+               ->setParameter('status', $status);
+        }
+
+        $reservations = $qb
+            ->orderBy('r.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('market_admin/reservations/index.html.twig', [
+            'reservations' => $reservations,
+            'currentStatus' => $status,
+        ]);
+    }
+
+    #[Route('/reservations/{id}/approve', name: 'reservations_approve', methods: ['POST'])]
+    public function approveReservation(string $id): Response
+    {
+        $reservation = $this->reservationRepository->find(hex2bin($id));
+
+        if (!$reservation) {
+            $this->addFlash('error', 'Réservation non trouvée');
+            return $this->redirectToRoute('market_admin_reservations_index');
+        }
+
+        try {
+            $this->reservationService->approveReservation($reservation);
+            $this->addFlash('success', 'Réservation approuvée avec succès');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur: ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('market_admin_reservations_index');
+    }
+
+    #[Route('/reservations/{id}/reject', name: 'reservations_reject', methods: ['POST'])]
+    public function rejectReservation(string $id, Request $request): Response
+    {
+        $reservation = $this->reservationRepository->find(hex2bin($id));
+
+        if (!$reservation) {
+            $this->addFlash('error', 'Réservation non trouvée');
+            return $this->redirectToRoute('market_admin_reservations_index');
+        }
+
+        $reason = $request->request->get('reason', 'Aucun motif fourni');
+
+        try {
+            $this->reservationService->rejectReservation($reservation, $reason);
+            $this->addFlash('success', 'Réservation rejetée');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur: ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('market_admin_reservations_index');
+    }
+    
     #[Route('/settings', name: 'settings')]
+    #[Route('/contracts/{id}/pdf', name: 'contracts_pdf')]
+    public function contractPdf(string $id, \App\Service\ContractGenerationService $pdfService): Response
+    {
+        $contract = $this->contractRepository->find(hex2bin($id));
+
+        if (!$contract) {
+            throw $this->createNotFoundException('Contract not found');
+        }
+
+        $pdfContent = $pdfService->generateContractPdf($contract);
+
+        return new Response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="contract-' . $contract->getContractCode() . '.pdf"'
+        ]);
+    }
+
     public function settings(): Response
     {
         return $this->render('market_admin/settings.html.twig');

@@ -1,0 +1,80 @@
+{% extends 'merchant/base_merchant.html.twig' %}
+
+{% block title %}Mes Paiements - ZANDO Market{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-6">
+    <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Mes Paiements</h1>
+        <p class="text-gray-600 mt-1">Historique de vos paiements</p>
+    </div>
+
+    <!-- Payments List -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Montant</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Référence</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for payment in payments %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{ payment.createdAt|date('d/m/Y H:i') }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{ payment.type.value|upper }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {{ payment.amount|number_format(0, ',', ' ') }} CDF
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if payment.status.value == 'paid' %}
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                Payé
+                            </span>
+                        {% elseif payment.status.value == 'pending' %}
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                En attente
+                            </span>
+                        {% else %}
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                {{ payment.status.value }}
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ payment.bankingTransactionId ?? '-' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        {% if payment.status.value == 'pending' %}
+                            <a href="{{ path('merchant_payment_pay', {'id': payment.id|bin2hex}) }}" class="text-purple-600 hover:text-purple-900 font-bold">
+                                <i class="fas fa-credit-card mr-1"></i>Payer
+                            </a>
+                        {% elseif payment.status.value == 'completed' %}
+                            <a href="#" class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-file-invoice mr-1"></i>Reçu
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                        <i class="fas fa-receipt text-4xl mb-4"></i>
+                        <p>Aucun paiement enregistré</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

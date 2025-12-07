@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enum\KycLevel;
 use App\Enum\MerchantStatus;
+use App\Enum\PersonType;
 use App\Repository\MerchantRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -52,6 +53,16 @@ class Merchant
 
     #[ORM\Column(length: 50, enumType: KycLevel::class)]
     private ?KycLevel $kycLevel = KycLevel::BASIC;
+
+    #[ORM\Column(length: 50, enumType: PersonType::class, nullable: true)]
+    #[Groups(['merchant:read'])]
+    private ?PersonType $personType = PersonType::PHYSICAL;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $documents = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isDeleted = false;
 
     #[ORM\Column(type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeInterface $createdAt = null;
@@ -199,6 +210,42 @@ class Merchant
     public function setUpdatedAt(\DateTimeInterface $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getPersonType(): ?PersonType
+    {
+        return $this->personType;
+    }
+
+    public function setPersonType(?PersonType $personType): static
+    {
+        $this->personType = $personType;
+
+        return $this;
+    }
+
+    public function getDocuments(): ?array
+    {
+        return $this->documents;
+    }
+
+    public function setDocuments(?array $documents): static
+    {
+        $this->documents = $documents;
+
+        return $this;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(bool $isDeleted): static
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

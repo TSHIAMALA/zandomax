@@ -1,0 +1,56 @@
+{{ form_start(form) }}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="md:col-span-2">
+            {{ form_label(form.space, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.space) }}
+            {{ form_errors(form.space) }}
+        </div>
+
+        <div>
+            {{ form_label(form.periodicity, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.periodicity) }}
+            {{ form_errors(form.periodicity) }}
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Montant</label>
+            <div class="flex gap-4">
+                <div class="flex-1">
+                    {{ form_widget(form.price, {'attr': {'placeholder': '0.00'}}) }}
+                </div>
+                <div class="w-32">
+                    {{ form_widget(form.currency) }}
+                </div>
+            </div>
+            {{ form_errors(form.price) }}
+            {{ form_errors(form.currency) }}
+        </div>
+
+        <div>
+            {{ form_label(form.minDuration, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.minDuration) }}
+            {{ form_errors(form.minDuration) }}
+        </div>
+
+        <div>
+            {{ form_label(form.maxDuration, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.maxDuration) }}
+            {{ form_errors(form.maxDuration) }}
+        </div>
+
+        <div class="md:col-span-2">
+            <div class="flex items-center">
+                {{ form_widget(form.isActive) }}
+                {{ form_label(form.isActive, null, {'label_attr': {'class': 'ml-2 block text-sm text-gray-900'}}) }}
+            </div>
+            {{ form_errors(form.isActive) }}
+        </div>
+    </div>
+
+    <div class="mt-6 flex items-center justify-end">
+        <a href="{{ path('market_admin_pricing_rules_index') }}" class="text-gray-600 hover:text-gray-900 mr-4">Annuler</a>
+        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition shadow-sm">
+            {{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
+{{ form_end(form) }}

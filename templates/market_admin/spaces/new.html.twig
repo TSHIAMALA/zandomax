@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel Espace - ZANDO Market{% endblock %}
+{% block header %}Créer un Nouvel Espace{% endblock %}
+{% block subtitle %}Ajoutez un nouvel espace à votre marché{% endblock %}
+
+{% block content %}
+{{ include('market_admin/spaces/_form.html.twig') }}
+{% endblock %}
