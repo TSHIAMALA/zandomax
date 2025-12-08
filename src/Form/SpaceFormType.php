@@ -6,8 +6,10 @@ use App\Entity\Space;
 use App\Entity\SpaceCategory;
 use App\Entity\SpaceType;
 use App\Enum\SpaceStatus;
+use App\Form\DataTransformer\BinaryUuidToEntityTransformer;
 use App\Repository\SpaceCategoryRepository;
 use App\Repository\SpaceTypeRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -19,7 +21,8 @@ class SpaceFormType extends AbstractType
 {
     public function __construct(
         private SpaceCategoryRepository $categoryRepository,
-        private SpaceTypeRepository $typeRepository
+        private SpaceTypeRepository $typeRepository,
+        private EntityManagerInterface $em
     ) {
     }
 
@@ -84,6 +87,13 @@ class SpaceFormType extends AbstractType
                 'attr' => ['class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm']
             ])
         ;
+
+        // Ajouter les transformers pour convertir les IDs hex en entités
+        $builder->get('spaceCategory')
+            ->addModelTransformer(new BinaryUuidToEntityTransformer($this->em, SpaceCategory::class));
+        
+        $builder->get('spaceType')
+            ->addModelTransformer(new BinaryUuidToEntityTransformer($this->em, SpaceType::class));
     }
 
     public function configureOptions(OptionsResolver $resolver): void

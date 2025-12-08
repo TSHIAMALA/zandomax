@@ -5,8 +5,6 @@ namespace App\Controller\MarketAdmin;
 use App\Entity\Space;
 use App\Form\SpaceFormType;
 use App\Repository\SpaceRepository;
-use App\Repository\SpaceCategoryRepository;
-use App\Repository\SpaceTypeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,8 +28,6 @@ class SpaceController extends AbstractController
     public function new(
         Request $request, 
         EntityManagerInterface $entityManager,
-        SpaceCategoryRepository $categoryRepository,
-        SpaceTypeRepository $typeRepository,
         \Symfony\Component\Form\FormFactoryInterface $formFactory
     ): Response {
         $space = new Space();
@@ -39,25 +35,7 @@ class SpaceController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Récupérer les IDs hexadécimaux et les convertir
-            $categoryId = $form->get('spaceCategory')->getData();
-            $typeId = $form->get('spaceType')->getData();
-
-            // Convertir hex en binaire et récupérer les entités
-            $category = $categoryRepository->find(hex2bin($categoryId));
-            $type = $typeRepository->find(hex2bin($typeId));
-
-            if (!$category || !$type) {
-                $this->addFlash('error', 'Catégorie ou type invalide.');
-                return $this->render('market_admin/spaces/new.html.twig', [
-                    'space' => $space,
-                    'form' => $form,
-                ]);
-            }
-
-            $space->setSpaceCategory($category);
-            $space->setSpaceType($type);
-
+            // Le transformer a déjà converti les IDs en entités
             $entityManager->persist($space);
             $entityManager->flush();
 
@@ -77,8 +55,6 @@ class SpaceController extends AbstractController
         string $id, 
         Request $request, 
         SpaceRepository $spaceRepository,
-        SpaceCategoryRepository $categoryRepository,
-        SpaceTypeRepository $typeRepository,
         EntityManagerInterface $entityManager, 
         \Symfony\Component\Form\FormFactoryInterface $formFactory
     ): Response {
@@ -92,25 +68,7 @@ class SpaceController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Récupérer les IDs hexadécimaux et les convertir
-            $categoryId = $form->get('spaceCategory')->getData();
-            $typeId = $form->get('spaceType')->getData();
-
-            // Convertir hex en binaire et récupérer les entités
-            $category = $categoryRepository->find(hex2bin($categoryId));
-            $type = $typeRepository->find(hex2bin($typeId));
-
-            if (!$category || !$type) {
-                $this->addFlash('error', 'Catégorie ou type invalide.');
-                return $this->render('market_admin/spaces/edit.html.twig', [
-                    'space' => $space,
-                    'form' => $form,
-                ]);
-            }
-
-            $space->setSpaceCategory($category);
-            $space->setSpaceType($type);
-
+            // Le transformer a déjà converti les IDs en entités
             $entityManager->flush();
 
             $this->addFlash('success', 'Espace modifié avec succès.');
