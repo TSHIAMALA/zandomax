@@ -31,7 +31,7 @@ class RegistrationController extends AbstractController
     public function register(Request $request): Response
     {
         if ($this->getUser()) {
-            return $this->redirectToRoute('market_admin_dashboard');
+            return $this->redirectToRoute('merchant_dashboard');
         }
 
         $categories = $this->categoryRepository->findAll();
@@ -93,13 +93,13 @@ class RegistrationController extends AbstractController
                     }
                 }
 
-                // Créer le marchand - ACTIF par défaut
+                // Créer le marchand - EN ATTENTE DE VALIDATION
                 $merchant = new Merchant();
                 $merchant->setFirstname($firstname);
                 $merchant->setLastname($lastname);
                 $merchant->setPhone($phone);
                 $merchant->setEmail($email);
-                $merchant->setStatus(MerchantStatus::ACTIVE); // Actif immédiatement
+                $merchant->setStatus(MerchantStatus::PENDING_VALIDATION); // En attente
                 $merchant->setKycLevel(KycLevel::BASIC);
                 $merchant->setPersonType(PersonType::from($personType));
                 
@@ -132,7 +132,7 @@ class RegistrationController extends AbstractController
                 $this->em->persist($user);
                 $this->em->flush();
 
-                $this->addFlash('success', 'Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter avec votre nom d\'utilisateur ou votre email.');
+                $this->addFlash('success', 'Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter. Pour activer votre compte, effectuez une réservation et un paiement.');
                 
                 return $this->redirectToRoute('app_login');
 
