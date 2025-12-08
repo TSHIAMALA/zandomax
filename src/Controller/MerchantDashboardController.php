@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Repository\ReservationRepository;
+use App\Repository\SpaceReservationRepository;
 use App\Repository\SpaceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +15,7 @@ class MerchantDashboardController extends AbstractController
 {
     #[Route('/dashboard', name: 'dashboard')]
     public function dashboard(
-        ReservationRepository $reservationRepository,
+        SpaceReservationRepository $reservationRepository,
         SpaceRepository $spaceRepository
     ): Response {
         $user = $this->getUser();
@@ -60,7 +60,7 @@ class MerchantDashboardController extends AbstractController
     }
 
     #[Route('/reservations', name: 'reservations')]
-    public function reservations(ReservationRepository $reservationRepository): Response
+    public function reservations(SpaceReservationRepository $reservationRepository): Response
     {
         $user = $this->getUser();
         $merchant = $user->getMerchant();

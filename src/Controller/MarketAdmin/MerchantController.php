@@ -5,7 +5,7 @@ namespace App\Controller\MarketAdmin;
 use App\Entity\Merchant;
 use App\Form\MerchantFormType;
 use App\Repository\MerchantRepository;
-use App\Repository\ReservationRepository;
+use App\Repository\SpaceReservationRepository;
 use App\Repository\ContractRepository;
 use App\Repository\InvoiceRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -55,7 +55,7 @@ class MerchantController extends AbstractController
     public function show(
         string $id, 
         MerchantRepository $merchantRepository,
-        ReservationRepository $reservationRepository,
+        SpaceReservationRepository $reservationRepository,
         ContractRepository $contractRepository,
         InvoiceRepository $invoiceRepository
     ): Response {
