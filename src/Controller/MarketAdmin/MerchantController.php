@@ -5,6 +5,9 @@ namespace App\Controller\MarketAdmin;
 use App\Entity\Merchant;
 use App\Form\MerchantFormType;
 use App\Repository\MerchantRepository;
+use App\Repository\ReservationRepository;
+use App\Repository\ContractRepository;
+use App\Repository\InvoiceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,22 +52,40 @@ class MerchantController extends AbstractController
     }
 
     #[Route('/{id}', name: 'show', methods: ['GET'])]
-    public function show(string $id, MerchantRepository $merchantRepository): Response
-    {
+    public function show(
+        string $id, 
+        MerchantRepository $merchantRepository,
+        ReservationRepository $reservationRepository,
+        ContractRepository $contractRepository,
+        InvoiceRepository $invoiceRepository
+    ): Response {
         $merchant = $merchantRepository->find(hex2bin($id));
         
         if (!$merchant) {
             throw $this->createNotFoundException('Marchand non trouvé');
         }
 
+        // Récupérer toutes les données liées au marchand
+        $reservations = $reservationRepository->findBy(['merchant' => $merchant], ['createdAt' => 'DESC']);
+        $contracts = $contractRepository->findBy(['merchant' => $merchant], ['createdAt' => 'DESC']);
+        $invoices = $invoiceRepository->findBy(['merchant' => $merchant], ['createdAt' => 'DESC']);
+
         return $this->render('market_admin/merchants/show.html.twig', [
             'merchant' => $merchant,
+            'reservations' => $reservations,
+            'contracts' => $contracts,
+            'invoices' => $invoices,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
-    public function edit(string $id, Request $request, MerchantRepository $merchantRepository, EntityManagerInterface $entityManager, \Symfony\Component\Form\FormFactoryInterface $formFactory): Response
-    {
+    public function edit(
+        string $id, 
+        Request $request, 
+        MerchantRepository $merchantRepository, 
+        EntityManagerInterface $entityManager, 
+        \Symfony\Component\Form\FormFactoryInterface $formFactory
+    ): Response {
         $merchant = $merchantRepository->find(hex2bin($id));
         
         if (!$merchant) {
@@ -79,7 +100,7 @@ class MerchantController extends AbstractController
 
             $this->addFlash('success', 'Marchand modifié avec succès.');
 
-            return $this->redirectToRoute('market_admin_merchants_index');
+            return $this->redirectToRoute('market_admin_merchants_show', ['id' => $id]);
         }
 
         return $this->render('market_admin/merchants/edit.html.twig', [
@@ -88,9 +109,13 @@ class MerchantController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'delete', methods: ['POST'])]
-    public function delete(string $id, Request $request, MerchantRepository $merchantRepository, EntityManagerInterface $entityManager): Response
-    {
+    #[Route('/{id}/delete', name: 'delete', methods: ['POST'])]
+    public function delete(
+        string $id, 
+        Request $request, 
+        MerchantRepository $merchantRepository, 
+        EntityManagerInterface $entityManager
+    ): Response {
         $merchant = $merchantRepository->find(hex2bin($id));
         
         if (!$merchant) {
@@ -109,8 +134,11 @@ class MerchantController extends AbstractController
     }
     
     #[Route('/{id}/validate', name: 'validate', methods: ['POST'])]
-    public function validate(string $id, MerchantRepository $merchantRepository, EntityManagerInterface $em): Response
-    {
+    public function validate(
+        string $id, 
+        MerchantRepository $merchantRepository, 
+        EntityManagerInterface $em
+    ): Response {
         $merchant = $merchantRepository->find(hex2bin($id));
         
         if (!$merchant) {

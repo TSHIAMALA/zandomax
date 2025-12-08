@@ -39,11 +39,11 @@ class RegistrationController extends AbstractController
         if ($request->isMethod('POST')) {
             try {
                 // Récupérer les données du formulaire
-                $firstname = $request->request->get('firstname');
-                $lastname = $request->request->get('lastname');
-                $phone = $request->request->get('phone');
-                $username = $request->request->get('username');
-                $email = $request->request->get('email');
+                $firstname = trim($request->request->get('firstname'));
+                $lastname = trim($request->request->get('lastname'));
+                $phone = trim($request->request->get('phone'));
+                $username = trim($request->request->get('username'));
+                $email = trim($request->request->get('email'));
                 $password = $request->request->get('password');
                 $confirmPassword = $request->request->get('confirm_password');
                 $categoryId = $request->request->get('category');
@@ -83,24 +83,36 @@ class RegistrationController extends AbstractController
                     throw new \Exception('Ce nom d\'utilisateur est déjà utilisé');
                 }
 
-                // Créer le marchand
+                // Vérifier si l'email existe déjà (si fourni)
+                if ($email) {
+                    $existingEmail = $this->em->getRepository(User::class)
+                        ->findOneBy(['email' => $email]);
+                    
+                    if ($existingEmail) {
+                        throw new \Exception('Cette adresse email est déjà utilisée');
+                    }
+                }
+
+                // Créer le marchand - ACTIF par défaut
                 $merchant = new Merchant();
                 $merchant->setFirstname($firstname);
                 $merchant->setLastname($lastname);
                 $merchant->setPhone($phone);
                 $merchant->setEmail($email);
-                $merchant->setStatus(MerchantStatus::PENDING_VALIDATION);
+                $merchant->setStatus(MerchantStatus::ACTIVE); // Actif immédiatement
                 $merchant->setKycLevel(KycLevel::BASIC);
                 $merchant->setPersonType(PersonType::from($personType));
                 
-                $category = $this->categoryRepository->find(hex2bin($categoryId));
-                if ($category) {
-                    $merchant->setMerchantCategory($category);
+                if ($categoryId) {
+                    $category = $this->categoryRepository->find(hex2bin($categoryId));
+                    if ($category) {
+                        $merchant->setMerchantCategory($category);
+                    }
                 }
 
                 // Créer l'utilisateur
                 $user = new User();
-                $user->setUsername($username); // Utiliser le nom d'utilisateur choisi
+                $user->setUsername($username);
                 
                 // Définir l'email (obligatoire pour User)
                 $userEmail = $email ?: $phone . '@zandomax.local';
@@ -120,7 +132,7 @@ class RegistrationController extends AbstractController
                 $this->em->persist($user);
                 $this->em->flush();
 
-                $this->addFlash('success', 'Votre compte a été créé avec succès ! Vous pourrez vous connecter avec votre nom d\'utilisateur après validation par l\'administrateur.');
+                $this->addFlash('success', 'Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter avec votre nom d\'utilisateur ou votre email.');
                 
                 return $this->redirectToRoute('app_login');
 
