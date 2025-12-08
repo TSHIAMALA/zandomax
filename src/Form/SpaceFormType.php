@@ -6,7 +6,8 @@ use App\Entity\Space;
 use App\Entity\SpaceCategory;
 use App\Entity\SpaceType;
 use App\Enum\SpaceStatus;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Repository\SpaceCategoryRepository;
+use App\Repository\SpaceTypeRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -16,12 +17,36 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SpaceFormType extends AbstractType
 {
+    public function __construct(
+        private SpaceCategoryRepository $categoryRepository,
+        private SpaceTypeRepository $typeRepository
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // Récupérer les catégories et types
+        $categories = $this->categoryRepository->findAll();
+        $types = $this->typeRepository->findAll();
+
+        // Créer les choix avec bin2hex pour les IDs
+        $categoryChoices = [];
+        foreach ($categories as $category) {
+            $categoryChoices[$category->getName()] = bin2hex($category->getId());
+        }
+
+        $typeChoices = [];
+        foreach ($types as $type) {
+            $typeChoices[$type->getLabel()] = bin2hex($type->getId());
+        }
+
         $builder
             ->add('code', TextType::class, [
                 'label' => 'Code de l\'espace',
-                'attr' => ['placeholder' => 'ex: A-001', 'class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm']
+                'attr' => [
+                    'placeholder' => 'ex: A-001', 
+                    'class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm'
+                ]
             ])
             ->add('zone', ChoiceType::class, [
                 'label' => 'Zone',
@@ -33,17 +58,17 @@ class SpaceFormType extends AbstractType
                 ],
                 'attr' => ['class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm']
             ])
-            ->add('spaceCategory', EntityType::class, [
-                'class' => SpaceCategory::class,
-                'choice_label' => 'name',
+            ->add('spaceCategory', ChoiceType::class, [
                 'label' => 'Catégorie',
-                'attr' => ['class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm']
+                'choices' => $categoryChoices,
+                'attr' => ['class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm'],
+                'placeholder' => 'Sélectionnez une catégorie'
             ])
-            ->add('spaceType', EntityType::class, [
-                'class' => SpaceType::class,
-                'choice_label' => 'label',
+            ->add('spaceType', ChoiceType::class, [
                 'label' => 'Type',
-                'attr' => ['class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm']
+                'choices' => $typeChoices,
+                'attr' => ['class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm'],
+                'placeholder' => 'Sélectionnez un type'
             ])
             ->add('status', EnumType::class, [
                 'class' => SpaceStatus::class,
