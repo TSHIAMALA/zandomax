@@ -7,8 +7,11 @@ use App\Entity\MerchantCategory;
 use App\Enum\MerchantStatus;
 use App\Enum\PersonType;
 use App\Enum\KycLevel;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Form\DataTransformer\BinaryUuidToEntityTransformer;
+use App\Repository\MerchantCategoryRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -17,8 +20,21 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MerchantFormType extends AbstractType
 {
+    public function __construct(
+        private MerchantCategoryRepository $categoryRepository,
+        private EntityManagerInterface $em
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // Récupérer les catégories
+        $categories = $this->categoryRepository->findAll();
+        $categoryChoices = [];
+        foreach ($categories as $category) {
+            $categoryChoices[$category->getName()] = bin2hex($category->getId());
+        }
+
         $builder
             ->add('firstname', TextType::class, [
                 'label' => 'Prénom',
@@ -37,11 +53,11 @@ class MerchantFormType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm']
             ])
-            ->add('merchantCategory', EntityType::class, [
-                'class' => MerchantCategory::class,
-                'choice_label' => 'name',
+            ->add('merchantCategory', ChoiceType::class, [
                 'label' => 'Catégorie',
-                'attr' => ['class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm']
+                'choices' => $categoryChoices,
+                'attr' => ['class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm'],
+                'placeholder' => 'Sélectionnez une catégorie'
             ])
             ->add('personType', EnumType::class, [
                 'class' => PersonType::class,
@@ -91,6 +107,10 @@ class MerchantFormType extends AbstractType
                 'attr' => ['class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm']
             ])
         ;
+
+        // Ajouter le transformer pour la catégorie
+        $builder->get('merchantCategory')
+            ->addModelTransformer(new BinaryUuidToEntityTransformer($this->em, MerchantCategory::class));
     }
 
     public function configureOptions(OptionsResolver $resolver): void

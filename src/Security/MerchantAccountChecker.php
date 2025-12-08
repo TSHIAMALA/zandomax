@@ -22,13 +22,10 @@ class MerchantAccountChecker implements UserCheckerInterface
             return; // Pas un marchand, probablement un admin
         }
 
-        // Vérifier le statut du marchand
-        if ($merchant->getStatus() === MerchantStatus::PENDING_VALIDATION) {
-            throw new CustomUserMessageAccountStatusException(
-                'Votre compte est en attente de validation par l\'administrateur. Vous recevrez une notification une fois votre compte activé.'
-            );
-        }
-
+        // PERMETTRE la connexion pour PENDING_VALIDATION
+        // Le marchand pourra se connecter mais verra une notification sur son dashboard
+        
+        // Bloquer uniquement les statuts vraiment problématiques
         if ($merchant->getStatus() === MerchantStatus::SUSPENDED) {
             throw new CustomUserMessageAccountStatusException(
                 'Votre compte a été suspendu. Veuillez contacter l\'administrateur pour plus d\'informations.'
@@ -41,11 +38,7 @@ class MerchantAccountChecker implements UserCheckerInterface
             );
         }
 
-        if ($merchant->getStatus() === MerchantStatus::INACTIVE) {
-            throw new CustomUserMessageAccountStatusException(
-                'Votre compte est inactif. Veuillez contacter l\'administrateur pour le réactiver.'
-            );
-        }
+        // INACTIVE peut se connecter aussi (compte dormant)
     }
 
     public function checkPostAuth(UserInterface $user): void
