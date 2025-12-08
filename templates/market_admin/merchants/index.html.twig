@@ -77,6 +77,15 @@
                 <td class="px-4 py-3 text-right text-sm space-x-2">
                     <a href="{{ path('market_admin_merchants_show', {id: merchant.id|bin2hex}) }}" class="text-purple-600 hover:text-purple-900 font-medium">Voir</a>
                     <a href="{{ path('market_admin_merchants_edit', {id: merchant.id|bin2hex}) }}" class="text-blue-600 hover:text-blue-900 font-medium">Modifier</a>
+                    {% if merchant.status.value == 'pending_validation' %}
+                    <form method="post" action="{{ path('market_admin_merchants_validate', {id: merchant.id|bin2hex}) }}" class="inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('validate_merchant') }}">
+                        <button type="submit" class="text-green-600 hover:text-green-900 font-medium" onclick="return confirm('Valider ce marchand ?')" title="Valider le compte">
+                            <i class="fas fa-check-circle"></i> Valider
+                        </button>
+                    </form>
+                    {% endif %}
+                </td>
                 </td>
             </tr>
             {% else %}

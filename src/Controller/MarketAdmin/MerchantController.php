@@ -16,39 +16,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_MARKET_ADMIN')]
 class MerchantController extends AbstractController
 {
-    #[Route('/', name: 'index', methods: ['GET'])]
-    public function index(Request $request, MerchantRepository $merchantRepository): Response
+    #[Route('', name: 'index')]
+    public function index(MerchantRepository $merchantRepository): Response
     {
-        $page = max(1, (int) $request->query->get('page', 1));
-        $limit = 20;
-        $offset = ($page - 1) * $limit;
-        $search = $request->query->get('search');
-
-        $qb = $merchantRepository->createQueryBuilder('m')
-            ->leftJoin('m.merchantCategory', 'mc')
-            ->addSelect('mc')
-            ->where('m.isDeleted = :deleted')
-            ->setParameter('deleted', false);
-
-        if ($search) {
-            $qb->andWhere('m.firstname LIKE :search OR m.lastname LIKE :search OR m.phone LIKE :search')
-               ->setParameter('search', '%' . $search . '%');
-        }
-
-        $totalCount = (clone $qb)->select('COUNT(m.id)')->getQuery()->getSingleScalarResult();
-
-        $merchants = $qb
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->orderBy('m.createdAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+        $merchants = $merchantRepository->findBy(['isDeleted' => false]);
 
         return $this->render('market_admin/merchants/index.html.twig', [
             'merchants' => $merchants,
-            'currentPage' => $page,
-            'totalPages' => ceil($totalCount / $limit),
-            'search' => $search,
         ]);
     }
 
@@ -60,11 +34,6 @@ class MerchantController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Generate a dummy biometric hash if not provided (for testing)
-            if (!$merchant->getBiometricHash()) {
-                $merchant->setBiometricHash(uniqid('bio_'));
-            }
-
             $entityManager->persist($merchant);
             $entityManager->flush();
 
@@ -79,9 +48,29 @@ class MerchantController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Merchant $merchant, EntityManagerInterface $entityManager, \Symfony\Component\Form\FormFactoryInterface $formFactory): Response
+    #[Route('/{id}', name: 'show', methods: ['GET'])]
+    public function show(string $id, MerchantRepository $merchantRepository): Response
     {
+        $merchant = $merchantRepository->find(hex2bin($id));
+        
+        if (!$merchant) {
+            throw $this->createNotFoundException('Marchand non trouvé');
+        }
+
+        return $this->render('market_admin/merchants/show.html.twig', [
+            'merchant' => $merchant,
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
+    public function edit(string $id, Request $request, MerchantRepository $merchantRepository, EntityManagerInterface $entityManager, \Symfony\Component\Form\FormFactoryInterface $formFactory): Response
+    {
+        $merchant = $merchantRepository->find(hex2bin($id));
+        
+        if (!$merchant) {
+            throw $this->createNotFoundException('Marchand non trouvé');
+        }
+        
         $form = $formFactory->create(MerchantFormType::class, $merchant);
         $form->handleRequest($request);
 
@@ -100,8 +89,14 @@ class MerchantController extends AbstractController
     }
 
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
-    public function delete(Request $request, Merchant $merchant, EntityManagerInterface $entityManager): Response
+    public function delete(string $id, Request $request, MerchantRepository $merchantRepository, EntityManagerInterface $entityManager): Response
     {
+        $merchant = $merchantRepository->find(hex2bin($id));
+        
+        if (!$merchant) {
+            throw $this->createNotFoundException('Marchand non trouvé');
+        }
+        
         if ($this->isCsrfTokenValid('delete'.$merchant->getId(), $request->request->get('_token'))) {
             // Soft delete
             $merchant->setIsDeleted(true);
@@ -112,29 +107,21 @@ class MerchantController extends AbstractController
 
         return $this->redirectToRoute('market_admin_merchants_index');
     }
+    
     #[Route('/{id}/validate', name: 'validate', methods: ['POST'])]
     public function validate(string $id, MerchantRepository $merchantRepository, EntityManagerInterface $em): Response
     {
         $merchant = $merchantRepository->find(hex2bin($id));
+        
         if (!$merchant) {
             throw $this->createNotFoundException('Marchand non trouvé');
         }
+        
         $merchant->setStatus(\App\Enum\MerchantStatus::ACTIVE);
         $em->flush();
+        
         $this->addFlash('success', 'Marchand validé avec succès');
+        
         return $this->redirectToRoute('market_admin_merchants_show', ['id' => $id]);
-    }
-
-    #[Route('/{id}/reject', name: 'reject', methods: ['POST'])]
-    public function reject(string $id, Request $request, MerchantRepository $merchantRepository, EntityManagerInterface $em): Response
-    {
-        $merchant = $merchantRepository->find(hex2bin($id));
-        if (!$merchant) {
-            throw $this->createNotFoundException('Marchand non trouvé');
-        }
-        $merchant->setStatus(\App\Enum\MerchantStatus::REJECTED);
-        $em->flush();
-        $this->addFlash('success', 'Marchand rejeté');
-        return $this->redirectToRoute('market_admin_merchants_index');
     }
 }

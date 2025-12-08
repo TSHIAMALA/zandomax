@@ -1,168 +1,127 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Détails du Marchand - {{ merchant.firstname }} {{ merchant.lastname }}{% endblock %}
+{% block header %}Détails du Marchand{% endblock %}
+{% block subtitle %}{{ merchant.firstname }} {{ merchant.lastname }}{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100">
-
-
-    <div class="py-10">
-        <header>
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                <h1 class="text-3xl font-bold leading-tight text-gray-900">
-                    Détails du Marchand
-                </h1>
-                <a href="{{ path('market_admin_merchants_index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Retour à la liste
-                </a>
-            </div>
-        </header>
-        <main>
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-8">
-                <!-- Merchant Info -->
-                <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
-                    <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
-                        <div>
-                            <h3 class="text-lg leading-6 font-medium text-gray-900">
-                                {{ merchant.firstname }} {{ merchant.lastname }}
-                            </h3>
-                            <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                                {{ merchant.merchantCategory.name }}
-                            </p>
-                        </div>
-                        <div>
-                            {% if merchant.status.value == 'active' %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Actif</span>
-                            {% elseif merchant.status.value == 'pending_validation' %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">En attente</span>
-                            {% elseif merchant.status.value == 'suspended' %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Suspendu</span>
-                            {% else %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{{ merchant.status.value|title }}</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
-                        <dl class="sm:divide-y sm:divide-gray-200">
-                            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                <dt class="text-sm font-medium text-gray-500">Nom complet</dt>
-                                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ merchant.firstname }} {{ merchant.lastname }}</dd>
-                            </div>
-                            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                <dt class="text-sm font-medium text-gray-500">Adresse email</dt>
-                                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ merchant.email }}</dd>
-                            </div>
-                            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                <dt class="text-sm font-medium text-gray-500">Numéro de téléphone</dt>
-                                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ merchant.phone }}</dd>
-                            </div>
-                            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                <dt class="text-sm font-medium text-gray-500">Niveau KYC</dt>
-                                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ merchant.kycLevel.value|upper }}</dd>
-                            </div>
-                            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                <dt class="text-sm font-medium text-gray-500">Date d'inscription</dt>
-                                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ merchant.createdAt|date('Y-m-d H:i') }}</dd>
-                            </div>
-                        </dl>
-                    </div>
-                </div>
-
-                <!-- Contracts Section -->
-                <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
-                    <div class="px-4 py-5 sm:px-6">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">Contrats</h3>
-                        <p class="mt-1 max-w-2xl text-sm text-gray-500">Liste des contrats associés à ce marchand.</p>
-                    </div>
-                    <div class="border-t border-gray-200">
-                        <ul role="list" class="divide-y divide-gray-200">
-                            {% for contract in contracts %}
-                            <li>
-                                <a href="{{ path('market_admin_contracts_show', {id: contract.id|bin2hex}) }}" class="block hover:bg-gray-50">
-                                    <div class="px-4 py-4 sm:px-6">
-                                        <div class="flex items-center justify-between">
-                                            <p class="text-sm font-medium text-indigo-600 truncate">
-                                                {{ contract.contractCode }}
-                                            </p>
-                                            <div class="ml-2 flex-shrink-0 flex">
-                                                <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    {{ contract.status.value|title }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="mt-2 sm:flex sm:justify-between">
-                                            <div class="sm:flex">
-                                                <p class="flex items-center text-sm text-gray-500">
-                                                    Emplacement: {{ contract.space.code }} ({{ contract.space.zone }})
-                                                </p>
-                                            </div>
-                                            <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                                                <p>
-                                                    {{ contract.startDate|date('Y-m-d') }} - {{ contract.endDate|date('Y-m-d') }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </li>
-                            {% else %}
-                            <li class="px-4 py-4 sm:px-6 text-sm text-gray-500">Aucun contrat trouvé.</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Recent Payments Section -->
-                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-                    <div class="px-4 py-5 sm:px-6">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">Paiements Récents</h3>
-                        <p class="mt-1 max-w-2xl text-sm text-gray-500">Les 10 derniers paiements.</p>
-                    </div>
-                    <div class="border-t border-gray-200">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    {% for payment in payments %}
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ payment.createdAt|date('Y-m-d H:i') }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ payment.type.value|title }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ payment.amount }} {{ payment.currency }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {% if payment.status.value == 'completed' %}
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Terminé</span>
-                                            {% elseif payment.status.value == 'pending' %}
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">En attente</span>
-                                            {% else %}
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{{ payment.status.value|title }}</span>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                    {% else %}
-                                    <tr>
-                                        <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">Aucun paiement trouvé.</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
+<div class="mb-4 flex justify-between items-center">
+    <a href="{{ path('market_admin_merchants_index') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+        <i class="fas fa-arrow-left mr-2"></i>Retour
+    </a>
+    <div class="flex space-x-3">
+        {% if merchant.status.value == 'pending_validation' %}
+        <form method="post" action="{{ path('market_admin_merchants_validate', {id: merchant.id|bin2hex}) }}" class="inline">
+            <input type="hidden" name="_token" value="{{ csrf_token('validate_merchant') }}">
+            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700" onclick="return confirm('Valider ce marchand ?')">
+                <i class="fas fa-check mr-2"></i>Valider le compte
+            </button>
+        </form>
+        {% endif %}
+        <a href="{{ path('market_admin_merchants_edit', {id: merchant.id|bin2hex}) }}" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+            <i class="fas fa-edit mr-2"></i>Modifier
+        </a>
     </div>
 </div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <h3 class="text-lg font-semibold mb-4">Informations personnelles</h3>
+        <dl class="space-y-3">
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Nom complet</dt>
+                <dd class="text-sm text-gray-900">{{ merchant.firstname }} {{ merchant.lastname }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Téléphone</dt>
+                <dd class="text-sm text-gray-900">{{ merchant.phone }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Email</dt>
+                <dd class="text-sm text-gray-900">{{ merchant.email ?: 'Non renseigné' }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Catégorie</dt>
+                <dd class="text-sm text-gray-900">{{ merchant.merchantCategory.name }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Type de personne</dt>
+                <dd class="text-sm text-gray-900">
+                    {% if merchant.personType.value == 'physical' %}Personne Physique
+                    {% else %}Personne Morale{% endif %}
+                </dd>
+            </div>
+        </dl>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <h3 class="text-lg font-semibold mb-4">Statut et KYC</h3>
+        <dl class="space-y-3">
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Statut</dt>
+                <dd>
+                    {% if merchant.status.value == 'active' %}
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Actif</span>
+                    {% elseif merchant.status.value == 'pending_validation' %}
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">En attente de validation</span>
+                    {% elseif merchant.status.value == 'suspended' %}
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Suspendu</span>
+                    {% else %}
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">{{ merchant.status.value }}</span>
+                    {% endif %}
+                </dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Niveau KYC</dt>
+                <dd>
+                    {% if merchant.kycLevel.value == 'verified' %}
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Vérifié</span>
+                    {% elseif merchant.kycLevel.value == 'full' %}
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Complet</span>
+                    {% else %}
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">Basique</span>
+                    {% endif %}
+                </dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Date d'inscription</dt>
+                <dd class="text-sm text-gray-900">{{ merchant.createdAt|date('d/m/Y H:i') }}</dd>
+            </div>
+            {% if merchant.accountNumber %}
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Numéro de compte</dt>
+                <dd class="text-sm text-gray-900">{{ merchant.accountNumber }}</dd>
+            </div>
+            {% endif %}
+        </dl>
+    </div>
+</div>
+
+{% if contracts is defined and contracts|length > 0 %}
+<div class="mt-6 bg-white rounded-lg shadow-sm p-6">
+    <h3 class="text-lg font-semibold mb-4">Contrats</h3>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Espace</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dates</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for contract in contracts %}
+                <tr>
+                    <td class="px-4 py-3 text-sm">{{ contract.contractCode }}</td>
+                    <td class="px-4 py-3 text-sm">{{ contract.space.code }}</td>
+                    <td class="px-4 py-3 text-sm">{{ contract.startDate|date('d/m/Y') }} - {{ contract.endDate|date('d/m/Y') }}</td>
+                    <td class="px-4 py-3 text-sm">{{ contract.status.value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

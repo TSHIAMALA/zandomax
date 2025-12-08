@@ -299,7 +299,6 @@ class MarketAdminController extends AbstractController
         return $this->redirectToRoute('market_admin_reservations_index');
     }
     
-    #[Route('/settings', name: 'settings')]
     #[Route('/contracts/{id}/pdf', name: 'contracts_pdf')]
     public function contractPdf(string $id, \App\Service\ContractGenerationService $pdfService): Response
     {
@@ -316,7 +315,8 @@ class MarketAdminController extends AbstractController
             'Content-Disposition' => 'attachment; filename="contract-' . $contract->getContractCode() . '.pdf"'
         ]);
     }
-
+    
+    #[Route('/settings', name: 'settings')]
     public function settings(): Response
     {
         return $this->render('market_admin/settings.html.twig');

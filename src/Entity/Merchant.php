@@ -25,7 +25,7 @@ class Merchant
     #[Groups(['merchant:read'])]
     private ?MerchantCategory $merchantCategory = null;
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
     private ?string $biometricHash = null;
 
     #[ORM\Column(length: 100)]

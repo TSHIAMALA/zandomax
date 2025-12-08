@@ -1,0 +1,135 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Facture {{ invoice.invoiceNumber }} - ZANDO Market{% endblock %}
+{% block header %}Détails de la Facture{% endblock %}
+{% block subtitle %}{{ invoice.invoiceNumber }}{% endblock %}
+
+{% block content %}
+<div class="mb-4 flex justify-between items-center">
+    <a href="{{ path('market_admin_invoices_index') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+        <i class="fas fa-arrow-left mr-2"></i>Retour
+    </a>
+    <div class="space-x-2">
+        <a href="{{ path('market_admin_invoices_pdf', {id: invoice.id|bin2hex}) }}" target="_blank" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <i class="fas fa-file-pdf mr-2"></i>Télécharger PDF
+        </a>
+        {% if invoice.status.value == 'pending' or invoice.status.value == 'overdue' %}
+        <form method="post" action="{{ path('market_admin_invoices_mark_paid', {id: invoice.id|bin2hex}) }}" class="inline">
+            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700" onclick="return confirm('Marquer cette facture comme payée ?')">
+                <i class="fas fa-check mr-2"></i>Marquer comme payée
+            </button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <h3 class="text-lg font-semibold mb-4">Informations de la facture</h3>
+        <dl class="space-y-3">
+            <div>
+                <dt class="text-sm font-medium text-gray-500">N° Facture</dt>
+                <dd class="text-sm text-gray-900 font-medium">{{ invoice.invoiceNumber }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Date d'émission</dt>
+                <dd class="text-sm text-gray-900">{{ invoice.issueDate|date('d/m/Y') }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Date d'échéance</dt>
+                <dd class="text-sm text-gray-900">{{ invoice.dueDate|date('d/m/Y') }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Statut</dt>
+                <dd>
+                    {% if invoice.status.value == 'paid' %}
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Payée</span>
+                    {% elseif invoice.status.value == 'pending' %}
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">En attente</span>
+                    {% elseif invoice.status.value == 'overdue' %}
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">En retard</span>
+                    {% else %}
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">{{ invoice.status.value }}</span>
+                    {% endif %}
+                </dd>
+            </div>
+            {% if invoice.paidAt %}
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Payée le</dt>
+                <dd class="text-sm text-gray-900">{{ invoice.paidAt|date('d/m/Y H:i') }}</dd>
+            </div>
+            {% endif %}
+        </dl>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <h3 class="text-lg font-semibold mb-4">Marchand</h3>
+        <dl class="space-y-3">
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Nom</dt>
+                <dd class="text-sm text-gray-900">{{ invoice.merchant.firstname }} {{ invoice.merchant.lastname }}</dd>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Téléphone</dt>
+                <dd class="text-sm text-gray-900">{{ invoice.merchant.phone }}</dd>
+            </div>
+            {% if invoice.merchant.email %}
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Email</dt>
+                <dd class="text-sm text-gray-900">{{ invoice.merchant.email }}</dd>
+            </div>
+            {% endif %}
+            <div>
+                <dt class="text-sm font-medium text-gray-500">Catégorie</dt>
+                <dd class="text-sm text-gray-900">{{ invoice.merchant.merchantCategory.name }}</dd>
+            </div>
+        </dl>
+    </div>
+</div>
+
+<div class="mt-6 bg-white rounded-lg shadow-sm p-6">
+    <h3 class="text-lg font-semibold mb-4">Détails du montant</h3>
+    <table class="w-full">
+        <tbody>
+            <tr class="border-b">
+                <td class="py-3 text-sm text-gray-700">{{ invoice.description }}</td>
+                <td class="py-3 text-sm text-right font-medium">{{ invoice.amount }} {{ invoice.currency }}</td>
+            </tr>
+            {% if invoice.taxAmount %}
+            <tr class="border-b">
+                <td class="py-3 text-sm text-gray-700">TVA (16%)</td>
+                <td class="py-3 text-sm text-right font-medium">{{ invoice.taxAmount }} {{ invoice.currency }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td class="py-3 text-lg font-bold text-gray-900">TOTAL</td>
+                <td class="py-3 text-lg text-right font-bold text-purple-600">{{ invoice.totalAmount }} {{ invoice.currency }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+{% if invoice.contract %}
+<div class="mt-6 bg-white rounded-lg shadow-sm p-6">
+    <h3 class="text-lg font-semibold mb-4">Contrat associé</h3>
+    <dl class="grid grid-cols-2 gap-4">
+        <div>
+            <dt class="text-sm font-medium text-gray-500">Code contrat</dt>
+            <dd class="text-sm text-gray-900">{{ invoice.contract.contractCode }}</dd>
+        </div>
+        <div>
+            <dt class="text-sm font-medium text-gray-500">Espace</dt>
+            <dd class="text-sm text-gray-900">{{ invoice.contract.space.code }} ({{ invoice.contract.space.zone }})</dd>
+        </div>
+        <div>
+            <dt class="text-sm font-medium text-gray-500">Période</dt>
+            <dd class="text-sm text-gray-900">{{ invoice.contract.startDate|date('d/m/Y') }} - {{ invoice.contract.endDate|date('d/m/Y') }}</dd>
+        </div>
+        <div>
+            <dt class="text-sm font-medium text-gray-500">Loyer mensuel</dt>
+            <dd class="text-sm text-gray-900">{{ invoice.contract.rentAmount }} CDF</dd>
+        </div>
+    </dl>
+</div>
+{% endif %}
+{% endblock %}

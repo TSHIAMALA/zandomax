@@ -33,6 +33,7 @@ security:
             jwt: ~
 
         main:
+            user_checker: App\Security\MerchantAccountChecker
             lazy: true
             provider: app_user_provider
             

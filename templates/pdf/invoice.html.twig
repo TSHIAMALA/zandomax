@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Facture {{ invoice.invoiceNumber }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .company-name { font-size: 24px; font-weight: bold; color: #6B46C1; }
+        .invoice-title { font-size: 18px; margin-top: 10px; }
+        .info-section { margin: 20px 0; }
+        .info-label { font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #6B46C1; color: white; }
+        .total-row { font-weight: bold; font-size: 14px; }
+        .footer { margin-top: 50px; text-align: center; font-size: 10px; color: #666; }
+        .status { padding: 5px 10px; border-radius: 5px; display: inline-block; }
+        .status-pending { background-color: #FEF3C7; color: #92400E; }
+        .status-paid { background-color: #D1FAE5; color: #065F46; }
+        .status-overdue { background-color: #FEE2E2; color: #991B1B; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-name">ZANDO MARKET</div>
+        <div>Gestion de Marchés</div>
+        <div class="invoice-title">FACTURE</div>
+    </div>
+
+    <div class="info-section">
+        <table style="border: none;">
+            <tr>
+                <td style="border: none; width: 50%;">
+                    <div class="info-label">Facturé à:</div>
+                    <div>{{ invoice.merchant.firstname }} {{ invoice.merchant.lastname }}</div>
+                    <div>{{ invoice.merchant.phone }}</div>
+                    {% if invoice.merchant.email %}
+                    <div>{{ invoice.merchant.email }}</div>
+                    {% endif %}
+                </td>
+                <td style="border: none; width: 50%; text-align: right;">
+                    <div><span class="info-label">N° Facture:</span> {{ invoice.invoiceNumber }}</div>
+                    <div><span class="info-label">Date d'émission:</span> {{ invoice.issueDate|date('d/m/Y') }}</div>
+                    <div><span class="info-label">Date d'échéance:</span> {{ invoice.dueDate|date('d/m/Y') }}</div>
+                    <div><span class="info-label">Statut:</span> 
+                        <span class="status status-{{ invoice.status.value }}">
+                            {% if invoice.status.value == 'paid' %}Payée
+                            {% elseif invoice.status.value == 'pending' %}En attente
+                            {% elseif invoice.status.value == 'overdue' %}En retard
+                            {% else %}{{ invoice.status.value }}
+                            {% endif %}
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th style="text-align: right;">Montant</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ invoice.description }}</td>
+                <td style="text-align: right;">{{ invoice.amount }} {{ invoice.currency }}</td>
+            </tr>
+            {% if invoice.taxAmount %}
+            <tr>
+                <td>TVA (16%)</td>
+                <td style="text-align: right;">{{ invoice.taxAmount }} {{ invoice.currency }}</td>
+            </tr>
+            {% endif %}
+            <tr class="total-row">
+                <td>TOTAL</td>
+                <td style="text-align: right;">{{ invoice.totalAmount }} {{ invoice.currency }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    {% if invoice.contract %}
+    <div class="info-section">
+        <div class="info-label">Informations du contrat:</div>
+        <div>Code: {{ invoice.contract.contractCode }}</div>
+        <div>Espace: {{ invoice.contract.space.code }} ({{ invoice.contract.space.zone }})</div>
+        <div>Période: {{ invoice.contract.startDate|date('d/m/Y') }} - {{ invoice.contract.endDate|date('d/m/Y') }}</div>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p>Merci pour votre confiance</p>
+        <p>ZANDO Market Management System - {{ "now"|date('Y') }}</p>
+    </div>
+</body>
+</html>
