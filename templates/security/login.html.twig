@@ -19,47 +19,26 @@
             overflow: hidden;
         }
         
-        /* Circuit Lines Background */
-        .circuit-bg {
+        /* SVG Circuit Background */
+        .circuit-svg {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            opacity: 0.15;
-        }
-        .circuit-line {
-            position: absolute;
-            background: rgba(255,255,255,0.2);
-        }
-        .circuit-node {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background: rgba(255,255,255,0.3);
-            border: 2px solid rgba(255,255,255,0.5);
-            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+            opacity: 0.25;
         }
         
-        /* Tech Icons */
-        .tech-icon {
+        /* Tech device icons */
+        .tech-device {
             position: absolute;
-            color: rgba(255,255,255,0.1);
-            font-size: 80px;
+            color: rgba(100, 150, 200, 0.3);
         }
         
-        /* Market Stalls */
+        /* Market elements */
         .market-stall {
             position: absolute;
             bottom: 0;
-        }
-        .stall-left {
-            left: 5%;
-            width: 160px;
-        }
-        .stall-right {
-            right: 5%;
-            width: 180px;
         }
         .awning {
             background: linear-gradient(135deg, #f4a261 0%, #e76f51 30%, #d62828 60%, #c1121f 100%);
@@ -84,16 +63,15 @@
             );
         }
         .stall-body {
-            background: rgba(42, 74, 111, 0.8);
-            padding: 25px 15px;
+            background: rgba(42, 74, 111, 0.9);
+            padding: 20px 15px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
         .products {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
         }
         .product-box {
             width: 35px;
@@ -101,97 +79,71 @@
             border-radius: 4px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        
-        /* Silhouettes */
         .silhouette {
             position: absolute;
             bottom: 60px;
-            color: rgba(0,0,0,0.4);
-            filter: blur(1px);
-        }
-        
-        /* Vegetables/Products on right stall */
-        .veggie-basket {
-            position: absolute;
-            bottom: 50px;
-            right: 8%;
-            display: flex;
-            gap: 15px;
-        }
-        .basket {
-            width: 60px;
-            height: 50px;
-            background: #8B4513;
-            border-radius: 8px 8px 0 0;
-            position: relative;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .basket::before {
-            content: '';
-            position: absolute;
-            top: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 70px;
-            height: 10px;
-            background: #654321;
-            border-radius: 50%;
-        }
-        .veggies {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 5px;
-        }
-        .veggie {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
+            color: rgba(0,0,0,0.5);
         }
     </style>
 </head>
 <body class="min-h-screen bg-gray-100">
     <div class="hero-section min-h-screen flex flex-col">
-        <!-- Circuit Background -->
-        <div class="circuit-bg">
-            <!-- Horizontal lines -->
-            <div class="circuit-line" style="top: 15%; left: 10%; width: 200px; height: 2px;"></div>
-            <div class="circuit-line" style="top: 25%; right: 15%; width: 250px; height: 2px;"></div>
-            <div class="circuit-line" style="top: 45%; left: 20%; width: 180px; height: 2px;"></div>
-            <div class="circuit-line" style="bottom: 35%; right: 10%; width: 220px; height: 2px;"></div>
+        <!-- SVG Circuit Pattern -->
+        <svg class="circuit-svg" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <marker id="dot" markerWidth="8" markerHeight="8" refX="4" refY="4">
+                    <circle cx="4" cy="4" r="3" fill="rgba(255,255,255,0.4)" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
+                </marker>
+            </defs>
             
-            <!-- Vertical lines -->
-            <div class="circuit-line" style="top: 10%; left: 15%; width: 2px; height: 150px;"></div>
-            <div class="circuit-line" style="top: 20%; right: 20%; width: 2px; height: 180px;"></div>
-            <div class="circuit-line" style="bottom: 30%; left: 25%; width: 2px; height: 120px;"></div>
-            <div class="circuit-line" style="bottom: 25%; right: 15%; width: 2px; height: 140px;"></div>
+            <!-- Left side circuits -->
+            <path d="M 100 150 L 200 150 L 200 250 L 300 250" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none" marker-mid="url(#dot)"/>
+            <path d="M 150 100 L 150 200" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
+            <circle cx="150" cy="100" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+            <circle cx="200" cy="150" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+            <circle cx="200" cy="250" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
             
-            <!-- Curved lines -->
-            <svg style="position: absolute; top: 20%; left: 30%; width: 300px; height: 200px;">
-                <path d="M 0 100 Q 150 0 300 100" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none"/>
-            </svg>
-            <svg style="position: absolute; top: 40%; right: 25%; width: 250px; height: 150px;">
-                <path d="M 0 50 Q 125 150 250 50" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none"/>
-            </svg>
+            <!-- Top circuits -->
+            <path d="M 400 100 Q 500 150 600 100" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
+            <path d="M 700 120 L 850 120 L 850 200" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
+            <circle cx="400" cy="100" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+            <circle cx="600" cy="100" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+            <circle cx="850" cy="120" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
             
-            <!-- Circuit nodes -->
-            <div class="circuit-node" style="top: 15%; left: 10%;"></div>
-            <div class="circuit-node" style="top: 25%; right: 15%;"></div>
-            <div class="circuit-node" style="top: 45%; left: 20%;"></div>
-            <div class="circuit-node" style="bottom: 35%; right: 10%;"></div>
-            <div class="circuit-node" style="top: 35%; left: 45%;"></div>
-            <div class="circuit-node" style="top: 55%; right: 40%;"></div>
-        </div>
+            <!-- Right side circuits -->
+            <path d="M 1100 180 L 1200 180 L 1200 280 L 1300 280" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
+            <path d="M 1250 150 L 1250 250" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
+            <circle cx="1100" cy="180" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+            <circle cx="1200" cy="180" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+            <circle cx="1250" cy="150" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+            
+            <!-- Bottom circuits -->
+            <path d="M 300 400 Q 400 350 500 400" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
+            <path d="M 800 380 L 950 380" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
+            <circle cx="300" cy="400" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+            <circle cx="500" cy="400" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+            <circle cx="950" cy="380" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+        </svg>
 
-        <!-- Tech Icons -->
-        <i class="tech-icon fas fa-microchip" style="top: 12%; left: 8%;"></i>
-        <i class="tech-icon fas fa-server" style="top: 18%; right: 12%;"></i>
-        <i class="tech-icon fas fa-network-wired" style="bottom: 45%; left: 12%;"></i>
-        <i class="tech-icon fas fa-database" style="bottom: 40%; right: 10%;"></i>
-        <i class="tech-icon fas fa-mobile-alt" style="top: 50%; left: 18%; font-size: 60px;"></i>
-        <i class="tech-icon fas fa-laptop" style="top: 40%; right: 18%; font-size: 70px;"></i>
+        <!-- Tech Device Icons -->
+        <div class="tech-device" style="top: 10%; left: 8%; font-size: 100px;">
+            <i class="fas fa-microchip"></i>
+        </div>
+        <div class="tech-device" style="top: 15%; right: 10%; font-size: 90px;">
+            <i class="fas fa-server"></i>
+        </div>
+        <div class="tech-device" style="bottom: 45%; left: 10%; font-size: 110px;">
+            <i class="fas fa-network-wired"></i>
+        </div>
+        <div class="tech-device" style="bottom: 40%; right: 8%; font-size: 100px;">
+            <i class="fas fa-database"></i>
+        </div>
+        <div class="tech-device" style="top: 50%; left: 15%; font-size: 80px;">
+            <i class="fas fa-mobile-alt"></i>
+        </div>
+        <div class="tech-device" style="top: 40%; right: 15%; font-size: 90px;">
+            <i class="fas fa-laptop"></i>
+        </div>
 
         <!-- Top Navigation -->
         <nav class="flex items-center justify-between px-8 py-4 relative z-10">
@@ -226,7 +178,7 @@
         <!-- Market Scene -->
         <div class="relative h-56 z-10">
             <!-- Left Stall -->
-            <div class="stall-left market-stall">
+            <div class="market-stall" style="left: 5%; width: 160px;">
                 <div class="awning"></div>
                 <div class="stall-body">
                     <div class="products">
@@ -240,45 +192,32 @@
                 </div>
             </div>
 
-            <!-- Right Stall -->
-            <div class="stall-right market-stall">
+            <!-- Right Stall with more products -->
+            <div class="market-stall" style="right: 5%; width: 180px;">
                 <div class="awning"></div>
                 <div class="stall-body">
                     <div class="products">
-                        <div class="product-box bg-yellow-500"></div>
                         <div class="product-box bg-orange-500"></div>
                         <div class="product-box bg-red-500"></div>
+                        <div class="product-box bg-purple-500"></div>
                         <div class="product-box bg-green-500"></div>
                         <div class="product-box bg-blue-500"></div>
-                        <div class="product-box bg-purple-500"></div>
+                        <div class="product-box bg-yellow-500"></div>
+                        <div class="product-box bg-pink-500"></div>
+                        <div class="product-box bg-indigo-500"></div>
+                        <div class="product-box bg-teal-500"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Vegetable Baskets -->
-            <div class="veggie-basket">
-                <div class="basket">
-                    <div class="veggies">
-                        <div class="veggie bg-orange-500"></div>
-                        <div class="veggie bg-red-500"></div>
-                    </div>
-                </div>
-                <div class="basket">
-                    <div class="veggies">
-                        <div class="veggie bg-green-500"></div>
-                        <div class="veggie bg-yellow-500"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Silhouettes of people -->
-            <div class="silhouette" style="left: 28%;">
+            <!-- Silhouettes -->
+            <div class="silhouette" style="left: 30%;">
                 <i class="fas fa-user text-7xl"></i>
             </div>
-            <div class="silhouette" style="left: 42%;">
+            <div class="silhouette" style="left: 45%;">
                 <i class="fas fa-user text-8xl"></i>
             </div>
-            <div class="silhouette" style="right: 32%;">
+            <div class="silhouette" style="right: 35%;">
                 <i class="fas fa-user text-7xl"></i>
             </div>
         </div>
@@ -312,7 +251,7 @@
 
     <!-- Login Modal -->
     <div id="loginModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative animate-fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
             <button onclick="document.getElementById('loginModal').classList.add('hidden')" 
                     class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
                 <i class="fas fa-times text-xl"></i>
