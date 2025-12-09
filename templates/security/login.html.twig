@@ -18,135 +18,31 @@
             position: relative;
             overflow: hidden;
         }
-        
-        /* SVG Circuit Background */
-        .circuit-svg {
+        .hero-bg-image {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            opacity: 0.25;
+            background-image: url('/images/market-hero-bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 1;
         }
-        
-        /* Tech device icons */
-        .tech-device {
-            position: absolute;
-            color: rgba(100, 150, 200, 0.3);
-        }
-        
-        /* Market elements */
-        .market-stall {
-            position: absolute;
-            bottom: 0;
-        }
-        .awning {
-            background: linear-gradient(135deg, #f4a261 0%, #e76f51 30%, #d62828 60%, #c1121f 100%);
-            height: 35px;
-            border-radius: 0 0 12px 12px;
+        .content-overlay {
             position: relative;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-        .awning::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 100%;
-            background: repeating-linear-gradient(
-                90deg,
-                transparent,
-                transparent 18px,
-                rgba(255,255,255,0.3) 18px,
-                rgba(255,255,255,0.3) 22px
-            );
-        }
-        .stall-body {
-            background: rgba(42, 74, 111, 0.9);
-            padding: 20px 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-        .products {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-        .product-box {
-            width: 35px;
-            height: 35px;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        .silhouette {
-            position: absolute;
-            bottom: 60px;
-            color: rgba(0,0,0,0.5);
+            z-index: 10;
         }
     </style>
 </head>
 <body class="min-h-screen bg-gray-100">
     <div class="hero-section min-h-screen flex flex-col">
-        <!-- SVG Circuit Pattern -->
-        <svg class="circuit-svg" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <marker id="dot" markerWidth="8" markerHeight="8" refX="4" refY="4">
-                    <circle cx="4" cy="4" r="3" fill="rgba(255,255,255,0.4)" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
-                </marker>
-            </defs>
-            
-            <!-- Left side circuits -->
-            <path d="M 100 150 L 200 150 L 200 250 L 300 250" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none" marker-mid="url(#dot)"/>
-            <path d="M 150 100 L 150 200" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
-            <circle cx="150" cy="100" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-            <circle cx="200" cy="150" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-            <circle cx="200" cy="250" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-            
-            <!-- Top circuits -->
-            <path d="M 400 100 Q 500 150 600 100" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
-            <path d="M 700 120 L 850 120 L 850 200" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
-            <circle cx="400" cy="100" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-            <circle cx="600" cy="100" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-            <circle cx="850" cy="120" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-            
-            <!-- Right side circuits -->
-            <path d="M 1100 180 L 1200 180 L 1200 280 L 1300 280" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
-            <path d="M 1250 150 L 1250 250" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
-            <circle cx="1100" cy="180" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-            <circle cx="1200" cy="180" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-            <circle cx="1250" cy="150" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-            
-            <!-- Bottom circuits -->
-            <path d="M 300 400 Q 400 350 500 400" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
-            <path d="M 800 380 L 950 380" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
-            <circle cx="300" cy="400" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-            <circle cx="500" cy="400" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-            <circle cx="950" cy="380" r="5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-        </svg>
-
-        <!-- Tech Device Icons -->
-        <div class="tech-device" style="top: 10%; left: 8%; font-size: 100px;">
-            <i class="fas fa-microchip"></i>
-        </div>
-        <div class="tech-device" style="top: 15%; right: 10%; font-size: 90px;">
-            <i class="fas fa-server"></i>
-        </div>
-        <div class="tech-device" style="bottom: 45%; left: 10%; font-size: 110px;">
-            <i class="fas fa-network-wired"></i>
-        </div>
-        <div class="tech-device" style="bottom: 40%; right: 8%; font-size: 100px;">
-            <i class="fas fa-database"></i>
-        </div>
-        <div class="tech-device" style="top: 50%; left: 15%; font-size: 80px;">
-            <i class="fas fa-mobile-alt"></i>
-        </div>
-        <div class="tech-device" style="top: 40%; right: 15%; font-size: 90px;">
-            <i class="fas fa-laptop"></i>
-        </div>
+        <!-- Background Image -->
+        <div class="hero-bg-image"></div>
 
         <!-- Top Navigation -->
-        <nav class="flex items-center justify-between px-8 py-4 relative z-10">
+        <nav class="content-overlay flex items-center justify-between px-8 py-4">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center shadow-lg">
                     <i class="fas fa-store text-white text-xl"></i>
@@ -163,10 +59,10 @@
         </nav>
 
         <!-- Main Content -->
-        <div class="flex-1 flex items-center justify-center relative z-10 px-4">
+        <div class="content-overlay flex-1 flex items-center justify-center px-4">
             <div class="text-center max-w-3xl">
-                <h1 class="text-5xl font-bold text-white mb-4 leading-tight">Platéfourme Digitale<br>Marché Central - Zando</h1>
-                <p class="text-white/80 text-lg mb-8 max-w-2xl mx-auto">Gestion facile, développement, paiement des commerçants et contrôle de paiements</p>
+                <h1 class="text-5xl font-bold text-white mb-4 leading-tight drop-shadow-lg">Platéfourme Digitale<br>Marché Central - Zando</h1>
+                <p class="text-white/90 text-lg mb-8 max-w-2xl mx-auto drop-shadow">Gestion facile, développement, paiement des commerçants et contrôle de paiements</p>
                 
                 <button onclick="document.getElementById('loginModal').classList.remove('hidden')" 
                         class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-10 py-4 rounded-lg transition transform hover:scale-105 shadow-xl">
@@ -175,55 +71,8 @@
             </div>
         </div>
 
-        <!-- Market Scene -->
-        <div class="relative h-56 z-10">
-            <!-- Left Stall -->
-            <div class="market-stall" style="left: 5%; width: 160px;">
-                <div class="awning"></div>
-                <div class="stall-body">
-                    <div class="products">
-                        <div class="product-box bg-orange-500"></div>
-                        <div class="product-box bg-red-500"></div>
-                        <div class="product-box bg-green-500"></div>
-                        <div class="product-box bg-yellow-500"></div>
-                        <div class="product-box bg-orange-600"></div>
-                        <div class="product-box bg-red-600"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Stall with more products -->
-            <div class="market-stall" style="right: 5%; width: 180px;">
-                <div class="awning"></div>
-                <div class="stall-body">
-                    <div class="products">
-                        <div class="product-box bg-orange-500"></div>
-                        <div class="product-box bg-red-500"></div>
-                        <div class="product-box bg-purple-500"></div>
-                        <div class="product-box bg-green-500"></div>
-                        <div class="product-box bg-blue-500"></div>
-                        <div class="product-box bg-yellow-500"></div>
-                        <div class="product-box bg-pink-500"></div>
-                        <div class="product-box bg-indigo-500"></div>
-                        <div class="product-box bg-teal-500"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Silhouettes -->
-            <div class="silhouette" style="left: 30%;">
-                <i class="fas fa-user text-7xl"></i>
-            </div>
-            <div class="silhouette" style="left: 45%;">
-                <i class="fas fa-user text-8xl"></i>
-            </div>
-            <div class="silhouette" style="right: 35%;">
-                <i class="fas fa-user text-7xl"></i>
-            </div>
-        </div>
-
         <!-- Footer Partners -->
-        <div class="bg-white py-6 relative z-10 shadow-lg">
+        <div class="content-overlay bg-white py-6 shadow-lg">
             <div class="container mx-auto px-8 flex items-center justify-center space-x-12 text-gray-600">
                 <div class="flex items-center space-x-2">
                     <span class="font-bold text-2xl text-blue-900">APINK</span>
@@ -251,7 +100,7 @@
 
     <!-- Login Modal -->
     <div id="loginModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative animate-fade-in">
             <button onclick="document.getElementById('loginModal').classList.add('hidden')" 
                     class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
                 <i class="fas fa-times text-xl"></i>
