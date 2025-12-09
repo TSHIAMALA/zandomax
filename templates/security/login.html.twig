@@ -1,86 +1,135 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Marché Central Zando</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 100%);
+        }
+        .market-illustration {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%23f97316" x="50" y="100" width="60" height="80" rx="5"/><path fill="%23ef4444" d="M50 100 L80 70 L110 100 Z"/><rect fill="%2322c55e" x="150" y="120" width="60" height="60" rx="5"/><path fill="%23eab308" d="M150 120 L180 90 L210 120 Z"/><rect fill="%233b82f6" x="250" y="110" width="60" height="70" rx="5"/><path fill="%23ec4899" d="M250 110 L280 80 L310 110 Z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-5xl">
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div class="flex flex-col md:flex-row">
+                <!-- Left Side - Illustration -->
+                <div class="md:w-1/2 bg-gradient-to-br from-navy-900 to-navy-800 p-12 text-white relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="flex items-center space-x-3 mb-8">
+                            <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-store text-2xl"></i>
+                            </div>
+                            <div>
+                                <h1 class="text-2xl font-bold">Marché Central</h1>
+                                <p class="text-sm text-gray-300">Zando Digital</p>
+                            </div>
+                        </div>
+                        
+                        <h2 class="text-3xl font-bold mb-4">Plateforme Digitale<br>Marché Central - Zando</h2>
+                        <p class="text-gray-300 mb-8">Gestion facile, développement, paiement des commerçants et contrôle de paiements</p>
+                        
+                        <div class="market-illustration h-48 mb-8"></div>
+                        
+                        <div class="flex items-center space-x-4 text-xs text-gray-400">
+                            <span>APINK</span>
+                            <span>•</span>
+                            <span>Gouvernement</span>
+                            <span>•</span>
+                            <span>Banque Centrale</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Decorative elements -->
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full opacity-10 -mr-32 -mt-32"></div>
+                    <div class="absolute bottom-0 left-0 w-48 h-48 bg-purple-500 rounded-full opacity-10 -ml-24 -mb-24"></div>
+                </div>
 
-{% block title %}Connexion - ZANDO Market{% endblock %}
+                <!-- Right Side - Login Form -->
+                <div class="md:w-1/2 p-12">
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Connexion</h3>
+                        <p class="text-gray-500">Accédez à votre espace de gestion</p>
+                    </div>
 
-{% block login_content %}
-<div class="w-full max-w-md">
-    <div class="bg-white rounded-2xl shadow-2xl p-8">
-        <!-- Logo et Titre -->
-        <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4">
-                🏪
+                    {% if error %}
+                        <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                                <p class="text-red-700 text-sm">{{ error.messageKey|trans(error.messageData, 'security') }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <form method="post" class="space-y-6">
+                        <div>
+                            <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user mr-2 text-gray-400"></i>Email / Identifiant
+                            </label>
+                            <input type="text" 
+                                   id="username" 
+                                   name="_username" 
+                                   value="{{ last_username }}" 
+                                   required 
+                                   autofocus
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                   placeholder="Votre identifiant">
+                        </div>
+
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-lock mr-2 text-gray-400"></i>Mot de Passe
+                            </label>
+                            <input type="password" 
+                                   id="password" 
+                                   name="_password" 
+                                   required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                   placeholder="••••••••">
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="_remember_me" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
+                            </label>
+                            <a href="#" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Mot de passe oublié?</a>
+                        </div>
+
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                        
+                        <button type="submit" 
+                                class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition transform hover:scale-[1.02] shadow-lg">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Se connecter
+                        </button>
+                    </form>
+
+                    <div class="mt-8 text-center">
+                        <p class="text-sm text-gray-600">
+                            Pas encore de compte? 
+                            <a href="{{ path('app_register') }}" class="text-blue-600 hover:text-blue-700 font-medium">Inscrivez-vous</a>
+                        </p>
+                    </div>
+                </div>
             </div>
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">ZANDO Market</h1>
-            <p class="text-gray-500">Connectez-vous à votre espace</p>
         </div>
 
-        {% if error %}
-            <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
-                <div class="flex items-center">
-                    <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
-                    <p class="text-red-700 text-sm">{{ error.messageKey|trans(error.messageData, 'security') }}</p>
-                </div>
-            </div>
-        {% endif %}
-
-        <form method="post">
-            <div class="space-y-4">
-                <div>
-                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-user mr-2 text-gray-400"></i>Nom d'utilisateur, Email ou Téléphone
-                    </label>
-                    <input type="text" 
-                           id="username" 
-                           name="_username" 
-                           value="{{ last_username }}" 
-                           required 
-                           autofocus
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                           placeholder="Votre identifiant">
-                    <p class="mt-1 text-xs text-gray-500">
-                        <i class="fas fa-info-circle mr-1"></i>Vous pouvez vous connecter avec votre nom d'utilisateur ou votre email
-                    </p>
-                </div>
-
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-lock mr-2 text-gray-400"></i>Mot de passe
-                    </label>
-                    <input type="password" 
-                           id="password" 
-                           name="_password" 
-                           required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                           placeholder="••••••••">
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <label class="flex items-center">
-                        <input type="checkbox" name="_remember_me" class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
-                        <span class="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
-                    </label>
-                    <a href="#" class="text-sm text-purple-600 hover:text-purple-700">Mot de passe oublié?</a>
-                </div>
-
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                
-                <button type="submit" 
-                        class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition transform hover:scale-105 shadow-lg">
-                    <i class="fas fa-sign-in-alt mr-2"></i>Se connecter
-                </button>
-            </div>
-        </form>
-
-        <div class="mt-6 text-center">
-            <p class="text-sm text-gray-600">
-                Pas encore de compte? 
-                <a href="{{ path('app_register') }}" class="text-purple-600 hover:text-purple-700 font-medium">Inscrivez-vous</a>
-            </p>
+        <div class="text-center mt-6 text-white text-sm">
+            <p>&copy; 2024 Marché Central Zando. Tous droits réservés.</p>
         </div>
     </div>
-
-    <div class="text-center mt-6 text-white text-sm">
-        <p>&copy; 2024 ZANDO Market. Tous droits réservés.</p>
-    </div>
-</div>
-{% endblock %}
+</body>
+</html>

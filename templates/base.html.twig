@@ -3,160 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}ZANDO Market{% endblock %}</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🏪</text></svg>">
+    <title>{% block title %}Marché Central - Zando Digital{% endblock %}</title>
     
-    {% block stylesheets %}
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            200: '#bcccdc',
+                            300: '#9fb3c8',
+                            400: '#829ab1',
+                            500: '#627d98',
+                            600: '#486581',
+                            700: '#334e68',
+                            800: '#243b53',
+                            900: '#1a2a3a',
+                        },
+                        navy: {
+                            800: '#1e3a5f',
+                            900: '#0f2744',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        
-        * {
+        body {
             font-family: 'Inter', sans-serif;
         }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .gradient-market {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-        
-        .sidebar-item {
+        .sidebar-link {
             transition: all 0.3s ease;
         }
-        
-        .sidebar-item:hover {
+        .sidebar-link:hover {
             background: rgba(255, 255, 255, 0.1);
             transform: translateX(5px);
         }
-        
-        .sidebar-item.active {
+        .sidebar-link.active {
             background: rgba(255, 255, 255, 0.15);
-            border-left: 4px solid #fff;
-        }
-        
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        
-        .pulse-animation {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: .5;
-            }
-        }
-        
-        .sidebar-logo {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            border-left: 4px solid #60a5fa;
         }
     </style>
-    {% endblock %}
-
-    {% block javascripts %}
-        {% block importmap %}{{ importmap('app') }}{% endblock %}
-    {% endblock %}
+    {% block stylesheets %}{% endblock %}
 </head>
 <body class="bg-gray-50">
-    {% if app.user %}
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar Moderne -->
-        <aside class="w-64 gradient-bg text-white flex-shrink-0 hidden md:flex flex-col">
-            <!-- Logo -->
-            <div class="sidebar-logo p-6 border-b border-white border-opacity-20">
-                <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-3xl">
-                        🏪
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gradient-to-b from-navy-900 to-navy-800 text-white flex-shrink-0 shadow-2xl">
+            <div class="p-6">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 mb-8 pb-6 border-b border-white/10">
+                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-store text-white text-xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold">ZANDO</h1>
-                        <p class="text-xs text-white text-opacity-70">Market Management</p>
+                        <h1 class="text-lg font-bold">Marché Central</h1>
+                        <p class="text-xs text-gray-400">Zando Digital</p>
                     </div>
                 </div>
+
+                <!-- Navigation -->
+                <nav class="space-y-1">
+                    <a href="{{ path('market_admin_dashboard') }}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-chart-line w-5"></i>
+                        <span>Tableau de Bord</span>
+                    </a>
+                    
+                    <a href="{{ path('market_admin_merchants_index') }}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-users w-5"></i>
+                        <span>Commerçants</span>
+                    </a>
+                    
+                    <a href="{{ path('market_admin_spaces_index') }}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-store-alt w-5"></i>
+                        <span>Espaces</span>
+                    </a>
+                    
+                    <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-file-contract w-5"></i>
+                        <span>Contrats</span>
+                    </a>
+                    
+                    <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-credit-card w-5"></i>
+                        <span>Paiements</span>
+                    </a>
+                    
+                    <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-file-invoice w-5"></i>
+                        <span>Factures</span>
+                    </a>
+                </nav>
             </div>
 
-            <!-- Navigation -->
-            <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-                <a href="{{ path('market_admin_dashboard') }}" 
-                   class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {% if app.request.get('_route') starts with 'market_admin_dashboard' %}active{% endif %}">
-                    <i class="fas fa-chart-line w-5"></i>
-                    <span class="font-medium">Tableau de Bord</span>
-                </a>
-                
-                <a href="{{ path('market_admin_merchants_index') }}" 
-                   class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {% if app.request.get('_route') starts with 'market_admin_merchants' %}active{% endif %}">
-                    <i class="fas fa-users w-5"></i>
-                    <span class="font-medium">Marchands</span>
-                </a>
-                
-                <a href="{{ path('market_admin_spaces_index') }}" 
-                   class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {% if app.request.get('_route') starts with 'market_admin_spaces' %}active{% endif %}">
-                    <i class="fas fa-store w-5"></i>
-                    <span class="font-medium">Espaces</span>
-                
-                <a href="{{ path('market_admin_contracts_index') }}" 
-                   class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {% if app.request.get('_route') starts with 'market_admin_contracts' %}active{% endif %}">
-                    <i class="fas fa-file-contract w-5"></i>
-                    <span class="font-medium">Contrats</span>
-                </a>
-                
-                <a href="{{ path('market_admin_reservations_index') }}" 
-                   class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {% if app.request.get('_route') starts with 'market_admin_reservations' %}active{% endif %}">
-                    <i class="fas fa-calendar-check w-5"></i>
-                    <span class="font-medium">Réservations</span>
-                </a>
-                
-                <a href="{{ path('market_admin_payments_index') }}" 
-                   class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {% if app.request.get('_route') starts with 'market_admin_payments' %}active{% endif %}">
-                    <i class="fas fa-money-bill-wave w-5"></i>
-                    <span class="font-medium">Paiements</span>
-                </a>
-                
-                <a href="{{ path('market_admin_invoices_index') }}" 
-                   class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {% if app.request.get('_route') starts with 'market_admin_invoices' %}active{% endif %}">
-                    <i class="fas fa-file-invoice w-5"></i>
-                    <span class="font-medium">Factures</span>
-                </a>
-                </a>
-
-                <div class="pt-4 mt-4 border-t border-white border-opacity-20">
-                    <a href="{{ path('market_admin_pricing_rules_index') }}" 
-                       class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {% if app.request.get('_route') starts with 'market_admin_pricing_rules' %}active{% endif %}">
-                        <i class="fas fa-tags w-5"></i>
-                        <span class="font-medium">Règles de Prix</span>
-                    </a>
-                    <a href="{{ path('market_admin_settings') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg">
-                        <i class="fas fa-cog w-5"></i>
-                        <span class="font-medium">Paramètres</span>
-                    </a>
-                </div>
-            </nav>
-
-            <!-- User Profile -->
-            <div class="p-4 border-t border-white border-opacity-20">
-                <div class="flex items-center space-x-3 px-4 py-3 bg-white bg-opacity-10 rounded-lg">
-                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-purple-600 font-bold">
-                        {{ app.user.username|slice(0, 1)|upper }}
+            <!-- User Info -->
+            <div class="absolute bottom-0 w-64 p-6 border-t border-white/10">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium truncate">{{ app.user.username }}</p>
+                            <p class="text-xs text-gray-400">Administrateur</p>
+                        </div>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium truncate">{{ app.user.username }}</p>
-                        <p class="text-xs text-white text-opacity-70">Administrateur</p>
-                    </div>
-                    <a href="{{ path('app_logout') }}" class="text-white hover:text-red-200" title="Déconnexion">
+                    <a href="{{ path('app_logout') }}" class="text-gray-400 hover:text-white transition" title="Déconnexion">
                         <i class="fas fa-sign-out-alt"></i>
                     </a>
                 </div>
@@ -166,43 +129,51 @@
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
             <!-- Top Bar -->
-            <header class="bg-white shadow-sm z-10">
-                <div class="px-6 py-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h2 class="text-2xl font-bold text-gray-800">{% block header %}Tableau de Bord{% endblock %}</h2>
-                            <p class="text-sm text-gray-500 mt-1">{% block subtitle %}Bienvenue sur votre espace de gestion{% endblock %}</p>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <button class="relative p-2 text-gray-600 hover:text-gray-800">
-                                <i class="fas fa-bell text-xl"></i>
-                                <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full pulse-animation"></span>
-                            </button>
-                            <div class="text-right">
-                                <p class="text-sm font-medium text-gray-700">{{ "now"|date("d/m/Y") }}</p>
-                                <p class="text-xs text-gray-500">{{ "now"|date("H:i") }}</p>
-                            </div>
-                        </div>
+            <header class="bg-white border-b border-gray-200 shadow-sm">
+                <div class="px-8 py-4 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">{% block header %}Dashboard{% endblock %}</h2>
+                        <p class="text-sm text-gray-500">{% block subtitle %}Vue d'ensemble de votre marché{% endblock %}</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        <button class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            <i class="fas fa-plus"></i>
+                            <span class="text-sm font-medium">Ajouter</span>
+                        </button>
                     </div>
                 </div>
             </header>
 
             <!-- Content Area -->
-            <main class="flex-1 overflow-y-auto bg-gray-50 p-6">
+            <main class="flex-1 overflow-y-auto bg-gray-50 p-8">
+                <!-- Flash Messages -->
                 {% for message in app.flashes('success') %}
-                    <div class="mb-4 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                    <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg shadow-sm">
                         <div class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
-                            <p class="text-green-700">{{ message }}</p>
+                            <i class="fas fa-check-circle text-green-500 text-xl mr-3"></i>
+                            <p class="text-green-800 font-medium">{{ message }}</p>
                         </div>
                     </div>
                 {% endfor %}
-                
+
                 {% for message in app.flashes('error') %}
-                    <div class="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                    <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-sm">
                         <div class="flex items-center">
-                            <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
-                            <p class="text-red-700">{{ message }}</p>
+                            <i class="fas fa-exclamation-circle text-red-500 text-xl mr-3"></i>
+                            <p class="text-red-800 font-medium">{{ message }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% for message in app.flashes('warning') %}
+                    <div class="mb-6 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg shadow-sm">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-yellow-500 text-xl mr-3"></i>
+                            <p class="text-yellow-800 font-medium">{{ message }}</p>
                         </div>
                     </div>
                 {% endfor %}
@@ -211,11 +182,7 @@
             </main>
         </div>
     </div>
-    {% else %}
-    <!-- Page de connexion -->
-    <div class="min-h-screen gradient-bg flex items-center justify-center p-4">
-        {% block login_content %}{% endblock %}
-    </div>
-    {% endif %}
+
+    {% block javascripts %}{% endblock %}
 </body>
 </html>
