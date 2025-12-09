@@ -18,35 +18,55 @@
             position: relative;
             overflow: hidden;
         }
-        .circuit-pattern {
+        
+        /* Circuit Lines Background */
+        .circuit-bg {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            opacity: 0.1;
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 1px, transparent 1px),
-                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
+            opacity: 0.15;
         }
+        .circuit-line {
+            position: absolute;
+            background: rgba(255,255,255,0.2);
+        }
+        .circuit-node {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: rgba(255,255,255,0.3);
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+        }
+        
+        /* Tech Icons */
+        .tech-icon {
+            position: absolute;
+            color: rgba(255,255,255,0.1);
+            font-size: 80px;
+        }
+        
+        /* Market Stalls */
         .market-stall {
             position: absolute;
             bottom: 0;
         }
         .stall-left {
             left: 5%;
-            width: 150px;
+            width: 160px;
         }
         .stall-right {
             right: 5%;
             width: 180px;
         }
         .awning {
-            background: linear-gradient(135deg, #f4a261 0%, #e76f51 50%, #d62828 100%);
-            height: 30px;
-            border-radius: 0 0 10px 10px;
+            background: linear-gradient(135deg, #f4a261 0%, #e76f51 30%, #d62828 60%, #c1121f 100%);
+            height: 35px;
+            border-radius: 0 0 12px 12px;
             position: relative;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
         .awning::before {
             content: '';
@@ -58,136 +78,232 @@
             background: repeating-linear-gradient(
                 90deg,
                 transparent,
-                transparent 20px,
-                rgba(255,255,255,0.2) 20px,
-                rgba(255,255,255,0.2) 25px
+                transparent 18px,
+                rgba(255,255,255,0.3) 18px,
+                rgba(255,255,255,0.3) 22px
             );
         }
+        .stall-body {
+            background: rgba(42, 74, 111, 0.8);
+            padding: 25px 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
         .products {
-            background: #2a4a6f;
-            padding: 20px;
-            border-radius: 5px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         .product-box {
-            width: 30px;
-            height: 30px;
-            border-radius: 3px;
+            width: 35px;
+            height: 35px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
+        
+        /* Silhouettes */
         .silhouette {
             position: absolute;
+            bottom: 60px;
+            color: rgba(0,0,0,0.4);
+            filter: blur(1px);
+        }
+        
+        /* Vegetables/Products on right stall */
+        .veggie-basket {
+            position: absolute;
             bottom: 50px;
-            opacity: 0.3;
+            right: 8%;
+            display: flex;
+            gap: 15px;
+        }
+        .basket {
+            width: 60px;
+            height: 50px;
+            background: #8B4513;
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .basket::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 10px;
+            background: #654321;
+            border-radius: 50%;
+        }
+        .veggies {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 5px;
+        }
+        .veggie {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
         }
     </style>
 </head>
 <body class="min-h-screen bg-gray-100">
-    <!-- Hero Section with Market Illustration -->
     <div class="hero-section min-h-screen flex flex-col">
+        <!-- Circuit Background -->
+        <div class="circuit-bg">
+            <!-- Horizontal lines -->
+            <div class="circuit-line" style="top: 15%; left: 10%; width: 200px; height: 2px;"></div>
+            <div class="circuit-line" style="top: 25%; right: 15%; width: 250px; height: 2px;"></div>
+            <div class="circuit-line" style="top: 45%; left: 20%; width: 180px; height: 2px;"></div>
+            <div class="circuit-line" style="bottom: 35%; right: 10%; width: 220px; height: 2px;"></div>
+            
+            <!-- Vertical lines -->
+            <div class="circuit-line" style="top: 10%; left: 15%; width: 2px; height: 150px;"></div>
+            <div class="circuit-line" style="top: 20%; right: 20%; width: 2px; height: 180px;"></div>
+            <div class="circuit-line" style="bottom: 30%; left: 25%; width: 2px; height: 120px;"></div>
+            <div class="circuit-line" style="bottom: 25%; right: 15%; width: 2px; height: 140px;"></div>
+            
+            <!-- Curved lines -->
+            <svg style="position: absolute; top: 20%; left: 30%; width: 300px; height: 200px;">
+                <path d="M 0 100 Q 150 0 300 100" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none"/>
+            </svg>
+            <svg style="position: absolute; top: 40%; right: 25%; width: 250px; height: 150px;">
+                <path d="M 0 50 Q 125 150 250 50" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none"/>
+            </svg>
+            
+            <!-- Circuit nodes -->
+            <div class="circuit-node" style="top: 15%; left: 10%;"></div>
+            <div class="circuit-node" style="top: 25%; right: 15%;"></div>
+            <div class="circuit-node" style="top: 45%; left: 20%;"></div>
+            <div class="circuit-node" style="bottom: 35%; right: 10%;"></div>
+            <div class="circuit-node" style="top: 35%; left: 45%;"></div>
+            <div class="circuit-node" style="top: 55%; right: 40%;"></div>
+        </div>
+
+        <!-- Tech Icons -->
+        <i class="tech-icon fas fa-microchip" style="top: 12%; left: 8%;"></i>
+        <i class="tech-icon fas fa-server" style="top: 18%; right: 12%;"></i>
+        <i class="tech-icon fas fa-network-wired" style="bottom: 45%; left: 12%;"></i>
+        <i class="tech-icon fas fa-database" style="bottom: 40%; right: 10%;"></i>
+        <i class="tech-icon fas fa-mobile-alt" style="top: 50%; left: 18%; font-size: 60px;"></i>
+        <i class="tech-icon fas fa-laptop" style="top: 40%; right: 18%; font-size: 70px;"></i>
+
         <!-- Top Navigation -->
         <nav class="flex items-center justify-between px-8 py-4 relative z-10">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center shadow-lg">
                     <i class="fas fa-store text-white text-xl"></i>
                 </div>
                 <span class="text-white font-semibold text-lg">Marché Central - Zando Digital</span>
             </div>
             <div class="flex items-center space-x-6">
-                <a href="#" class="text-white/80 hover:text-white text-sm">Lexicom</a>
-                <a href="#" class="text-white/80 hover:text-white text-sm">Annonces</a>
-                <button class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white hover:bg-white/20">
+                <a href="#" class="text-white/80 hover:text-white text-sm transition">Lexicom</a>
+                <a href="#" class="text-white/80 hover:text-white text-sm transition">Annonces</a>
+                <button class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white hover:bg-white/20 transition">
                     <i class="fas fa-lock"></i>
                 </button>
             </div>
         </nav>
 
-        <!-- Circuit Pattern Background -->
-        <div class="circuit-pattern"></div>
-
         <!-- Main Content -->
         <div class="flex-1 flex items-center justify-center relative z-10 px-4">
             <div class="text-center max-w-3xl">
-                <!-- Tech Icons -->
-                <div class="absolute top-10 left-20 text-white/20">
-                    <i class="fas fa-microchip text-6xl"></i>
-                </div>
-                <div class="absolute top-20 right-32 text-white/20">
-                    <i class="fas fa-network-wired text-5xl"></i>
-                </div>
-                <div class="absolute bottom-40 left-32 text-white/20">
-                    <i class="fas fa-server text-4xl"></i>
-                </div>
-                <div class="absolute bottom-32 right-40 text-white/20">
-                    <i class="fas fa-database text-5xl"></i>
-                </div>
-
-                <h1 class="text-5xl font-bold text-white mb-4">Platéfourme Digitale<br>Marché Central - Zando</h1>
-                <p class="text-white/80 text-lg mb-8">Gestion facile, développement, paiement des commerçants et contrôle de paiements</p>
+                <h1 class="text-5xl font-bold text-white mb-4 leading-tight">Platéfourme Digitale<br>Marché Central - Zando</h1>
+                <p class="text-white/80 text-lg mb-8 max-w-2xl mx-auto">Gestion facile, développement, paiement des commerçants et contrôle de paiements</p>
                 
-                <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-8 py-3 rounded-lg transition transform hover:scale-105">
+                <button onclick="document.getElementById('loginModal').classList.remove('hidden')" 
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-10 py-4 rounded-lg transition transform hover:scale-105 shadow-xl">
                     Commencer Ici
                 </button>
             </div>
         </div>
 
-        <!-- Market Stalls Illustration -->
-        <div class="relative h-48">
+        <!-- Market Scene -->
+        <div class="relative h-56 z-10">
             <!-- Left Stall -->
             <div class="stall-left market-stall">
                 <div class="awning"></div>
-                <div class="products">
-                    <div class="product-box bg-orange-500"></div>
-                    <div class="product-box bg-red-500"></div>
-                    <div class="product-box bg-green-500"></div>
+                <div class="stall-body">
+                    <div class="products">
+                        <div class="product-box bg-orange-500"></div>
+                        <div class="product-box bg-red-500"></div>
+                        <div class="product-box bg-green-500"></div>
+                        <div class="product-box bg-yellow-500"></div>
+                        <div class="product-box bg-orange-600"></div>
+                        <div class="product-box bg-red-600"></div>
+                    </div>
                 </div>
             </div>
 
             <!-- Right Stall -->
             <div class="stall-right market-stall">
                 <div class="awning"></div>
-                <div class="products">
-                    <div class="product-box bg-yellow-500"></div>
-                    <div class="product-box bg-orange-500"></div>
-                    <div class="product-box bg-red-500"></div>
-                    <div class="product-box bg-green-500"></div>
+                <div class="stall-body">
+                    <div class="products">
+                        <div class="product-box bg-yellow-500"></div>
+                        <div class="product-box bg-orange-500"></div>
+                        <div class="product-box bg-red-500"></div>
+                        <div class="product-box bg-green-500"></div>
+                        <div class="product-box bg-blue-500"></div>
+                        <div class="product-box bg-purple-500"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Silhouettes -->
-            <div class="silhouette" style="left: 30%; bottom: 30px;">
-                <i class="fas fa-user text-6xl text-white"></i>
+            <!-- Vegetable Baskets -->
+            <div class="veggie-basket">
+                <div class="basket">
+                    <div class="veggies">
+                        <div class="veggie bg-orange-500"></div>
+                        <div class="veggie bg-red-500"></div>
+                    </div>
+                </div>
+                <div class="basket">
+                    <div class="veggies">
+                        <div class="veggie bg-green-500"></div>
+                        <div class="veggie bg-yellow-500"></div>
+                    </div>
+                </div>
             </div>
-            <div class="silhouette" style="left: 45%; bottom: 30px;">
-                <i class="fas fa-user text-7xl text-white"></i>
+
+            <!-- Silhouettes of people -->
+            <div class="silhouette" style="left: 28%;">
+                <i class="fas fa-user text-7xl"></i>
             </div>
-            <div class="silhouette" style="right: 35%; bottom: 30px;">
-                <i class="fas fa-user text-6xl text-white"></i>
+            <div class="silhouette" style="left: 42%;">
+                <i class="fas fa-user text-8xl"></i>
+            </div>
+            <div class="silhouette" style="right: 32%;">
+                <i class="fas fa-user text-7xl"></i>
             </div>
         </div>
 
         <!-- Footer Partners -->
-        <div class="bg-white py-6 relative z-10">
+        <div class="bg-white py-6 relative z-10 shadow-lg">
             <div class="container mx-auto px-8 flex items-center justify-center space-x-12 text-gray-600">
                 <div class="flex items-center space-x-2">
-                    <span class="font-bold text-2xl">APINK</span>
+                    <span class="font-bold text-2xl text-blue-900">APINK</span>
                 </div>
                 <div class="text-sm">
-                    <div>Gouvernement Numérique</div>
+                    <div class="font-semibold">Gouvernement Numérique</div>
                     <div class="text-xs text-gray-400">Numérique</div>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-blue-900 rounded flex items-center justify-center text-white">
-                        <i class="fas fa-university text-sm"></i>
+                    <div class="w-10 h-10 bg-blue-900 rounded flex items-center justify-center text-white">
+                        <i class="fas fa-university"></i>
                     </div>
                     <div class="text-sm">
-                        <div>Banque</div>
+                        <div class="font-semibold">Banque</div>
                         <div class="text-xs text-gray-400">Centrale</div>
                     </div>
                 </div>
                 <div class="text-sm">
-                    <div>Telecom</div>
+                    <div class="font-semibold">Telecom</div>
                     <div class="text-xs text-gray-400">DRC</div>
                 </div>
             </div>
@@ -195,14 +311,15 @@
     </div>
 
     <!-- Login Modal -->
-    <div id="loginModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
-            <button onclick="document.getElementById('loginModal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+    <div id="loginModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative animate-fade-in">
+            <button onclick="document.getElementById('loginModal').classList.add('hidden')" 
+                    class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
                 <i class="fas fa-times text-xl"></i>
             </button>
 
             <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <i class="fas fa-store text-white text-2xl"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-gray-800 mb-2">Connexion</h2>
@@ -250,7 +367,7 @@
                         <input type="checkbox" name="_remember_me" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                         <span class="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
                     </label>
-                    <a href="#" class="text-sm text-blue-600 hover:text-blue-700">Mot de passe oublié?</a>
+                    <a href="#" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Mot de passe oublié?</a>
                 </div>
 
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
@@ -268,7 +385,6 @@
                 </p>
             </div>
 
-            <!-- Partners in Modal -->
             <div class="mt-6 pt-6 border-t border-gray-200">
                 <div class="flex items-center justify-center space-x-4 text-xs text-gray-400">
                     <span>APINK</span>
@@ -282,7 +398,6 @@
     </div>
 
     <script>
-        // Auto-open modal if there's an error
         {% if error %}
             document.getElementById('loginModal').classList.remove('hidden');
         {% endif %}
