@@ -12,124 +12,280 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 100%);
         }
-        .market-illustration {
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%23f97316" x="50" y="100" width="60" height="80" rx="5"/><path fill="%23ef4444" d="M50 100 L80 70 L110 100 Z"/><rect fill="%2322c55e" x="150" y="120" width="60" height="60" rx="5"/><path fill="%23eab308" d="M150 120 L180 90 L210 120 Z"/><rect fill="%233b82f6" x="250" y="110" width="60" height="70" rx="5"/><path fill="%23ec4899" d="M250 110 L280 80 L310 110 Z"/></svg>');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
+        .hero-section {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c4a6f 50%, #1e3a5f 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .circuit-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        .market-stall {
+            position: absolute;
+            bottom: 0;
+        }
+        .stall-left {
+            left: 5%;
+            width: 150px;
+        }
+        .stall-right {
+            right: 5%;
+            width: 180px;
+        }
+        .awning {
+            background: linear-gradient(135deg, #f4a261 0%, #e76f51 50%, #d62828 100%);
+            height: 30px;
+            border-radius: 0 0 10px 10px;
+            position: relative;
+        }
+        .awning::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 20px,
+                rgba(255,255,255,0.2) 20px,
+                rgba(255,255,255,0.2) 25px
+            );
+        }
+        .products {
+            background: #2a4a6f;
+            padding: 20px;
+            border-radius: 5px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .product-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 3px;
+        }
+        .silhouette {
+            position: absolute;
+            bottom: 50px;
+            opacity: 0.3;
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-5xl">
-        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <div class="flex flex-col md:flex-row">
-                <!-- Left Side - Illustration -->
-                <div class="md:w-1/2 bg-gradient-to-br from-navy-900 to-navy-800 p-12 text-white relative overflow-hidden">
-                    <div class="relative z-10">
-                        <div class="flex items-center space-x-3 mb-8">
-                            <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-store text-2xl"></i>
-                            </div>
-                            <div>
-                                <h1 class="text-2xl font-bold">Marché Central</h1>
-                                <p class="text-sm text-gray-300">Zando Digital</p>
-                            </div>
-                        </div>
-                        
-                        <h2 class="text-3xl font-bold mb-4">Plateforme Digitale<br>Marché Central - Zando</h2>
-                        <p class="text-gray-300 mb-8">Gestion facile, développement, paiement des commerçants et contrôle de paiements</p>
-                        
-                        <div class="market-illustration h-48 mb-8"></div>
-                        
-                        <div class="flex items-center space-x-4 text-xs text-gray-400">
-                            <span>APINK</span>
-                            <span>•</span>
-                            <span>Gouvernement</span>
-                            <span>•</span>
-                            <span>Banque Centrale</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Decorative elements -->
-                    <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full opacity-10 -mr-32 -mt-32"></div>
-                    <div class="absolute bottom-0 left-0 w-48 h-48 bg-purple-500 rounded-full opacity-10 -ml-24 -mb-24"></div>
+<body class="min-h-screen bg-gray-100">
+    <!-- Hero Section with Market Illustration -->
+    <div class="hero-section min-h-screen flex flex-col">
+        <!-- Top Navigation -->
+        <nav class="flex items-center justify-between px-8 py-4 relative z-10">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-store text-white text-xl"></i>
+                </div>
+                <span class="text-white font-semibold text-lg">Marché Central - Zando Digital</span>
+            </div>
+            <div class="flex items-center space-x-6">
+                <a href="#" class="text-white/80 hover:text-white text-sm">Lexicom</a>
+                <a href="#" class="text-white/80 hover:text-white text-sm">Annonces</a>
+                <button class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white hover:bg-white/20">
+                    <i class="fas fa-lock"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Circuit Pattern Background -->
+        <div class="circuit-pattern"></div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex items-center justify-center relative z-10 px-4">
+            <div class="text-center max-w-3xl">
+                <!-- Tech Icons -->
+                <div class="absolute top-10 left-20 text-white/20">
+                    <i class="fas fa-microchip text-6xl"></i>
+                </div>
+                <div class="absolute top-20 right-32 text-white/20">
+                    <i class="fas fa-network-wired text-5xl"></i>
+                </div>
+                <div class="absolute bottom-40 left-32 text-white/20">
+                    <i class="fas fa-server text-4xl"></i>
+                </div>
+                <div class="absolute bottom-32 right-40 text-white/20">
+                    <i class="fas fa-database text-5xl"></i>
                 </div>
 
-                <!-- Right Side - Login Form -->
-                <div class="md:w-1/2 p-12">
-                    <div class="mb-8">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Connexion</h3>
-                        <p class="text-gray-500">Accédez à votre espace de gestion</p>
-                    </div>
-
-                    {% if error %}
-                        <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
-                            <div class="flex items-center">
-                                <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
-                                <p class="text-red-700 text-sm">{{ error.messageKey|trans(error.messageData, 'security') }}</p>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    <form method="post" class="space-y-6">
-                        <div>
-                            <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-user mr-2 text-gray-400"></i>Email / Identifiant
-                            </label>
-                            <input type="text" 
-                                   id="username" 
-                                   name="_username" 
-                                   value="{{ last_username }}" 
-                                   required 
-                                   autofocus
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                                   placeholder="Votre identifiant">
-                        </div>
-
-                        <div>
-                            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-lock mr-2 text-gray-400"></i>Mot de Passe
-                            </label>
-                            <input type="password" 
-                                   id="password" 
-                                   name="_password" 
-                                   required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                                   placeholder="••••••••">
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <label class="flex items-center">
-                                <input type="checkbox" name="_remember_me" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                <span class="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
-                            </label>
-                            <a href="#" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Mot de passe oublié?</a>
-                        </div>
-
-                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                        
-                        <button type="submit" 
-                                class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition transform hover:scale-[1.02] shadow-lg">
-                            <i class="fas fa-sign-in-alt mr-2"></i>Se connecter
-                        </button>
-                    </form>
-
-                    <div class="mt-8 text-center">
-                        <p class="text-sm text-gray-600">
-                            Pas encore de compte? 
-                            <a href="{{ path('app_register') }}" class="text-blue-600 hover:text-blue-700 font-medium">Inscrivez-vous</a>
-                        </p>
-                    </div>
-                </div>
+                <h1 class="text-5xl font-bold text-white mb-4">Platéfourme Digitale<br>Marché Central - Zando</h1>
+                <p class="text-white/80 text-lg mb-8">Gestion facile, développement, paiement des commerçants et contrôle de paiements</p>
+                
+                <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-8 py-3 rounded-lg transition transform hover:scale-105">
+                    Commencer Ici
+                </button>
             </div>
         </div>
 
-        <div class="text-center mt-6 text-white text-sm">
-            <p>&copy; 2024 Marché Central Zando. Tous droits réservés.</p>
+        <!-- Market Stalls Illustration -->
+        <div class="relative h-48">
+            <!-- Left Stall -->
+            <div class="stall-left market-stall">
+                <div class="awning"></div>
+                <div class="products">
+                    <div class="product-box bg-orange-500"></div>
+                    <div class="product-box bg-red-500"></div>
+                    <div class="product-box bg-green-500"></div>
+                </div>
+            </div>
+
+            <!-- Right Stall -->
+            <div class="stall-right market-stall">
+                <div class="awning"></div>
+                <div class="products">
+                    <div class="product-box bg-yellow-500"></div>
+                    <div class="product-box bg-orange-500"></div>
+                    <div class="product-box bg-red-500"></div>
+                    <div class="product-box bg-green-500"></div>
+                </div>
+            </div>
+
+            <!-- Silhouettes -->
+            <div class="silhouette" style="left: 30%; bottom: 30px;">
+                <i class="fas fa-user text-6xl text-white"></i>
+            </div>
+            <div class="silhouette" style="left: 45%; bottom: 30px;">
+                <i class="fas fa-user text-7xl text-white"></i>
+            </div>
+            <div class="silhouette" style="right: 35%; bottom: 30px;">
+                <i class="fas fa-user text-6xl text-white"></i>
+            </div>
+        </div>
+
+        <!-- Footer Partners -->
+        <div class="bg-white py-6 relative z-10">
+            <div class="container mx-auto px-8 flex items-center justify-center space-x-12 text-gray-600">
+                <div class="flex items-center space-x-2">
+                    <span class="font-bold text-2xl">APINK</span>
+                </div>
+                <div class="text-sm">
+                    <div>Gouvernement Numérique</div>
+                    <div class="text-xs text-gray-400">Numérique</div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-blue-900 rounded flex items-center justify-center text-white">
+                        <i class="fas fa-university text-sm"></i>
+                    </div>
+                    <div class="text-sm">
+                        <div>Banque</div>
+                        <div class="text-xs text-gray-400">Centrale</div>
+                    </div>
+                </div>
+                <div class="text-sm">
+                    <div>Telecom</div>
+                    <div class="text-xs text-gray-400">DRC</div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
+            <button onclick="document.getElementById('loginModal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-store text-white text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Connexion</h2>
+                <p class="text-gray-500">Accédez à votre espace de gestion</p>
+            </div>
+
+            {% if error %}
+                <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                        <p class="text-red-700 text-sm">{{ error.messageKey|trans(error.messageData, 'security') }}</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <form method="post" class="space-y-5">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user mr-2 text-gray-400"></i>Email / Identifiant
+                    </label>
+                    <input type="text" 
+                           id="username" 
+                           name="_username" 
+                           value="{{ last_username }}" 
+                           required 
+                           autofocus
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                           placeholder="Votre identifiant">
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-lock mr-2 text-gray-400"></i>Mot de Passe
+                    </label>
+                    <input type="password" 
+                           id="password" 
+                           name="_password" 
+                           required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                           placeholder="••••••••">
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="_remember_me" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <span class="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
+                    </label>
+                    <a href="#" class="text-sm text-blue-600 hover:text-blue-700">Mot de passe oublié?</a>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                
+                <button type="submit" 
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition transform hover:scale-[1.02] shadow-lg">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Se connecter
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Pas encore de compte? 
+                    <a href="{{ path('app_register') }}" class="text-blue-600 hover:text-blue-700 font-medium">Inscrivez-vous</a>
+                </p>
+            </div>
+
+            <!-- Partners in Modal -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <div class="flex items-center justify-center space-x-4 text-xs text-gray-400">
+                    <span>APINK</span>
+                    <span>•</span>
+                    <span>Gouvernement</span>
+                    <span>•</span>
+                    <span>Banque Centrale</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-open modal if there's an error
+        {% if error %}
+            document.getElementById('loginModal').classList.remove('hidden');
+        {% endif %}
+    </script>
 </body>
 </html>
