@@ -68,7 +68,11 @@
                     {% endif %}
                 </td>
                 <td class="px-4 py-3 text-sm font-medium text-gray-900">
-                    {{ reservation.firstPaymentAmount|number_format(2, ',', ' ') }} {{ reservation.currency.code }}
+                    {% if reservation.firstPaymentAmount %}
+                        {{ reservation.firstPaymentAmount|number_format(2, ',', ' ') }} {{ reservation.currency ? reservation.currency.code : 'CDF' }}
+                    {% else %}
+                        -
+                    {% endif %}
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-500">
                     {{ reservation.createdAt|date('d/m/Y H:i') }}

@@ -48,8 +48,16 @@ class PricingRuleController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, PricingRule $pricingRule, EntityManagerInterface $entityManager, FormFactoryInterface $formFactory): Response
+    public function edit(string $id, Request $request, PricingRuleRepository $pricingRuleRepository, EntityManagerInterface $entityManager, FormFactoryInterface $formFactory): Response
     {
+        // Convertir l'ID hexadécimal en binaire
+        $binaryId = hex2bin($id);
+        $pricingRule = $pricingRuleRepository->find($binaryId);
+
+        if (!$pricingRule) {
+            throw $this->createNotFoundException('Règle de prix non trouvée');
+        }
+
         $form = $formFactory->create(PricingRuleFormType::class, $pricingRule);
         $form->handleRequest($request);
 
@@ -68,8 +76,16 @@ class PricingRuleController extends AbstractController
     }
 
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
-    public function delete(Request $request, PricingRule $pricingRule, EntityManagerInterface $entityManager): Response
+    public function delete(string $id, Request $request, PricingRuleRepository $pricingRuleRepository, EntityManagerInterface $entityManager): Response
     {
+        // Convertir l'ID hexadécimal en binaire
+        $binaryId = hex2bin($id);
+        $pricingRule = $pricingRuleRepository->find($binaryId);
+
+        if (!$pricingRule) {
+            throw $this->createNotFoundException('Règle de prix non trouvée');
+        }
+
         if ($this->isCsrfTokenValid('delete'.$pricingRule->getId(), $request->request->get('_token'))) {
             $pricingRule->setIsDeleted(true);
             $entityManager->flush();

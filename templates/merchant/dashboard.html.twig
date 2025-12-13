@@ -4,66 +4,70 @@
 {% block header %}Mon Espace Marchand{% endblock %}
 {% block subtitle %}Bienvenue {{ merchant.firstname }} {{ merchant.lastname }}{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
 {% block content %}
 
 {# Notification de validation en attente #}
 {% if merchant.status.value == 'pending_validation' %}
-<div class="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-r-lg shadow-md">
+<div class="mb-3 md:mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-3 md:p-4 rounded-r-lg shadow-sm">
     <div class="flex items-start">
         <div class="flex-shrink-0">
-            <i class="fas fa-exclamation-triangle text-yellow-400 text-3xl"></i>
+            <i class="fas fa-exclamation-triangle text-yellow-400 text-lg md:text-xl"></i>
         </div>
-        <div class="ml-4 flex-1">
-            <h3 class="text-lg font-semibold text-yellow-800 mb-2">
-                <i class="fas fa-clock mr-2"></i>Compte en attente de validation
+        <div class="ml-2 md:ml-3 flex-1">
+            <h3 class="text-xs md:text-sm font-semibold text-yellow-800 mb-1">
+                <i class="fas fa-clock mr-1"></i>Compte en attente de validation
             </h3>
-            <p class="text-yellow-700 mb-3">
-                Votre compte est actuellement en attente de validation par l'administrateur. 
-                Pour activer votre compte et accéder à tous les services, veuillez :
+            <p class="text-xs text-yellow-700 mb-2">
+                Votre compte est en attente de validation. Pour l'activer :
             </p>
-            <ol class="list-decimal list-inside text-yellow-700 space-y-2 mb-4">
+            <ol class="list-decimal list-inside text-xs text-yellow-700 space-y-1 mb-2 md:mb-3">
                 <li>Réserver un espace dans le marché</li>
                 <li>Effectuer le paiement de votre réservation</li>
-                <li>L'administrateur validera votre compte après vérification du paiement</li>
+                <li>L'administrateur validera votre compte après vérification</li>
             </ol>
-            <a href="{{ path('merchant_spaces') }}" class="inline-flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition">
-                <i class="fas fa-store mr-2"></i>
+            <a href="{{ path('merchant_spaces') }}" class="inline-flex items-center px-3 py-1.5 bg-yellow-600 text-white text-xs rounded-lg hover:bg-yellow-700 transition">
+                <i class="fas fa-store mr-1"></i>
                 Voir les espaces disponibles
             </a>
         </div>
     </div>
 </div>
 {% elseif merchant.status.value == 'active' %}
-<div class="mb-6 bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
+<div class="mb-3 md:mb-4 bg-green-50 border-l-4 border-green-400 p-2 md:p-3 rounded-r-lg">
     <div class="flex items-center">
-        <i class="fas fa-check-circle text-green-400 text-2xl mr-3"></i>
+        <i class="fas fa-check-circle text-green-400 text-base md:text-lg mr-2"></i>
         <div>
-            <h3 class="text-lg font-semibold text-green-800">Compte activé</h3>
-            <p class="text-green-700">Votre compte est actif. Vous avez accès à tous les services.</p>
+            <h3 class="text-xs md:text-sm font-semibold text-green-800">Compte activé</h3>
+            <p class="text-xs text-green-700">Votre compte est actif. Vous avez accès à tous les services.</p>
         </div>
     </div>
 </div>
 {% endif %}
 
-{# Statistiques rapides #}
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-    <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-blue-500">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm text-gray-600 mb-1">Réservations</p>
-                <p class="text-2xl font-bold text-gray-800">{{ reservations|length }}</p>
+{# Statistiques rapides - Version compacte #}
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-3 md:mb-5">
+    <div class="bg-white rounded-lg shadow-sm p-2 md:p-3 border-l-4 border-blue-500">
+        <div class="flex flex-col md:flex-row items-start md:items-center md:justify-between">
+            <div class="mb-2 md:mb-0">
+                <p class="text-xs text-gray-600 mb-0.5">Réservations</p>
+                <p class="text-lg md:text-xl font-bold text-gray-800">{{ reservations|length }}</p>
             </div>
-            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <i class="fas fa-calendar-check text-blue-600 text-xl"></i>
+            <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-calendar-check text-blue-600 text-sm md:text-lg"></i>
             </div>
         </div>
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-green-500">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm text-gray-600 mb-1">Statut</p>
-                <p class="text-lg font-semibold text-gray-800">
+    <div class="bg-white rounded-lg shadow-sm p-2 md:p-3 border-l-4 border-green-500">
+        <div class="flex flex-col md:flex-row items-start md:items-center md:justify-between">
+            <div class="mb-2 md:mb-0">
+                <p class="text-xs text-gray-600 mb-0.5">Statut</p>
+                <p class="text-sm md:text-base font-semibold text-gray-800">
                     {% if merchant.status.value == 'active' %}
                         <span class="text-green-600">Actif</span>
                     {% else %}
@@ -71,82 +75,138 @@
                     {% endif %}
                 </p>
             </div>
-            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <i class="fas fa-shield-alt text-green-600 text-xl"></i>
+            <div class="w-8 h-8 md:w-10 md:h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-shield-alt text-green-600 text-sm md:text-lg"></i>
             </div>
         </div>
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-purple-500">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm text-gray-600 mb-1">Niveau KYC</p>
-                <p class="text-lg font-semibold text-gray-800">
+    <div class="bg-white rounded-lg shadow-sm p-2 md:p-3 border-l-4 border-purple-500">
+        <div class="flex flex-col md:flex-row items-start md:items-center md:justify-between">
+            <div class="mb-2 md:mb-0">
+                <p class="text-xs text-gray-600 mb-0.5">Niveau KYC</p>
+                <p class="text-sm md:text-base font-semibold text-gray-800">
                     {% if merchant.kycLevel.value == 'verified' %}Vérifié
                     {% elseif merchant.kycLevel.value == 'full' %}Complet
                     {% else %}Basique{% endif %}
                 </p>
             </div>
-            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <i class="fas fa-user-check text-purple-600 text-xl"></i>
+            <div class="w-8 h-8 md:w-10 md:h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-user-check text-purple-600 text-sm md:text-lg"></i>
             </div>
         </div>
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-orange-500">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm text-gray-600 mb-1">Espaces disponibles</p>
-                <p class="text-2xl font-bold text-gray-800">{{ availableSpaces|length }}</p>
+    <div class="bg-white rounded-lg shadow-sm p-2 md:p-3 border-l-4 border-orange-500">
+        <div class="flex flex-col md:flex-row items-start md:items-center md:justify-between">
+            <div class="mb-2 md:mb-0">
+                <p class="text-xs text-gray-600 mb-0.5">Espaces disponibles</p>
+                <p class="text-lg md:text-xl font-bold text-gray-800">{{ availableSpaces|length }}</p>
             </div>
-            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                <i class="fas fa-store text-orange-600 text-xl"></i>
+            <div class="w-8 h-8 md:w-10 md:h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-store text-orange-600 text-sm md:text-lg"></i>
             </div>
         </div>
     </div>
 </div>
 
-{# Actions rapides #}
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-    <a href="{{ path('merchant_spaces') }}" class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-6 hover:from-blue-600 hover:to-blue-700 transition transform hover:scale-105 shadow-lg">
-        <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-semibold">Réserver un espace</h3>
-            <i class="fas fa-store text-3xl opacity-75"></i>
+{# Graphiques Section #}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-3 mb-3">
+    <!-- Graphique Statut des Réservations -->
+    <div class="bg-white rounded-lg shadow-sm p-2 md:p-3">
+        <h3 class="text-xs md:text-sm font-bold text-gray-800 mb-1.5">Statut des Réservations</h3>
+        <div class="flex justify-center" style="height: 140px; max-height: 140px;">
+            <canvas id="reservationsChart"></canvas>
         </div>
-        <p class="text-blue-100 text-sm">Parcourez les espaces disponibles et faites votre réservation</p>
+    </div>
+
+    <!-- Graphique Activité Mensuelle -->
+    <div class="bg-white rounded-lg shadow-sm p-2 md:p-3">
+        <h3 class="text-xs md:text-sm font-bold text-gray-800 mb-1.5">Activité Mensuelle</h3>
+        <div style="height: 140px; max-height: 140px;">
+            <canvas id="activityChart"></canvas>
+        </div>
+    </div>
+</div>
+
+{# Actions rapides - Version ultra compacte #}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-3">
+    <a href="{{ path('merchant_spaces') }}" class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-3 hover:from-blue-600 hover:to-blue-700 transition shadow-sm">
+        <div class="flex items-center justify-between mb-1">
+            <h3 class="text-sm font-semibold">Réserver un espace</h3>
+            <i class="fas fa-store text-lg opacity-75"></i>
+        </div>
+        <p class="text-blue-100 text-xs">Parcourez les espaces</p>
     </a>
 
-    <a href="{{ path('merchant_reservations') }}" class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg p-6 hover:from-purple-600 hover:to-purple-700 transition transform hover:scale-105 shadow-lg">
-        <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-semibold">Mes réservations</h3>
-            <i class="fas fa-calendar-alt text-3xl opacity-75"></i>
+    <a href="{{ path('merchant_reservations') }}" class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg p-3 hover:from-purple-600 hover:to-purple-700 transition shadow-sm">
+        <div class="flex items-center justify-between mb-1">
+            <h3 class="text-sm font-semibold">Mes réservations</h3>
+            <i class="fas fa-calendar-alt text-lg opacity-75"></i>
         </div>
-        <p class="text-purple-100 text-sm">Consultez l'historique de vos réservations</p>
+        <p class="text-purple-100 text-xs">Consultez l'historique</p>
     </a>
 
-    <a href="#" class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-6 hover:from-green-600 hover:to-green-700 transition transform hover:scale-105 shadow-lg">
-        <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-semibold">Mon profil</h3>
-            <i class="fas fa-user-circle text-3xl opacity-75"></i>
+    <a href="#" class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-3 hover:from-green-600 hover:to-green-700 transition shadow-sm">
+        <div class="flex items-center justify-between mb-1">
+            <h3 class="text-sm font-semibold">Mon profil</h3>
+            <i class="fas fa-user-circle text-lg opacity-75"></i>
         </div>
-        <p class="text-green-100 text-sm">Gérez vos informations personnelles</p>
+        <p class="text-green-100 text-xs">Gérez vos infos</p>
     </a>
 </div>
 
 {# Dernières réservations #}
 {% if reservations|length > 0 %}
-<div class="bg-white rounded-lg shadow-sm p-6">
-    <h3 class="text-lg font-semibold mb-4 flex items-center">
+<div class="bg-white rounded-lg shadow-sm p-3 md:p-4">
+    <h3 class="text-xs md:text-sm font-semibold mb-3 flex items-center">
         <i class="fas fa-history mr-2 text-blue-600"></i>
         Dernières réservations
     </h3>
-    <div class="overflow-x-auto">
+    
+    {# Version mobile - Cards #}
+    <div class="block md:hidden space-y-2">
+        {% for reservation in reservations %}
+        <div class="border border-gray-200 rounded-lg p-3">
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <p class="text-sm font-semibold text-gray-800">{{ reservation.space.code }}</p>
+                    <p class="text-xs text-gray-500">{{ reservation.space.zone }}</p>
+                </div>
+                {% if reservation.status.value == 'confirmed' %}
+                    <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">Confirmée</span>
+                {% elseif reservation.status.value == 'pending' or reservation.status.value == 'pending_admin' %}
+                    <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded">En attente</span>
+                {% else %}
+                    <span class="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded">{{ reservation.status.value }}</span>
+                {% endif %}
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                    <p class="text-gray-500">Périodicité</p>
+                    <p class="font-medium">{{ reservation.periodicity.value|capitalize }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-500">Durée</p>
+                    <p class="font-medium">{{ reservation.duration }} période(s)</p>
+                </div>
+            </div>
+            <div class="mt-2 pt-2 border-t border-gray-100 flex justify-between items-center">
+                <p class="text-xs text-gray-500">{{ reservation.createdAt|date('d/m/Y') }}</p>
+                <p class="text-sm font-bold text-gray-800">{{ reservation.firstPaymentAmount|number_format(0, ',', ' ') }} FC</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {# Version desktop - Table #}
+    <div class="hidden md:block overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Espace</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date début</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date fin</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Périodicité</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durée</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Montant</th>
                 </tr>
@@ -155,39 +215,163 @@
                 {% for reservation in reservations %}
                 <tr class="hover:bg-gray-50">
                     <td class="px-4 py-3 text-sm font-medium">{{ reservation.space.code }} - {{ reservation.space.zone }}</td>
-                    <td class="px-4 py-3 text-sm">{{ reservation.startDate|date('d/m/Y') }}</td>
-                    <td class="px-4 py-3 text-sm">{{ reservation.endDate|date('d/m/Y') }}</td>
+                    <td class="px-4 py-3 text-sm">{{ reservation.periodicity.value|capitalize }}</td>
+                    <td class="px-4 py-3 text-sm">{{ reservation.duration }} période(s)</td>
                     <td class="px-4 py-3 text-sm">
                         {% if reservation.status.value == 'confirmed' %}
                             <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">Confirmée</span>
-                        {% elseif reservation.status.value == 'pending' %}
+                        {% elseif reservation.status.value == 'pending' or reservation.status.value == 'pending_admin' %}
                             <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded">En attente</span>
                         {% else %}
                             <span class="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded">{{ reservation.status.value }}</span>
                         {% endif %}
                     </td>
-                    <td class="px-4 py-3 text-sm font-semibold">{{ reservation.totalAmount|number_format(0, ',', ' ') }} FC</td>
+                    <td class="px-4 py-3 text-sm font-semibold">{{ reservation.firstPaymentAmount|number_format(0, ',', ' ') }} FC</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    <div class="mt-4 text-center">
-        <a href="{{ path('merchant_reservations') }}" class="text-blue-600 hover:text-blue-800 font-medium">
+    
+    <div class="mt-3 md:mt-4 text-center">
+        <a href="{{ path('merchant_reservations') }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
             Voir toutes les réservations <i class="fas fa-arrow-right ml-1"></i>
         </a>
     </div>
 </div>
 {% else %}
-<div class="bg-white rounded-lg shadow-sm p-8 text-center">
-    <i class="fas fa-calendar-times text-gray-300 text-6xl mb-4"></i>
-    <h3 class="text-xl font-semibold text-gray-700 mb-2">Aucune réservation</h3>
-    <p class="text-gray-500 mb-4">Vous n'avez pas encore effectué de réservation</p>
-    <a href="{{ path('merchant_spaces') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+<div class="bg-white rounded-lg shadow-sm p-6 md:p-8 text-center">
+    <i class="fas fa-calendar-times text-gray-300 text-4xl md:text-6xl mb-3 md:mb-4"></i>
+    <h3 class="text-lg md:text-xl font-semibold text-gray-700 mb-2">Aucune réservation</h3>
+    <p class="text-sm md:text-base text-gray-500 mb-3 md:mb-4">Vous n'avez pas encore effectué de réservation</p>
+    <a href="{{ path('merchant_spaces') }}" class="inline-flex items-center px-4 md:px-6 py-2 md:py-3 bg-blue-600 text-white text-sm md:text-base rounded-lg hover:bg-blue-700 transition">
         <i class="fas fa-plus mr-2"></i>
         Faire une réservation
     </a>
 </div>
 {% endif %}
+
+<script>
+// Configuration commune
+Chart.defaults.font.family = 'Inter';
+Chart.defaults.color = '#6B7280';
+Chart.defaults.font.size = 11;
+
+// Graphique Camembert - Statut des Réservations
+const reservationsCtx = document.getElementById('reservationsChart').getContext('2d');
+new Chart(reservationsCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Confirmées', 'En attente', 'Annulées'],
+        datasets: [{
+            data: [{{ reservations|filter(r => r.status.value == 'confirmed')|length }}, 
+                   {{ reservations|filter(r => r.status.value == 'pending')|length }}, 
+                   {{ reservations|filter(r => r.status.value == 'cancelled')|length }}],
+            backgroundColor: [
+                'rgba(34, 197, 94, 0.8)',
+                'rgba(251, 191, 36, 0.8)',
+                'rgba(239, 68, 68, 0.8)'
+            ],
+            borderWidth: 0,
+            hoverOffset: 8
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 10,
+                    usePointStyle: true,
+                    font: {
+                        size: 11,
+                        weight: '500'
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 8,
+                cornerRadius: 6,
+                titleFont: {
+                    size: 12,
+                    weight: 'bold'
+                },
+                bodyFont: {
+                    size: 11
+                }
+            }
+        },
+        cutout: '65%'
+    }
+});
+
+// Graphique Barres - Activité Mensuelle
+const activityCtx = document.getElementById('activityChart').getContext('2d');
+new Chart(activityCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+        datasets: [{
+            label: 'Réservations',
+            data: [2, 3, 1, 4, {{ reservations|length }}, 2],
+            backgroundColor: 'rgba(147, 51, 234, 0.8)',
+            borderRadius: 6,
+            borderSkipped: false,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 8,
+                cornerRadius: 6,
+                displayColors: false,
+                titleFont: {
+                    size: 11
+                },
+                bodyFont: {
+                    size: 11
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.05)',
+                    drawBorder: false
+                },
+                ticks: {
+                    padding: 8,
+                    font: {
+                        size: 10
+                    },
+                    stepSize: 1
+                }
+            },
+            x: {
+                grid: {
+                    display: false,
+                    drawBorder: false
+                },
+                ticks: {
+                    padding: 8,
+                    font: {
+                        size: 10
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
 
 {% endblock %}

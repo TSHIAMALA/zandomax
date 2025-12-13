@@ -38,7 +38,10 @@ class PaymentService
         $payment->setStatus(\App\Enum\PaymentStatus::PENDING);
         $payment->setContract($contract);
         $payment->setBankingTransactionId($reference ?? $this->generateReference());
-        $payment->setCreatedAt(new \DateTimeImmutable());
+        $payment->setCreatedAt(new \DateTime());
+        if ($dueDate instanceof \DateTimeImmutable) {
+            $dueDate = \DateTime::createFromImmutable($dueDate);
+        }
         $payment->setDueDate($dueDate);
         $payment->setCurrency($currency);
 
@@ -54,7 +57,7 @@ class PaymentService
     public function validatePayment(Payment $payment, string $validatedBy): Payment
     {
         $payment->setStatus(\App\Enum\PaymentStatus::PAID);
-        $payment->setPaymentDate(new \DateTimeImmutable());
+        $payment->setPaymentDate(new \DateTime());
         // $payment->setValidatedBy($validatedBy); // Entity has processedBy (User), not validatedBy (string)
 
         $this->entityManager->flush();
@@ -105,7 +108,7 @@ class PaymentService
             ->where('p.status = :status')
             ->andWhere('p.dueDate < :now')
             ->setParameter('status', 'pending')
-            ->setParameter('now', new \DateTimeImmutable())
+            ->setParameter('now', new \DateTime())
             ->getQuery()
             ->getResult();
     }

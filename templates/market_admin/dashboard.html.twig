@@ -9,177 +9,240 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 {% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .stat-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
 <!-- Stats Cards Compactes -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2.5 mb-3">
-    <!-- Card Marchands -->
-    <a href="{{ path('market_admin_merchants_index') }}" class="card-hover bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-sm p-2.5 text-white block">
-        <div class="flex items-center justify-between mb-2">
-            <div class="w-7 h-7 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+    <!-- Card 1: Commandes Enregistrées -->
+    <a href="{{ path('market_admin_contracts_index') }}" class="stat-card bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg shadow-sm p-3 text-white block">
+        <div class="flex items-center justify-between">
+            <div class="flex-1">
+                <h3 class="text-xs text-gray-300 mb-1">Commandes Enregistrées</h3>
+                <p class="text-2xl font-bold text-yellow-400">{{ stats.merchants.total|default('10') }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">Total marchands</p>
+            </div>
+            <div class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center flex-shrink-0">
                 <i class="fas fa-users text-lg"></i>
             </div>
-            <span class="text-xs bg-white bg-opacity-20 px-2 py-0.5 rounded-full">+12%</span>
-        </div>
-        <h3 class="text-base font-bold mb-0.5">{{ stats.merchants.total }}</h3>
-        <p class="text-blue-100 text-xs mb-2">Total Marchands</p>
-        <div class="flex items-center text-xs space-x-1.5">
-            <span><i class="fas fa-check-circle mr-0.5"></i>{{ stats.merchants.active }}</span>
-            <span><i class="fas fa-clock mr-0.5"></i>{{ stats.merchants.pending }}</span>
         </div>
     </a>
 
-    <!-- Card Espaces -->
-    <a href="{{ path('market_admin_spaces_index') }}" class="card-hover bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-sm p-2.5 text-white block">
-        <div class="flex items-center justify-between mb-2">
-            <div class="w-7 h-7 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
-                <i class="fas fa-store text-lg"></i>
+    <!-- Card 2: Commandes Annulées -->
+    <a href="{{ path('market_admin_spaces_index') }}" class="stat-card bg-gradient-to-br from-blue-400 to-blue-500 rounded-lg shadow-sm p-3 text-white block">
+        <div class="flex items-center justify-between">
+            <div class="flex-1">
+                <h3 class="text-xs text-blue-100 mb-1">Commandes Annulées</h3>
+                <p class="text-2xl font-bold">{{ stats.spaces.available|default('1') }}</p>
+                <p class="text-xs text-blue-100 mt-0.5">Espaces disponibles</p>
             </div>
-            <span class="text-xs bg-white bg-opacity-20 px-2 py-0.5 rounded-full">{{ ((stats.spaces.occupied / stats.spaces.total) * 100)|round }}%</span>
-        </div>
-        <h3 class="text-base font-bold mb-0.5">{{ stats.spaces.total }}</h3>
-        <p class="text-purple-100 text-xs mb-2">Espaces Totaux</p>
-        <div class="flex items-center text-xs space-x-1.5">
-            <span><i class="fas fa-check-circle mr-0.5"></i>{{ stats.spaces.occupied }}</span>
-            <span><i class="fas fa-door-open mr-0.5"></i>{{ stats.spaces.available }}</span>
+            <div class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-calendar-times text-lg"></i>
+            </div>
         </div>
     </a>
 
-    <!-- Card Contrats -->
-    <a href="{{ path('market_admin_contracts_index') }}" class="card-hover bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-sm p-2.5 text-white block">
-        <div class="flex items-center justify-between mb-2">
-            <div class="w-7 h-7 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
-                <i class="fas fa-file-contract text-lg"></i>
+    <!-- Card 3: Commandes Faites -->
+    <a href="{{ path('market_admin_payments_index') }}" class="stat-card bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-sm p-3 text-white block">
+        <div class="flex items-center justify-between">
+            <div class="flex-1">
+                <h3 class="text-xs text-green-100 mb-1">Commandes Faites</h3>
+                <p class="text-2xl font-bold">{{ stats.contracts.active|default('1') }}</p>
+                <p class="text-xs text-green-100 mt-0.5">Contrats actifs</p>
             </div>
-            <span class="text-xs bg-white bg-opacity-20 px-2 py-0.5 rounded-full">Actif</span>
-        </div>
-        <h3 class="text-base font-bold mb-0.5">{{ stats.contracts.total }}</h3>
-        <p class="text-green-100 text-xs mb-2">Contrats</p>
-        <div class="flex items-center text-xs">
-            <span><i class="fas fa-check-circle mr-0.5"></i>{{ stats.contracts.active }} actifs</span>
+            <div class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-check-circle text-lg"></i>
+            </div>
         </div>
     </a>
 
-    <!-- Card Paiements -->
-    <a href="{{ path('market_admin_payments_index') }}" class="card-hover bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-sm p-2.5 text-white block">
-        <div class="flex items-center justify-between mb-2">
-            <div class="w-7 h-7 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
-                <i class="fas fa-credit-card text-lg"></i>
+    <!-- Card 4: Dépenses Totales -->
+    <a href="{{ path('market_admin_invoices_index') }}" class="stat-card bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-sm p-3 text-white block">
+        <div class="flex items-center justify-between">
+            <div class="flex-1">
+                <h3 class="text-xs text-blue-100 mb-1">Dépenses Totales</h3>
+                <p class="text-2xl font-bold">128,000</p>
+                <p class="text-xs text-blue-100 mt-0.5">CDF ce mois</p>
             </div>
-            <span class="text-xs bg-white bg-opacity-20 px-2 py-0.5 rounded-full">{{ stats.payments.total }}</span>
-        </div>
-        <h3 class="text-base font-bold mb-0.5">{{ stats.payments.completed }}</h3>
-        <p class="text-orange-100 text-xs mb-2">Paiements Complétés</p>
-        <div class="flex items-center text-xs">
-            <span><i class="fas fa-clock mr-0.5"></i>{{ stats.payments.pending }} en attente</span>
+            <div class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-money-bill-wave text-lg"></i>
+            </div>
         </div>
     </a>
 </div>
 
-<!-- Graphiques et Activités Compacts -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-2.5 mb-3">
-    <!-- Graphique Occupation -->
-    <div class="lg:col-span-2 bg-white rounded-lg shadow-sm p-2.5">
-        <div class="flex items-center justify-between mb-2">
-            <div>
-                <h3 class="text-sm font-bold text-gray-800">Occupation des Espaces</h3>
-                <p class="text-xs text-gray-500">Répartition en temps réel</p>
-            </div>
-            <div class="flex space-x-1">
-                <button class="px-2 py-1 text-xs bg-purple-100 text-purple-600 rounded font-medium">Jour</button>
-                <button class="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded">Semaine</button>
-                <button class="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded">Mois</button>
-            </div>
+<!-- Graphiques Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+    <!-- Graphique Répartition des Espaces (Camembert) -->
+    <div class="bg-white rounded-xl shadow-md p-5">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Répartition des Espaces</h3>
+        <div class="flex justify-center">
+            <canvas id="spacesChart" style="max-height: 200px;"></canvas>
         </div>
-        <div style="max-height: 220px;"><canvas id="occupationChart" height="50"></canvas></div>
+    </div>
+
+    <!-- Graphique Revenus Mensuels (Barres) -->
+    <div class="bg-white rounded-xl shadow-md p-5">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Revenus Mensuels</h3>
+        <canvas id="revenueChart" style="max-height: 200px;"></canvas>
     </div>
 
     <!-- Activités Récentes -->
-    <div class="bg-white rounded-lg shadow-sm p-2.5">
-        <h3 class="text-sm font-bold text-gray-800 mb-2">Activités Récentes</h3>
-        <div class="space-y-1.5">
-            <div class="flex items-start space-x-1.5">
-                <div class="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+    <div class="bg-white rounded-xl shadow-md p-5">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Activités Récentes</h3>
+        <div class="space-y-3">
+            <div class="flex items-start space-x-3">
+                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <i class="fas fa-user-plus text-blue-600 text-sm"></i>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-xs font-medium text-gray-800">Nouveau marchand</p>
+                    <p class="text-sm font-medium text-gray-800">Nouveau marchand</p>
                     <p class="text-xs text-gray-500">Il y a 2 heures</p>
                 </div>
             </div>
             
-            <div class="flex items-start space-x-1.5">
-                <div class="w-7 h-7 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div class="flex items-start space-x-3">
+                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <i class="fas fa-check text-green-600 text-sm"></i>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-xs font-medium text-gray-800">Paiement validé</p>
+                    <p class="text-sm font-medium text-gray-800">Paiement validé</p>
                     <p class="text-xs text-gray-500">Il y a 3 heures</p>
                 </div>
             </div>
             
-            <div class="flex items-start space-x-1.5">
-                <div class="w-7 h-7 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div class="flex items-start space-x-3">
+                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <i class="fas fa-file-contract text-purple-600 text-sm"></i>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-xs font-medium text-gray-800">Contrat signé</p>
+                    <p class="text-sm font-medium text-gray-800">Contrat signé</p>
                     <p class="text-xs text-gray-500">Il y a 5 heures</p>
                 </div>
             </div>
             
-            <div class="flex items-start space-x-1.5">
-                <div class="w-7 h-7 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div class="flex items-start space-x-3">
+                <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <i class="fas fa-store text-orange-600 text-sm"></i>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-xs font-medium text-gray-800">Espace libéré</p>
+                    <p class="text-sm font-medium text-gray-800">Espace libéré</p>
                     <p class="text-xs text-gray-500">Il y a 1 jour</p>
                 </div>
             </div>
         </div>
-        
-        <button class="w-full mt-3 py-1.5 text-xs text-purple-600 hover:bg-purple-50 rounded font-medium transition">
-            Voir toutes les activités →
-        </button>
     </div>
 </div>
 
-<!-- Graphique Paiements Compact -->
-<div class="bg-white rounded-lg shadow-sm p-2.5">
-    <div class="flex items-center justify-between mb-2">
-        <div>
-            <h3 class="text-sm font-bold text-gray-800">Évolution des Paiements</h3>
-            <p class="text-xs text-gray-500">Statistiques mensuelles</p>
-        </div>
-        <select class="px-3 py-1 border border-gray-200 rounded text-xs focus:outline-none focus:ring-2 focus:ring-purple-500">
-            <option>2024</option>
-            <option>2023</option>
-        </select>
+<!-- Section Accès Rapides -->
+<div class="bg-white rounded-xl shadow-md p-5">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">Accès Rapides</h2>
+
+    <!-- Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Contrats -->
+        <a href="{{ path('market_admin_contracts_index') }}" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-300 transition">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-contract text-green-600"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-800 text-sm">Contrats</h3>
+                    <p class="text-xs text-gray-500">Gérer les contrats</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">{{ stats.contracts.active }}</span>
+                <i class="fas fa-arrow-right text-gray-400"></i>
+            </div>
+        </a>
+
+        <!-- Réservations -->
+        <a href="{{ path('market_admin_reservations_index') }}" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-300 transition">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-calendar-check text-blue-600"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-800 text-sm">Réservations</h3>
+                    <p class="text-xs text-gray-500">Valider les demandes</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-arrow-right text-gray-400"></i>
+            </div>
+        </a>
+
+        <!-- Paiements -->
+        <a href="{{ path('market_admin_payments_index') }}" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-300 transition">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-credit-card text-purple-600"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-800 text-sm">Paiements</h3>
+                    <p class="text-xs text-gray-500">Suivre les paiements</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">{{ stats.payments.pending }}</span>
+                <i class="fas fa-arrow-right text-gray-400"></i>
+            </div>
+        </a>
+
+        <!-- Factures -->
+        <a href="{{ path('market_admin_invoices_index') }}" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-300 transition">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-invoice text-orange-600"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-800 text-sm">Factures</h3>
+                    <p class="text-xs text-gray-500">Gérer les factures</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-arrow-right text-gray-400"></i>
+            </div>
+        </a>
     </div>
-    <canvas id="paymentsChart" height="50"></canvas>
 </div>
 
 <script>
-// Configuration commune
-Chart.defaults.font.family = 'Inter';
-Chart.defaults.color = '#6B7280';
-Chart.defaults.font.size = 9;
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuration commune
+    Chart.defaults.font.family = 'Inter';
+    Chart.defaults.color = '#6B7280';
+    Chart.defaults.font.size = 11;
 
-// Graphique Occupation (Doughnut moderne)
-const occupationCtx = document.getElementById('occupationChart').getContext('2d');
-new Chart(occupationCtx, {
+    // Graphique Camembert - Répartition des Espaces
+    const spacesCtx = document.getElementById('spacesChart');
+    if (spacesCtx) {
+        new Chart(spacesCtx.getContext('2d'), {
     type: 'doughnut',
     data: {
         labels: ['Occupés', 'Disponibles', 'Maintenance'],
         datasets: [{
-            data: [{{ stats.spaces.occupied }}, {{ stats.spaces.available }}, 0],
+            data: [{{ stats.spaces.occupied|default('8') }}, {{ stats.spaces.available|default('1') }}, 1],
             backgroundColor: [
-                'rgba(139, 92, 246, 0.8)',
                 'rgba(59, 130, 246, 0.8)',
+                'rgba(34, 197, 94, 0.8)',
                 'rgba(251, 146, 60, 0.8)'
             ],
             borderWidth: 0,
-            hoverOffset: 8
+            hoverOffset: 10
         }]
     },
     options: {
@@ -189,108 +252,105 @@ new Chart(occupationCtx, {
             legend: {
                 position: 'bottom',
                 labels: {
-                    padding: 4,
+                    padding: 10,
                     usePointStyle: true,
                     font: {
-                        size: 9,
+                        size: 11,
                         weight: '500'
                     }
                 }
             },
             tooltip: {
                 backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                padding: 4,
+                padding: 8,
                 cornerRadius: 6,
                 titleFont: {
-                    size: 10,
+                    size: 12,
                     weight: 'bold'
                 },
                 bodyFont: {
-                    size: 9
+                    size: 11
                 }
             }
         },
-        cutout: '60%'
+        cutout: '65%'
     }
 });
+    } // Fin du if spacesCtx
 
-// Graphique Paiements (Line moderne)
-const paymentsCtx = document.getElementById('paymentsChart').getContext('2d');
-const gradient = paymentsCtx.createLinearGradient(0, 0, 0, 300);
-gradient.addColorStop(0, 'rgba(139, 92, 246, 0.3)');
-gradient.addColorStop(1, 'rgba(139, 92, 246, 0)');
-
-new Chart(paymentsCtx, {
-    type: 'line',
-    data: {
-        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
-        datasets: [{
-            label: 'Paiements',
-            data: [12, 19, 15, 25, 22, 30, 28, 35, 32, 38, 42, 45],
-            borderColor: 'rgb(139, 92, 246)',
-            backgroundColor: gradient,
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4,
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            pointHoverBackgroundColor: 'rgb(139, 92, 246)',
-            pointHoverBorderColor: '#fff',
-            pointHoverBorderWidth: 2
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-            legend: {
-                display: false
+    // Graphique Barres - Revenus Mensuels
+    const revenueCtx = document.getElementById('revenueChart');
+    if (revenueCtx) {
+        new Chart(revenueCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                datasets: [{
+                    label: 'Revenus (CDF)',
+                    data: [85000, 92000, 78000, 105000, 128000, 115000],
+                    backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                    borderRadius: 6,
+                    borderSkipped: false,
+                }]
             },
-            tooltip: {
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                padding: 4,
-                cornerRadius: 6,
-                displayColors: false,
-                titleFont: {
-                    size: 9
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 8,
+                        cornerRadius: 6,
+                        displayColors: false,
+                        titleFont: {
+                            size: 11
+                        },
+                        bodyFont: {
+                            size: 11
+                        },
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y.toLocaleString() + ' CDF';
+                            }
+                        }
+                    }
                 },
-                bodyFont: {
-                    size: 9
-                }
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                grid: {
-                    color: 'rgba(0, 0, 0, 0.05)',
-                    drawBorder: false
-                },
-                ticks: {
-                    padding: 4,
-                    font: {
-                        size: 9
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            padding: 8,
+                            font: {
+                                size: 10
+                            },
+                            callback: function(value) {
+                                return (value / 1000) + 'K';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            padding: 8,
+                            font: {
+                                size: 10
+                            }
+                        }
                     }
                 }
-            },
-            x: {
-                grid: {
-                    display: false,
-                    drawBorder: false
-                },
-                ticks: {
-                    padding: 4,
-                    font: {
-                        size: 9
-                    }
-                }
             }
-        },
-        interaction: {
-            intersect: false,
-            mode: 'index'
-        }
-    }
-});
+        });
+    } // Fin du if revenueCtx
+}); // Fin du DOMContentLoaded
 </script>
 {% endblock %}

@@ -112,7 +112,11 @@
                 <div>
                     <p class="text-sm text-gray-500">Montant premier paiement</p>
                     <p class="font-medium text-gray-900 text-lg text-purple-600">
-                        {{ reservation.firstPaymentAmount|number_format(2, ',', ' ') }} {{ reservation.currency.code }}
+                        {% if reservation.firstPaymentAmount %}
+                            {{ reservation.firstPaymentAmount|number_format(2, ',', ' ') }} {{ reservation.currency ? reservation.currency.code : 'CDF' }}
+                        {% else %}
+                            Non défini
+                        {% endif %}
                     </p>
                 </div>
                 <div>

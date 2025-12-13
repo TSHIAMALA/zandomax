@@ -1,17 +1,74 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Modifier Règle de Prix - ZANDO Market{% endblock %}
+{% block header %}Dashboard{% endblock %}
+{% block subtitle %}Vue d'ensemble de votre marché{% endblock %}
 
 {% block content %}
-<div class="container-fluid px-6 py-6">
-    <div class="max-w-3xl mx-auto">
+<div class="bg-gray-50 -m-8 p-8 min-h-screen">
+    <div class="max-w-4xl mx-auto">
         <div class="mb-6">
             <h1 class="text-2xl font-bold text-gray-800">Modifier Règle de Prix</h1>
-            <p class="text-gray-600">Modifier le tarif pour l'espace {{ pricing_rule.space.code }}</p>
+            <p class="text-gray-500 text-sm">Modifier le tarif pour l'espace {{ pricing_rule.space.code }}</p>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            {% include 'market_admin/pricing_rules/_form.html.twig' with {'button_label': 'Mettre à jour'} %}
+        <div class="bg-white rounded-xl shadow-sm p-8">
+            {{ form_start(form, {'action': path('market_admin_pricing_rules_edit', {'id': pricing_rule.id|bin2hex}), 'method': 'POST'}) }}
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Espace</label>
+                    {{ form_widget(form.space, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent'}}) }}
+                    {{ form_errors(form.space) }}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Périodicité</label>
+                        {{ form_widget(form.periodicity, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent'}}) }}
+                        {{ form_errors(form.periodicity) }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Montant</label>
+                        <div class="flex gap-3">
+                            {{ form_widget(form.price, {'attr': {'class': 'flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent'}}) }}
+                            {{ form_widget(form.currency, {'attr': {'class': 'w-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent'}}) }}
+                        </div>
+                        {{ form_errors(form.price) }}
+                        {{ form_errors(form.currency) }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Durée Minimum (unités)</label>
+                        {{ form_widget(form.minDuration, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent'}}) }}
+                        {{ form_errors(form.minDuration) }}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Durée Maximum (unités)</label>
+                        {{ form_widget(form.maxDuration, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent'}}) }}
+                        {{ form_errors(form.maxDuration) }}
+                    </div>
+                </div>
+
+                <div class="flex items-center">
+                    {{ form_widget(form.isActive, {'attr': {'class': 'w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500'}}) }}
+                    <label class="ml-2 block text-sm text-gray-900">Actif</label>
+                    {{ form_errors(form.isActive) }}
+                </div>
+            </div>
+
+            <div class="mt-8 flex items-center justify-between pt-6 border-t">
+                <a href="{{ path('market_admin_pricing_rules_index') }}" class="px-6 py-3 text-gray-600 hover:text-gray-900 font-medium">
+                    Annuler
+                </a>
+                <button type="submit" class="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition shadow-sm">
+                    Mettre à jour
+                </button>
+            </div>
+
+            {{ form_end(form) }}
         </div>
     </div>
 </div>

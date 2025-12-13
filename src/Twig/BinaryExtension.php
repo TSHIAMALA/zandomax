@@ -10,11 +10,11 @@ class BinaryExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('bin2hex', [$this, 'bin2hex']),
+            new TwigFilter('bin2hex', [$this, 'binaryToHex']),
         ];
     }
 
-    public function bin2hex(?string $binary): string
+    public function binaryToHex(?string $binary): string
     {
         if ($binary === null) {
             return '';

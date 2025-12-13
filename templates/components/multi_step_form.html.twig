@@ -1,0 +1,71 @@
+{# Composant de formulaire multi-étapes #}
+{% set current_step = current_step|default(1) %}
+
+<div class="flex gap-6 min-h-screen bg-gray-50 p-6">
+    <!-- Sidebar Navigation -->
+    <div class="w-80 bg-white rounded-xl shadow-sm p-6 h-fit sticky top-6">
+        <div class="mb-6">
+            <div class="relative">
+                <input type="text" 
+                       placeholder="Prests Chile" 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+            </div>
+        </div>
+
+        <nav class="space-y-2">
+            {% for step in steps %}
+            <a href="#step-{{ loop.index }}" 
+               data-step="{{ loop.index }}"
+               class="step-nav flex items-center gap-3 px-4 py-3 rounded-lg transition {% if loop.index == current_step %}bg-slate-700 text-white{% else %}text-gray-700 hover:bg-gray-100{% endif %}">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center {% if loop.index == current_step %}bg-white/20{% else %}bg-gray-200{% endif %}">
+                    <span class="font-semibold text-sm">{{ loop.index }}</span>
+                </div>
+                <span class="font-medium text-sm">{{ step.title }}</span>
+            </a>
+            {% endfor %}
+        </nav>
+    </div>
+
+    <!-- Main Form Content -->
+    <div class="flex-1 bg-white rounded-xl shadow-sm p-8">
+        {{ form_content|raw }}
+    </div>
+</div>
+
+<style>
+.step-content {
+    display: none;
+}
+.step-content.active {
+    display: block;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stepNavs = document.querySelectorAll('.step-nav');
+    const stepContents = document.querySelectorAll('.step-content');
+    
+    stepNavs.forEach(nav => {
+        nav.addEventListener('click', function(e) {
+            e.preventDefault();
+            const step = this.dataset.step;
+            
+            // Update navigation
+            stepNavs.forEach(n => {
+                n.classList.remove('bg-slate-700', 'text-white');
+                n.classList.add('text-gray-700');
+            });
+            this.classList.add('bg-slate-700', 'text-white');
+            this.classList.remove('text-gray-700');
+            
+            // Update content
+            stepContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById('step-' + step).classList.add('active');
+        });
+    });
+});
+</script>

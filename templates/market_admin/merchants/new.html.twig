@@ -1,18 +1,222 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Nouveau Marchand - ZANDO Market{% endblock %}
+{% block header %}Dashboard{% endblock %}
+{% block subtitle %}Vue d'ensemble de votre marché{% endblock %}
 
 {% block content %}
-<div class="container-fluid px-6 py-6">
-    <div class="max-w-3xl mx-auto">
+<div class="flex gap-6 bg-gray-50 -m-8 p-8 min-h-screen">
+    <!-- Sidebar Navigation -->
+    <div class="w-80 bg-white rounded-xl shadow-sm p-6 h-fit sticky top-6">
         <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-800">Nouveau Marchand</h1>
-            <p class="text-gray-600">Inscrire un nouveau marchand</p>
+            <div class="relative">
+                <input type="text" 
+                       placeholder="Prests Chile" 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <i class="fas fa-search absolute right-3 top-3 text-gray-400 text-sm"></i>
+            </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            {% include 'market_admin/merchants/_form.html.twig' with {'button_label': 'Créer le marchand'} %}
+        <nav class="space-y-2">
+            <div class="step-nav active flex items-center gap-3 px-4 py-3 rounded-lg transition bg-slate-700 text-white cursor-pointer" data-step="1">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center bg-white/20">
+                    <span class="font-semibold text-sm">1</span>
+                </div>
+                <span class="font-medium text-sm">Identité & Contact</span>
+            </div>
+            
+            <div class="step-nav flex items-center gap-3 px-4 py-3 rounded-lg transition text-gray-700 hover:bg-gray-100 cursor-pointer" data-step="2">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200">
+                    <span class="font-semibold text-sm">2</span>
+                </div>
+                <span class="font-medium text-sm">Infos Professionnelles</span>
+            </div>
+            
+            <div class="step-nav flex items-center gap-3 px-4 py-3 rounded-lg transition text-gray-700 hover:bg-gray-100 cursor-pointer" data-step="3">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200">
+                    <span class="font-semibold text-sm">3</span>
+                </div>
+                <span class="font-medium text-sm">Documents & KYC</span>
+            </div>
+            
+            <div class="step-nav flex items-center gap-3 px-4 py-3 rounded-lg transition text-gray-700 hover:bg-gray-100 cursor-pointer" data-step="4">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200">
+                    <span class="font-semibold text-sm">4</span>
+                </div>
+                <span class="font-medium text-sm">Espace & Contrat</span>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Form Content -->
+    <div class="flex-1 bg-white rounded-xl shadow-sm p-8">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Nouveau Marchand</h1>
+            <p class="text-gray-500 text-sm">Inscrire un nouveau marchand</p>
         </div>
+
+        {{ form_start(form, {'attr': {'id': 'merchant-form'}}) }}
+        
+        <!-- Step 1: Identité & Contact -->
+        <div class="step-content active" id="step-1">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                    {{ form_widget(form.firstname, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent', 'placeholder': 'Nom'}}) }}
+                    {{ form_errors(form.firstname) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                    {{ form_widget(form.lastname, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent', 'placeholder': 'Nom'}}) }}
+                    {{ form_errors(form.lastname) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                    {{ form_widget(form.phone, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+                    {{ form_errors(form.phone) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    {{ form_widget(form.email, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+                    {{ form_errors(form.email) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Infos Professionnelles -->
+        <div class="step-content" id="step-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Catégorie</label>
+                    {{ form_widget(form.merchantCategory, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+                    <p class="mt-1 text-xs text-gray-500">Sélectionnez une catégorie</p>
+                    {{ form_errors(form.merchantCategory) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Type de Personne</label>
+                    {{ form_widget(form.personType, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+                    <p class="mt-1 text-xs text-gray-500">Personne Physique</p>
+                    {{ form_errors(form.personType) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                    {{ form_widget(form.status, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+                    <p class="mt-1 text-xs text-gray-500">En attente de validation</p>
+                    {{ form_errors(form.status) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Numéro de Compte</label>
+                    {{ form_widget(form.accountNumber, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+                    {{ form_errors(form.accountNumber) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Documents & KYC -->
+        <div class="step-content" id="step-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Niveau KYC</label>
+                    {{ form_widget(form.kycLevel, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+                    <p class="mt-1 text-xs text-gray-500">Basique</p>
+                    {{ form_errors(form.kycLevel) }}
+                </div>
+
+                <div class="md:col-span-2">
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition cursor-pointer">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                        <p class="text-sm text-gray-600 mb-1">
+                            <i class="fas fa-info-circle text-gray-400 mr-1"></i>
+                            Dress & Drop si commentrais
+                        </p>
+                        <p class="text-xs text-gray-400">Pièces d'identité</p>
+                        <p class="text-xs text-gray-500 mt-2">Déposez/Cliquez pour ajouter des fichiers</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Hash Biométrique (Simulation)</label>
+                    {{ form_widget(form.biometricHash, {'attr': {'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent', 'placeholder': 'Laisser vide pour générer automatiquement'}}) }}
+                    <p class="mt-1 text-xs text-gray-500">Laisser vide pour générer automatiquement</p>
+                    {{ form_errors(form.biometricHash) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Espace & Contrat -->
+        <div class="step-content" id="step-4">
+            <div class="text-center py-12">
+                <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Prêt à créer le marchand</h3>
+                <p class="text-gray-600">Vérifiez les informations avant de soumettre</p>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="mt-8 flex items-center justify-between pt-6 border-t">
+            <a href="{{ path('market_admin_merchants_index') }}" class="px-6 py-3 text-gray-600 hover:text-gray-900 font-medium">
+                Annuler
+            </a>
+            <button type="submit" class="px-8 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-semibold transition shadow-sm">
+                Créer le commerçant
+            </button>
+        </div>
+
+        {{ form_end(form) }}
     </div>
 </div>
+
+<style>
+.step-content {
+    display: none;
+}
+.step-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stepNavs = document.querySelectorAll('.step-nav');
+    const stepContents = document.querySelectorAll('.step-content');
+    
+    stepNavs.forEach(nav => {
+        nav.addEventListener('click', function(e) {
+            e.preventDefault();
+            const step = this.dataset.step;
+            
+            // Update navigation
+            stepNavs.forEach(n => {
+                n.classList.remove('bg-slate-700', 'text-white');
+                n.classList.add('text-gray-700');
+                const circle = n.querySelector('.w-8');
+                circle.classList.remove('bg-white/20');
+                circle.classList.add('bg-gray-200');
+            });
+            this.classList.add('bg-slate-700', 'text-white');
+            this.classList.remove('text-gray-700');
+            const circle = this.querySelector('.w-8');
+            circle.classList.remove('bg-gray-200');
+            circle.classList.add('bg-white/20');
+            
+            // Update content
+            stepContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById('step-' + step).classList.add('active');
+        });
+    });
+});
+</script>
 {% endblock %}

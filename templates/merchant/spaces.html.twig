@@ -37,19 +37,7 @@
                 </div>
             </div>
             
-            {% if space.spacePricings|length > 0 %}
-            <div class="border-t pt-4 mb-4">
-                <p class="text-sm text-gray-600 mb-2">Tarifs :</p>
-                {% for pricing in space.spacePricings %}
-                <div class="flex justify-between items-center mb-1">
-                    <span class="text-sm text-gray-700">{{ pricing.durationType.value }}</span>
-                    <span class="font-semibold text-gray-900">{{ pricing.price|number_format(0, ',', ' ') }} FC</span>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-            
-            <a href="#" class="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition font-semibold">
+            <a href="{{ path('merchant_space_reserve', {'id': space.id|bin2hex}) }}" class="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition font-semibold">
                 <i class="fas fa-calendar-plus mr-2"></i>
                 Réserver cet espace
             </a>

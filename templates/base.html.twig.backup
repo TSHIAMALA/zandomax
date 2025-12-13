@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Marché Central - Zando Digital{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            200: '#bcccdc',
+                            300: '#9fb3c8',
+                            400: '#829ab1',
+                            500: '#627d98',
+                            600: '#486581',
+                            700: '#334e68',
+                            800: '#243b53',
+                            900: '#1a2a3a',
+                        },
+                        navy: {
+                            800: '#1e3a5f',
+                            900: '#0f2744',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .sidebar-link {
+            transition: all 0.3s ease;
+        }
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        .sidebar-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 4px solid #60a5fa;
+        }
+    </style>
+    {% block stylesheets %}{% endblock %}
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gradient-to-b from-navy-900 to-navy-800 text-white flex-shrink-0 shadow-2xl">
+            <div class="p-6">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 mb-8 pb-6 border-b border-white/10">
+                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-store text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold">Marché Central</h1>
+                        <p class="text-xs text-gray-400">Zando Digital</p>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="space-y-1">
+                    <a href="{{ path('market_admin_dashboard') }}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-chart-line w-5"></i>
+                        <span>Tableau de Bord</span>
+                    </a>
+                    
+                    <a href="{{ path('market_admin_merchants_index') }}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-users w-5"></i>
+                        <span>Marchands</span>
+                    </a>
+                    
+                    <a href="{{ path('market_admin_spaces_index') }}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-store-alt w-5"></i>
+                        <span>Espaces</span>
+                    </a>
+                    
+                    <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-file-contract w-5"></i>
+                        <span>Contrats</span>
+                    </a>
+                    
+                    <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-calendar-check w-5"></i>
+                        <span>Réservations</span>
+                    </a>
+                    
+                    <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-credit-card w-5"></i>
+                        <span>Paiements</span>
+                    </a>
+                    
+                    <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-file-invoice w-5"></i>
+                        <span>Factures</span>
+                    </a>
+                    
+                    <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-tags w-5"></i>
+                        <span>Règles des Prix</span>
+                    </a>
+                    
+                    <a href="#" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
+                        <i class="fas fa-cog w-5"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </nav>
+                </nav>
+            </div>
+
+            <!-- User Info -->
+            <div class="absolute bottom-0 w-64 p-6 border-t border-white/10">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium truncate">{{ app.user.username }}</p>
+                            <p class="text-xs text-gray-400">Administrateur</p>
+                        </div>
+                    </div>
+                    <a href="{{ path('app_logout') }}" class="text-gray-400 hover:text-white transition" title="Déconnexion">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <header class="bg-white border-b border-gray-200 shadow-sm">
+                <div class="px-8 py-4 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">{% block header %}Dashboard{% endblock %}</h2>
+                        <p class="text-sm text-gray-500">{% block subtitle %}Vue d'ensemble de votre marché{% endblock %}</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        <button class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            <i class="fas fa-plus"></i>
+                            <span class="text-sm font-medium">Ajouter</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="flex-1 overflow-y-auto bg-gray-50 p-8">
+                <!-- Flash Messages -->
+                {% for message in app.flashes('success') %}
+                    <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg shadow-sm">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 text-xl mr-3"></i>
+                            <p class="text-green-800 font-medium">{{ message }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% for message in app.flashes('error') %}
+                    <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-sm">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle text-red-500 text-xl mr-3"></i>
+                            <p class="text-red-800 font-medium">{{ message }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% for message in app.flashes('warning') %}
+                    <div class="mb-6 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg shadow-sm">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-yellow-500 text-xl mr-3"></i>
+                            <p class="text-yellow-800 font-medium">{{ message }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

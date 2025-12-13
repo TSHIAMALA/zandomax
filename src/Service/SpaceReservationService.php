@@ -98,8 +98,9 @@ class SpaceReservationService
 
         // Logic for Rent/Guarantee (Simplified for now, assuming FirstPaymentAmount is the base)
         // Ideally we should recalculate based on business rules (e.g. 3 months guarantee)
-        $contract->setRentAmount($reservation->getFirstPaymentAmount());
-        $contract->setGuaranteeAmount($reservation->getFirstPaymentAmount()); 
+        $rentAmount = $reservation->getFirstPaymentAmount() ?? '0';
+        $contract->setRentAmount($rentAmount);
+        $contract->setGuaranteeAmount($rentAmount); 
         
         // Map Periodicity to BillingCycle
         $billingCycle = match($periodicity) {

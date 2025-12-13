@@ -1,0 +1,51 @@
+# Traductions des énumérations
+
+# Periodicity
+periodicity:
+  daily: 'Journalier'
+  weekly: 'Hebdomadaire'
+  monthly: 'Mensuel'
+  quarterly: 'Trimestriel'
+  semester: 'Semestriel'
+  yearly: 'Annuel'
+
+# Space Status
+space_status:
+  available: 'Disponible'
+  occupied: 'Occupé'
+  maintenance: 'En maintenance'
+  reserved: 'Réservé'
+
+# Reservation Status
+reservation_status:
+  pending_admin: 'En attente de validation'
+  approved: 'Approuvé'
+  rejected: 'Rejeté'
+  confirmed: 'Confirmé'
+  cancelled: 'Annulé'
+
+# Payment Status
+payment_status:
+  pending: 'En attente'
+  completed: 'Complété'
+  failed: 'Échoué'
+  refunded: 'Remboursé'
+
+# Merchant Status
+merchant_status:
+  active: 'Actif'
+  inactive: 'Inactif'
+  pending_validation: 'En attente de validation'
+  suspended: 'Suspendu'
+  blocked: 'Bloqué'
+
+# KYC Level
+kyc_level:
+  basic: 'Basique'
+  verified: 'Vérifié'
+  full: 'Complet'
+
+# Person Type
+person_type:
+  physical: 'Personne Physique'
+  legal: 'Personne Morale'

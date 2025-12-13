@@ -76,14 +76,7 @@ class SpaceFormType extends AbstractType
             ->add('status', EnumType::class, [
                 'class' => SpaceStatus::class,
                 'label' => 'Statut',
-                'choice_label' => function (SpaceStatus $status): string {
-                    return match($status) {
-                        SpaceStatus::AVAILABLE => 'Disponible',
-                        SpaceStatus::OCCUPIED => 'Occupé',
-                        SpaceStatus::MAINTENANCE => 'Maintenance',
-                        SpaceStatus::RESERVED => 'Réservé',
-                    };
-                },
+                'choice_label' => fn(SpaceStatus $status) => $status->label(),
                 'attr' => ['class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm']
             ])
         ;

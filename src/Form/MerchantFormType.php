@@ -62,38 +62,19 @@ class MerchantFormType extends AbstractType
             ->add('personType', EnumType::class, [
                 'class' => PersonType::class,
                 'label' => 'Type de Personne',
-                'choice_label' => function (PersonType $type): string {
-                    return match($type) {
-                        PersonType::PHYSICAL => 'Personne Physique',
-                        PersonType::MORAL => 'Personne Morale',
-                    };
-                },
+                'choice_label' => fn(PersonType $type) => $type->label(),
                 'attr' => ['class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm']
             ])
             ->add('status', EnumType::class, [
                 'class' => MerchantStatus::class,
                 'label' => 'Statut',
-                'choice_label' => function (MerchantStatus $status): string {
-                    return match($status) {
-                        MerchantStatus::ACTIVE => 'Actif',
-                        MerchantStatus::INACTIVE => 'Inactif',
-                        MerchantStatus::PENDING_VALIDATION => 'En attente de validation',
-                        MerchantStatus::SUSPENDED => 'Suspendu',
-                        MerchantStatus::BLACKLISTED => 'Liste noire',
-                    };
-                },
+                'choice_label' => fn(MerchantStatus $status) => $status->label(),
                 'attr' => ['class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm']
             ])
             ->add('kycLevel', EnumType::class, [
                 'class' => KycLevel::class,
                 'label' => 'Niveau KYC',
-                'choice_label' => function (KycLevel $level): string {
-                    return match($level) {
-                        KycLevel::BASIC => 'Basique',
-                        KycLevel::FULL => 'Complet',
-                        KycLevel::VERIFIED => 'Vérifié',
-                    };
-                },
+                'choice_label' => fn(KycLevel $level) => $level->label(),
                 'attr' => ['class' => 'block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm']
             ])
             ->add('accountNumber', TextType::class, [

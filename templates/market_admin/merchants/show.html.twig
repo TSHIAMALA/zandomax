@@ -139,8 +139,8 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Espace</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date début</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date fin</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Périodicité</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durée</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Montant</th>
                 </tr>
@@ -148,19 +148,19 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 {% for reservation in reservations %}
                 <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-3 text-sm">{{ reservation.space.name }}</td>
-                    <td class="px-4 py-3 text-sm">{{ reservation.startDate|date('d/m/Y') }}</td>
-                    <td class="px-4 py-3 text-sm">{{ reservation.endDate|date('d/m/Y') }}</td>
+                    <td class="px-4 py-3 text-sm">{{ reservation.space.code }}</td>
+                    <td class="px-4 py-3 text-sm">{{ reservation.periodicity.label }}</td>
+                    <td class="px-4 py-3 text-sm">{{ reservation.duration }} période(s)</td>
                     <td class="px-4 py-3 text-sm">
-                        {% if reservation.status.value == 'confirmed' %}
+                        {% if reservation.status.value == 'confirmed' or reservation.status.value == 'approved' %}
                             <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">Confirmée</span>
-                        {% elseif reservation.status.value == 'pending' %}
+                        {% elseif reservation.status.value == 'pending' or reservation.status.value == 'pending_admin' %}
                             <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded">En attente</span>
                         {% else %}
                             <span class="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded">{{ reservation.status.value }}</span>
                         {% endif %}
                     </td>
-                    <td class="px-4 py-3 text-sm font-semibold">{{ reservation.totalAmount|number_format(0, ',', ' ') }} FC</td>
+                    <td class="px-4 py-3 text-sm font-semibold">{{ reservation.firstPaymentAmount ? reservation.firstPaymentAmount|number_format(0, ',', ' ') ~ ' FC' : '-' }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -190,8 +190,8 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 {% for contract in contracts %}
                 <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-3 text-sm font-mono">{{ contract.contractNumber }}</td>
-                    <td class="px-4 py-3 text-sm">{{ contract.space.name }}</td>
+                    <td class="px-4 py-3 text-sm font-mono">{{ contract.contractCode }}</td>
+                    <td class="px-4 py-3 text-sm">{{ contract.space.code }}</td>
                     <td class="px-4 py-3 text-sm">{{ contract.startDate|date('d/m/Y') }}</td>
                     <td class="px-4 py-3 text-sm">{{ contract.endDate|date('d/m/Y') }}</td>
                     <td class="px-4 py-3 text-sm">
