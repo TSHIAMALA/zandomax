@@ -42,57 +42,63 @@
         <div class="hero-bg-image"></div>
 
         <!-- Top Navigation -->
-        <nav class="content-overlay flex items-center justify-between px-8 py-4">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center shadow-lg">
-                    <i class="fas fa-store text-white text-xl"></i>
+        <nav class="content-overlay flex items-center justify-between px-4 md:px-8 py-3 md:py-4">
+            <div class="flex items-center space-x-2 md:space-x-3">
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-yellow-500 rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
+                    <i class="fas fa-store text-white text-base md:text-xl"></i>
                 </div>
-                <span class="text-white font-semibold text-lg">Marché Central - Zando Digital</span>
+                <span class="text-white font-semibold text-sm md:text-lg whitespace-nowrap">Marché Central - Zando</span>
             </div>
-            <div class="flex items-center space-x-6">
-                <a href="#" onclick="document.getElementById('loginModal').classList.remove('hidden'); return false;" class="text-white/80 hover:text-white text-sm transition">Connexion</a>
-                <a href="#" class="text-white/80 hover:text-white text-sm transition">Annonces</a>
-                <button class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white hover:bg-white/20 transition">
-                    <i class="fas fa-lock"></i>
+            <div class="flex items-center space-x-3 md:space-x-6">
+                <a href="#" onclick="document.getElementById('loginModal').classList.remove('hidden'); return false;" class="text-white/80 hover:text-white text-xs md:text-sm transition">Connexion</a>
+                <a href="#" class="text-white/80 hover:text-white text-xs md:text-sm transition hidden sm:inline">Annonces</a>
+                <button class="w-7 h-7 md:w-8 md:h-8 bg-white/10 rounded-lg flex items-center justify-center text-white hover:bg-white/20 transition">
+                    <i class="fas fa-lock text-sm md:text-base"></i>
                 </button>
             </div>
         </nav>
 
         <!-- Main Content -->
-        <div class="content-overlay flex-1 flex items-center justify-center px-4">
+        <div class="content-overlay flex-1 flex items-center justify-center px-4 py-8">
             <div class="text-center max-w-3xl">
-                <h1 class="text-5xl font-bold text-white mb-4 leading-tight drop-shadow-lg">Plateforme Digitale<br>Marché Central - Zando</h1>
-                <p class="text-white/90 text-lg mb-8 max-w-2xl mx-auto drop-shadow">Gestion facile, développement, paiement des commerçants et contrôle de paiements</p>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 leading-tight drop-shadow-lg">
+                    Plateforme Digitale<br>Marché Central - Zando
+                </h1>
+                <p class="text-white/90 text-sm sm:text-base md:text-lg mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow px-2">
+                    Gestion facile, développement, paiement des commerçants et contrôle de paiements
+                </p>
                 
                 <button onclick="document.getElementById('loginModal').classList.remove('hidden')" 
-                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-10 py-4 rounded-lg transition transform hover:scale-105 shadow-xl">
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-8 md:px-10 py-3 md:py-4 rounded-lg transition transform hover:scale-105 shadow-xl text-sm md:text-base">
                     Commencer Ici
                 </button>
             </div>
         </div>
 
         <!-- Footer Partners -->
-        <div class="content-overlay bg-white py-6 shadow-lg">
-            <div class="container mx-auto px-8 flex items-center justify-center space-x-12 text-gray-600">
-                <div class="flex items-center space-x-2">
-                    <span class="font-bold text-2xl text-blue-900">APDNK</span>
-                </div>
-                <div class="text-sm">
-                    <div class="font-semibold">Gouvernement Numérique</div>
-                    <div class="text-xs text-gray-400">Numérique</div>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <div class="w-10 h-10 bg-blue-900 rounded flex items-center justify-center text-white">
-                        <i class="fas fa-university"></i>
+        <div class="content-overlay bg-white py-4 md:py-6 shadow-lg">
+            <div class="container mx-auto px-4 md:px-8">
+                <div class="flex flex-wrap items-center justify-center gap-4 md:gap-8 lg:gap-12 text-gray-600">
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold text-lg md:text-2xl text-blue-900">APDNK</span>
                     </div>
-                    <div class="text-sm">
-                        <div class="font-semibold">Banque</div>
-                        <div class="text-xs text-gray-400">Centrale</div>
+                    <div class="text-xs md:text-sm text-center">
+                        <div class="font-semibold">Gouvernement</div>
+                        <div class="text-xs text-gray-400">Numérique</div>
                     </div>
-                </div>
-                <div class="text-sm">
-                    <div class="font-semibold">Telecom</div>
-                    <div class="text-xs text-gray-400">DRC</div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-900 rounded flex items-center justify-center text-white">
+                            <i class="fas fa-university text-sm md:text-base"></i>
+                        </div>
+                        <div class="text-xs md:text-sm">
+                            <div class="font-semibold">Banque</div>
+                            <div class="text-xs text-gray-400">Centrale</div>
+                        </div>
+                    </div>
+                    <div class="text-xs md:text-sm text-center hidden sm:block">
+                        <div class="font-semibold">Telecom</div>
+                        <div class="text-xs text-gray-400">DRC</div>
+                    </div>
                 </div>
             </div>
         </div>

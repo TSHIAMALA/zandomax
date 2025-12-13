@@ -54,27 +54,74 @@
             background: rgba(255, 255, 255, 0.15);
             border-left: 4px solid #60a5fa;
         }
+        
+        /* Mobile Menu Styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                height: 100vh;
+                width: 280px !important;
+                z-index: 50;
+                transition: left 0.3s ease;
+            }
+            .sidebar.open {
+                left: 0;
+            }
+            .overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 40;
+            }
+            .overlay.show {
+                display: block;
+            }
+            .main-content {
+                margin-left: 0 !important;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .sidebar {
+                position: relative;
+            }
+            .mobile-menu-btn {
+                display: none !important;
+            }
+        }
     </style>
     {% block stylesheets %}{% endblock %}
 </head>
 <body class="bg-gray-50">
+    <!-- Mobile Overlay -->
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
-        <aside class="w-64 bg-gradient-to-b from-navy-900 to-navy-800 text-white flex-shrink-0 shadow-2xl">
-            <div class="p-6">
+        <aside class="sidebar w-64 bg-gradient-to-b from-navy-900 to-navy-800 text-white flex-shrink-0 shadow-2xl" id="sidebar">
+            <div class="p-4 md:p-6 h-full flex flex-col">
                 <!-- Logo -->
-                <div class="flex items-center space-x-3 mb-8 pb-6 border-b border-white/10">
-                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-store text-white text-xl"></i>
+                <div class="flex items-center justify-between mb-6 md:mb-8 pb-4 md:pb-6 border-b border-white/10">
+                    <div class="flex items-center space-x-2 md:space-x-3">
+                        <div class="w-9 h-9 md:w-10 md:h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-store text-white text-lg md:text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-base md:text-lg font-bold">Marché Central</h1>
+                            <p class="text-xs text-gray-400">Zando Digital</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 class="text-lg font-bold">Marché Central</h1>
-                        <p class="text-xs text-gray-400">Zando Digital</p>
-                    </div>
+                    <!-- Close button for mobile -->
+                    <button onclick="toggleSidebar()" class="md:hidden text-white/70 hover:text-white p-1">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
                 </div>
 
                 <!-- Navigation -->
-                <nav class="space-y-1">
+                <nav class="space-y-1 flex-1 overflow-y-auto">
                     <a href="{{ path('market_admin_dashboard') }}" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm">
                         <i class="fas fa-chart-line w-5"></i>
                         <span>Tableau de Bord</span>
@@ -120,40 +167,44 @@
                         <span>Paramètres</span>
                     </a>
                 </nav>
-                </nav>
-            </div>
-
-            <!-- User Info -->
-            <div class="absolute bottom-0 w-64 p-6 border-t border-white/10">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user-shield"></i>
+                
+                <!-- User Info -->
+                <div class="pt-4 mt-4 border-t border-white/10">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 md:space-x-3 flex-1 min-w-0">
+                            <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-user-shield text-sm md:text-base"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-xs md:text-sm font-medium truncate">{{ app.user.username }}</p>
+                                <p class="text-xs text-gray-400">Administrateur</p>
+                            </div>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium truncate">{{ app.user.username }}</p>
-                            <p class="text-xs text-gray-400">Administrateur</p>
-                        </div>
+                        <a href="{{ path('app_logout') }}" class="text-gray-400 hover:text-white transition ml-2 flex-shrink-0" title="Déconnexion">
+                            <i class="fas fa-sign-out-alt text-sm md:text-base"></i>
+                        </a>
                     </div>
-                    <a href="{{ path('app_logout') }}" class="text-gray-400 hover:text-white transition" title="Déconnexion">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </a>
                 </div>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="flex-1 flex flex-col overflow-hidden main-content">
             <!-- Top Bar -->
             <header class="bg-white border-b border-gray-200 shadow-sm">
-                <div class="px-8 py-4 flex items-center justify-between">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800">{% block header %}Dashboard{% endblock %}</h2>
-                        <p class="text-sm text-gray-500">{% block subtitle %}Vue d'ensemble de votre marché{% endblock %}</p>
+                <div class="px-3 md:px-8 py-3 md:py-4 flex items-center justify-between">
+                    <!-- Mobile Menu Button -->
+                    <button onclick="toggleSidebar()" class="mobile-menu-btn md:hidden p-2 -ml-2 text-gray-600 hover:text-gray-800 mr-2">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-base md:text-2xl font-bold text-gray-800 truncate">{% block header %}Dashboard{% endblock %}</h2>
+                        <p class="text-xs md:text-sm text-gray-500 hidden sm:block">{% block subtitle %}Vue d'ensemble de votre marché{% endblock %}</p>
                     </div>
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 md:space-x-4">
                         <button class="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition">
-                            <i class="fas fa-bell text-xl"></i>
+                            <i class="fas fa-bell text-base md:text-xl"></i>
                             <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                         </button>
                     </div>
@@ -161,7 +212,7 @@
             </header>
 
             <!-- Content Area -->
-            <main class="flex-1 overflow-y-auto bg-gray-50 p-8">
+            <main class="flex-1 overflow-y-auto bg-gray-50 p-3 md:p-8">
                 <!-- Flash Messages -->
                 {% for message in app.flashes('success') %}
                     <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg shadow-sm">
@@ -195,6 +246,26 @@
         </div>
     </div>
 
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+        
+        // Close sidebar when clicking on a link (mobile)
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 768) {
+                        toggleSidebar();
+                    }
+                });
+            });
+        });
+    </script>
     {% block javascripts %}{% endblock %}
 </body>
 </html>
