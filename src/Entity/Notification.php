@@ -16,8 +16,11 @@ class Notification
     private string $id;
 
     #[ORM\ManyToOne(targetEntity: Merchant::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private Merchant $merchant;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Merchant $merchant = null;
+
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $isForAdmin = false;
 
     #[ORM\Column(length: 50)]
     private string $type; // payment_reminder, reservation_approved, contract_expiring, etc.
@@ -187,5 +190,16 @@ class Notification
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function isForAdmin(): bool
+    {
+        return $this->isForAdmin;
+    }
+
+    public function setIsForAdmin(bool $isForAdmin): static
+    {
+        $this->isForAdmin = $isForAdmin;
+        return $this;
     }
 }

@@ -1,26 +1,117 @@
-{% extends 'merchant/base_merchant.html.twig' %}
+{% extends 'merchant/base.html.twig' %}
 
 {% block title %}Mes Paiements - ZANDO Market{% endblock %}
+{% block header %}Mes Paiements{% endblock %}
+{% block subtitle %}Historique de vos paiements{% endblock %}
 
 {% block content %}
-<div class="container-fluid px-4 py-6">
-    <!-- Header -->
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Mes Paiements</h1>
-        <p class="text-gray-600 mt-1">Historique de vos paiements</p>
+
+<div class="mb-6">
+    <a href="{{ path('merchant_dashboard') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+        <i class="fas fa-arrow-left mr-2"></i>
+        Retour au dashboard
+    </a>
+</div>
+
+<!-- Statistiques rapides -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    {% set totalPaid = 0 %}
+    {% set totalPending = 0 %}
+    {% set countPaid = 0 %}
+    {% set countPending = 0 %}
+    {% for payment in payments %}
+        {% if payment.status.value == 'paid' or payment.status.value == 'completed' %}
+            {% set totalPaid = totalPaid + payment.amount %}
+            {% set countPaid = countPaid + 1 %}
+        {% elseif payment.status.value == 'pending' %}
+            {% set totalPending = totalPending + payment.amount %}
+            {% set countPending = countPending + 1 %}
+        {% endif %}
+    {% endfor %}
+
+    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-green-500">
+        <p class="text-xs text-gray-500 mb-1">Total payé</p>
+        <p class="text-lg font-bold text-green-600">{{ totalPaid|number_format(0, ',', ' ') }} CDF</p>
+        <p class="text-xs text-gray-400">{{ countPaid }} paiement(s)</p>
     </div>
 
-    <!-- Payments List -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-yellow-500">
+        <p class="text-xs text-gray-500 mb-1">En attente</p>
+        <p class="text-lg font-bold text-yellow-600">{{ totalPending|number_format(0, ',', ' ') }} CDF</p>
+        <p class="text-xs text-gray-400">{{ countPending }} paiement(s)</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-blue-500">
+        <p class="text-xs text-gray-500 mb-1">Total paiements</p>
+        <p class="text-lg font-bold text-blue-600">{{ payments|length }}</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-purple-500">
+        <p class="text-xs text-gray-500 mb-1">Ce mois</p>
+        {% set thisMonth = 0 %}
+        {% for payment in payments %}
+            {% if payment.createdAt|date('Y-m') == 'now'|date('Y-m') %}
+                {% set thisMonth = thisMonth + payment.amount %}
+            {% endif %}
+        {% endfor %}
+        <p class="text-lg font-bold text-purple-600">{{ thisMonth|number_format(0, ',', ' ') }} CDF</p>
+    </div>
+</div>
+
+{% if payments|length > 0 %}
+<!-- Version mobile - Cards -->
+<div class="block md:hidden space-y-3">
+    {% for payment in payments %}
+    <div class="bg-white rounded-lg shadow-sm p-4">
+        <div class="flex justify-between items-start mb-3">
+            <div>
+                <p class="font-semibold text-gray-800">{{ payment.amount|number_format(0, ',', ' ') }} {{ payment.currency }}</p>
+                <p class="text-xs text-gray-500">{{ payment.type.value|capitalize }}</p>
+            </div>
+            {% if payment.status.value == 'paid' or payment.status.value == 'completed' %}
+                <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Payé</span>
+            {% elseif payment.status.value == 'pending' %}
+                <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">En attente</span>
+            {% elseif payment.status.value == 'failed' %}
+                <span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">Échoué</span>
+            {% else %}
+                <span class="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">{{ payment.status.value }}</span>
+            {% endif %}
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>
+                <p class="text-gray-500">Date</p>
+                <p class="font-medium">{{ payment.createdAt|date('d/m/Y') }}</p>
+            </div>
+            <div>
+                <p class="text-gray-500">Échéance</p>
+                <p class="font-medium">{{ payment.dueDate ? payment.dueDate|date('d/m/Y') : '-' }}</p>
+            </div>
+        </div>
+        {% if payment.contract %}
+        <div class="mt-2 pt-2 border-t border-gray-100 text-xs">
+            <span class="text-gray-500">Contrat:</span>
+            <span class="font-medium">{{ payment.contract.contractCode }}</span>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Version desktop - Table -->
+<div class="hidden md:block bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Montant</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Référence</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrat</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Échéance</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date paiement</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -30,46 +121,71 @@
                         {{ payment.createdAt|date('d/m/Y H:i') }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {{ payment.type.value|upper }}
+                        {% if payment.type.value == 'reservation' %}
+                            <span class="text-blue-600"><i class="fas fa-calendar-check mr-1"></i>Réservation</span>
+                        {% elseif payment.type.value == 'rent' %}
+                            <span class="text-purple-600"><i class="fas fa-home mr-1"></i>Loyer</span>
+                        {% elseif payment.type.value == 'guarantee' %}
+                            <span class="text-orange-600"><i class="fas fa-shield-alt mr-1"></i>Garantie</span>
+                        {% else %}
+                            {{ payment.type.value|capitalize }}
+                        {% endif %}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {{ payment.amount|number_format(0, ',', ' ') }} CDF
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {% if payment.contract %}
+                            {{ payment.contract.contractCode }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                        {{ payment.amount|number_format(0, ',', ' ') }} {{ payment.currency }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {% if payment.dueDate %}
+                            {% if payment.dueDate < date() and payment.status.value == 'pending' %}
+                                <span class="text-red-600 font-semibold">{{ payment.dueDate|date('d/m/Y') }}</span>
+                            {% else %}
+                                {{ payment.dueDate|date('d/m/Y') }}
+                            {% endif %}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{ payment.paymentDate ? payment.paymentDate|date('d/m/Y H:i') : '-' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        {% if payment.status.value == 'paid' %}
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                Payé
+                        {% if payment.status.value == 'paid' or payment.status.value == 'completed' %}
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i> Payé
                             </span>
                         {% elseif payment.status.value == 'pending' %}
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                En attente
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                <i class="fas fa-clock mr-1"></i> En attente
+                            </span>
+                        {% elseif payment.status.value == 'failed' %}
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                <i class="fas fa-times-circle mr-1"></i> Échoué
+                            </span>
+                        {% elseif payment.status.value == 'overdue' %}
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                <i class="fas fa-exclamation-triangle mr-1"></i> En retard
                             </span>
                         {% else %}
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
                                 {{ payment.status.value }}
                             </span>
                         {% endif %}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {{ payment.bankingTransactionId ?? '-' }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         {% if payment.status.value == 'pending' %}
-                            <a href="{{ path('merchant_payment_pay', {'id': payment.id|bin2hex}) }}" class="text-purple-600 hover:text-purple-900 font-bold">
-                                <i class="fas fa-credit-card mr-1"></i>Payer
-                            </a>
-                        {% elseif payment.status.value == 'completed' %}
-                            <a href="#" class="text-gray-400 hover:text-gray-600">
-                                <i class="fas fa-file-invoice mr-1"></i>Reçu
-                            </a>
+                        <a href="#" class="text-green-600 hover:text-green-900">
+                            <i class="fas fa-credit-card mr-1"></i> Payer
+                        </a>
+                        {% else %}
+                        <span class="text-gray-400">-</span>
                         {% endif %}
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="5" class="px-6 py-12 text-center text-gray-500">
-                        <i class="fas fa-receipt text-4xl mb-4"></i>
-                        <p>Aucun paiement enregistré</p>
                     </td>
                 </tr>
                 {% endfor %}
@@ -77,4 +193,16 @@
         </table>
     </div>
 </div>
+{% else %}
+<div class="bg-white rounded-lg shadow-sm p-12 text-center">
+    <i class="fas fa-receipt text-gray-300 text-6xl mb-4"></i>
+    <h3 class="text-2xl font-semibold text-gray-700 mb-2">Aucun paiement</h3>
+    <p class="text-gray-500 mb-6">Vous n'avez pas encore de paiements enregistrés</p>
+    <a href="{{ path('merchant_spaces') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
+        <i class="fas fa-store mr-2"></i>
+        Réserver un espace
+    </a>
+</div>
+{% endif %}
+
 {% endblock %}

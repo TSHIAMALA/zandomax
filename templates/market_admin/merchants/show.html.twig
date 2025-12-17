@@ -11,12 +11,18 @@
     </a>
     <div class="flex space-x-3">
         {% if merchant.status.value == 'pending_validation' %}
-        <form method="post" action="{{ path('market_admin_merchants_validate', {id: merchant.id|bin2hex}) }}" class="inline">
-            <input type="hidden" name="_token" value="{{ csrf_token('validate_merchant') }}">
-            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700" onclick="return confirm('Valider ce marchand ?')">
-                <i class="fas fa-check mr-2"></i>Valider le compte
-            </button>
-        </form>
+            {% if hasValidatedPayment|default(false) %}
+            <form method="post" action="{{ path('market_admin_merchants_validate', {id: merchant.id|bin2hex}) }}" class="inline">
+                <input type="hidden" name="_token" value="{{ csrf_token('validate_merchant') }}">
+                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700" onclick="return confirm('Valider ce marchand ?')">
+                    <i class="fas fa-check mr-2"></i>Valider le compte
+                </button>
+            </form>
+            {% else %}
+            <span class="px-4 py-2 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed" title="En attente d'un paiement validé">
+                <i class="fas fa-clock mr-2"></i>Attente paiement
+            </span>
+            {% endif %}
         {% endif %}
         <a href="{{ path('market_admin_merchants_edit', {id: merchant.id|bin2hex}) }}" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
             <i class="fas fa-edit mr-2"></i>Modifier
@@ -201,6 +207,75 @@
                             <span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded">Expiré</span>
                         {% else %}
                             <span class="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded">{{ contract.status.value }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Paiements -->
+{% if payments is defined and payments|length > 0 %}
+<div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+    <h3 class="text-lg font-semibold mb-4 flex items-center">
+        <i class="fas fa-credit-card mr-2 text-green-600"></i>
+        Paiements ({{ payments|length }})
+    </h3>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Montant</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Référence</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for payment in payments %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 text-sm">{{ payment.createdAt|date('d/m/Y H:i') }}</td>
+                    <td class="px-4 py-3 text-sm">{{ payment.type.value|capitalize }}</td>
+                    <td class="px-4 py-3 text-sm font-semibold">{{ payment.amount|number_format(0, ',', ' ') }} {{ payment.currency }}</td>
+                    <td class="px-4 py-3 text-sm font-mono">{{ payment.bankingTransactionId ?: '-' }}</td>
+                    <td class="px-4 py-3 text-sm">
+                        {% if payment.status.value == 'paid' or payment.status.value == 'completed' %}
+                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
+                                <i class="fas fa-check-circle mr-1"></i>Validé
+                            </span>
+                        {% elseif payment.status.value == 'pending' %}
+                            <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded">
+                                <i class="fas fa-clock mr-1"></i>En attente
+                            </span>
+                        {% elseif payment.status.value == 'failed' %}
+                            <span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded">
+                                <i class="fas fa-times-circle mr-1"></i>Échoué
+                            </span>
+                        {% else %}
+                            <span class="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded">{{ payment.status.value }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        {% if payment.status.value == 'pending' %}
+                        <form method="post" action="{{ path('market_admin_payments_validate', {id: payment.id|bin2hex}) }}" class="inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('validate_payment') }}">
+                            <button type="submit" class="text-green-600 hover:text-green-800 mr-2" onclick="return confirm('Valider ce paiement ?')">
+                                <i class="fas fa-check mr-1"></i>Valider
+                            </button>
+                        </form>
+                        <form method="post" action="{{ path('market_admin_payments_reject', {id: payment.id|bin2hex}) }}" class="inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('reject_payment') }}">
+                            <button type="submit" class="text-red-600 hover:text-red-800" onclick="return confirm('Rejeter ce paiement ?')">
+                                <i class="fas fa-times mr-1"></i>Rejeter
+                            </button>
+                        </form>
+                        {% else %}
+                        <span class="text-gray-400">-</span>
                         {% endif %}
                     </td>
                 </tr>

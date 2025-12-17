@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enum\Periodicity;
 use App\Enum\ReservationStatus;
+use App\Enum\PaymentMethod;
 use App\Repository\SpaceReservationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -42,10 +43,18 @@ class SpaceReservation
     #[Groups(['reservation:read'])]
     private ?string $firstPaymentAmount = null;
 
+    #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2, nullable: true)]
+    #[Groups(['reservation:read'])]
+    private ?string $unitPrice = null;
+
     #[ORM\ManyToOne(targetEntity: Currency::class)]
     #[ORM\JoinColumn(name: 'currency_id', referencedColumnName: 'id', nullable: true)]
     #[Groups(['reservation:read'])]
     private ?Currency $currency = null;
+
+    #[ORM\Column(length: 50, enumType: PaymentMethod::class, nullable: true)]
+    #[Groups(['reservation:read'])]
+    private ?PaymentMethod $paymentMethod = null;
 
     #[ORM\Column(type: 'boolean')]
     private bool $isDeleted = false;
@@ -180,6 +189,28 @@ class SpaceReservation
     public function setCreatedAt(\DateTimeInterface $createdAt): static
     {
         $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getUnitPrice(): ?string
+    {
+        return $this->unitPrice;
+    }
+
+    public function setUnitPrice(?string $unitPrice): static
+    {
+        $this->unitPrice = $unitPrice;
+        return $this;
+    }
+
+    public function getPaymentMethod(): ?PaymentMethod
+    {
+        return $this->paymentMethod;
+    }
+
+    public function setPaymentMethod(?PaymentMethod $paymentMethod): static
+    {
+        $this->paymentMethod = $paymentMethod;
         return $this;
     }
 }

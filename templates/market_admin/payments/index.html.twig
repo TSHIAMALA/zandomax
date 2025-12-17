@@ -1,99 +1,137 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Paiements - ZANDO Market{% endblock %}
+{% block title %}Gestion des Paiements - ZANDO Market{% endblock %}
 {% block header %}Gestion des Paiements{% endblock %}
-{% block subtitle %}Suivez et gérez les paiements des marchands{% endblock %}
+{% block subtitle %}Validez les paiements des marchands{% endblock %}
 
 {% block content %}
-<div class="bg-white rounded-lg shadow-sm p-4 mb-4">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div class="bg-green-50 p-4 rounded-lg">
-            <div class="text-sm font-medium text-green-700">Total Collecté</div>
-            <div class="text-2xl font-bold text-green-900">{{ summary.totalCollected }} CDF</div>
-        </div>
-        <div class="bg-yellow-50 p-4 rounded-lg">
-            <div class="text-sm font-medium text-yellow-700">Montant en attente</div>
-            <div class="text-2xl font-bold text-yellow-900">{{ summary.pending }} CDF</div>
-        </div>
+
+<!-- Statistiques -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    {% set pendingCount = 0 %}
+    {% set paidCount = 0 %}
+    {% set totalPending = 0 %}
+    {% set totalPaid = 0 %}
+    {% for payment in payments %}
+        {% if payment.status.value == 'pending' %}
+            {% set pendingCount = pendingCount + 1 %}
+            {% set totalPending = totalPending + payment.amount %}
+        {% elseif payment.status.value == 'paid' or payment.status.value == 'completed' %}
+            {% set paidCount = paidCount + 1 %}
+            {% set totalPaid = totalPaid + payment.amount %}
+        {% endif %}
+    {% endfor %}
+
+    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-yellow-500">
+        <p class="text-xs text-gray-500 mb-1">En attente</p>
+        <p class="text-2xl font-bold text-yellow-600">{{ pendingCount }}</p>
+        <p class="text-xs text-gray-400">{{ totalPending|number_format(0, ',', ' ') }} CDF</p>
     </div>
-    
-    <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
-            <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500">
-                <option value="">Tous</option>
-                <option value="completed" {% if filters.status == 'completed' %}selected{% endif %}>Terminé</option>
-                <option value="pending" {% if filters.status == 'pending' %}selected{% endif %}>En attente</option>
-                <option value="failed" {% if filters.status == 'failed' %}selected{% endif %}>Échoué</option>
-            </select>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
-            <select name="type" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500">
-                <option value="">Tous</option>
-                <option value="rent" {% if filters.type == 'rent' %}selected{% endif %}>Loyer</option>
-                <option value="guarantee" {% if filters.type == 'guarantee' %}selected{% endif %}>Garantie</option>
-                <option value="penalty" {% if filters.type == 'penalty' %}selected{% endif %}>Pénalité</option>
-            </select>
-        </div>
-        <div class="flex items-end">
-            <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium">
-                <i class="fas fa-search mr-2"></i>Filtrer
-            </button>
-        </div>
-    </form>
+
+    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-green-500">
+        <p class="text-xs text-gray-500 mb-1">Validés</p>
+        <p class="text-2xl font-bold text-green-600">{{ paidCount }}</p>
+        <p class="text-xs text-gray-400">{{ totalPaid|number_format(0, ',', ' ') }} CDF</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-blue-500">
+        <p class="text-xs text-gray-500 mb-1">Total paiements</p>
+        <p class="text-2xl font-bold text-blue-600">{{ payments|length }}</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-purple-500">
+        <p class="text-xs text-gray-500 mb-1">Total encaissé</p>
+        <p class="text-2xl font-bold text-purple-600">{{ totalPaid|number_format(0, ',', ' ') }}</p>
+        <p class="text-xs text-gray-400">CDF</p>
+    </div>
 </div>
 
+<!-- Liste des paiements -->
 <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-            <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Marchand</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Montant</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-            </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-            {% for payment in payments %}
-            <tr class="hover:bg-gray-50">
-                <td class="px-4 py-3 text-sm text-gray-500">{{ payment.createdAt|date('Y-m-d H:i') }}</td>
-                <td class="px-4 py-3 text-sm text-gray-900">{{ payment.merchant.firstname }} {{ payment.merchant.lastname }}</td>
-                <td class="px-4 py-3 text-sm text-gray-900">{{ payment.type.value|title }}</td>
-                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ payment.amount }} {{ payment.currency }}</td>
-                <td class="px-4 py-3">
-                    {% if payment.status.value == 'completed' %}
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Terminé</span>
-                    {% elseif payment.status.value == 'pending' %}
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">En attente</span>
-                    {% elseif payment.status.value == 'failed' %}
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Échoué</span>
-                    {% else %}
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">{{ payment.status.value|title }}</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="5" class="px-4 py-8 text-center text-sm text-gray-500">Aucun paiement trouvé</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-{% if totalPages > 1 %}
-<div class="mt-4 flex justify-between items-center">
-    <div class="text-sm text-gray-700">Page {{ currentPage }} sur {{ totalPages }}</div>
-    <div class="flex space-x-2">
-        {% if currentPage > 1 %}
-            <a href="?page={{ currentPage - 1 }}{% if filters.status %}&status={{ filters.status }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}" class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50">Précédent</a>
-        {% endif %}
-        {% if currentPage < totalPages %}
-            <a href="?page={{ currentPage + 1 }}{% if filters.status %}&status={{ filters.status }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}" class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50">Suivant</a>
-        {% endif %}
+    <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+        <h3 class="font-semibold text-gray-800">Liste des paiements</h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Marchand</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Montant</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Réf. Transaction</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for payment in payments %}
+                <tr class="hover:bg-gray-50 {% if payment.status.value == 'pending' %}bg-yellow-50{% endif %}">
+                    <td class="px-4 py-3 text-sm text-gray-900">
+                        {{ payment.createdAt|date('d/m/Y H:i') }}
+                    </td>
+                    <td class="px-4 py-3 text-sm">
+                        <div class="font-medium text-gray-900">{{ payment.merchant.firstname }} {{ payment.merchant.lastname }}</div>
+                        <div class="text-xs text-gray-500">{{ payment.merchant.phone }}</div>
+                    </td>
+                    <td class="px-4 py-3 text-sm text-gray-900">
+                        {% if payment.type.value == 'reservation' %}
+                            <span class="text-blue-600"><i class="fas fa-calendar-check mr-1"></i>Réservation</span>
+                        {% elseif payment.type.value == 'rent' %}
+                            <span class="text-purple-600"><i class="fas fa-home mr-1"></i>Loyer</span>
+                        {% else %}
+                            {{ payment.type.value|capitalize }}
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-3 text-sm font-bold text-gray-900">
+                        {{ payment.amount|number_format(0, ',', ' ') }} {{ payment.currency }}
+                    </td>
+                    <td class="px-4 py-3 text-sm text-gray-500 font-mono">
+                        {{ payment.bankingTransactionId ?: '-' }}
+                    </td>
+                    <td class="px-4 py-3">
+                        {% if payment.status.value == 'paid' or payment.status.value == 'completed' %}
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i>Validé
+                            </span>
+                        {% elseif payment.status.value == 'pending' %}
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                <i class="fas fa-clock mr-1"></i>En attente
+                            </span>
+                        {% elseif payment.status.value == 'failed' %}
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                <i class="fas fa-times-circle mr-1"></i>Rejeté
+                            </span>
+                        {% else %}
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                                {{ payment.status.value }}
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-3 text-right text-sm space-x-2">
+                        <a href="{{ path('market_admin_payments_show', {id: payment.id|bin2hex}) }}" class="text-purple-600 hover:text-purple-900 font-medium">
+                            <i class="fas fa-eye"></i> Voir
+                        </a>
+                        {% if payment.status.value == 'pending' %}
+                        <form method="post" action="{{ path('market_admin_payments_validate', {id: payment.id|bin2hex}) }}" class="inline">
+                            <button type="submit" class="text-green-600 hover:text-green-900 font-medium" onclick="return confirm('Valider ce paiement ?')">
+                                <i class="fas fa-check"></i> Valider
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="px-4 py-8 text-center text-sm text-gray-500">
+                        <i class="fas fa-inbox text-gray-300 text-4xl mb-2"></i>
+                        <p>Aucun paiement trouvé</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
-{% endif %}
+
 {% endblock %}

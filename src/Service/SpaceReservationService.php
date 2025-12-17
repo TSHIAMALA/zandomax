@@ -19,7 +19,8 @@ class SpaceReservationService
         private SpaceReservationRepository $reservationRepository,
         private PricingService $pricingService,
         private CurrencyRepository $currencyRepository,
-        private PaymentService $paymentService
+        private PaymentService $paymentService,
+        private NotificationService $notificationService
     ) {
     }
 
@@ -56,6 +57,25 @@ class SpaceReservationService
 
         $this->entityManager->persist($reservation);
         $this->entityManager->flush();
+
+        // Notify admin of new reservation
+        $this->notificationService->createAdminNotification(
+            'new_reservation',
+            'Nouvelle réservation',
+            sprintf(
+                '%s %s a demandé une réservation pour l\'espace %s (%s)',
+                $merchant->getFirstname(),
+                $merchant->getLastname(),
+                $space->getCode(),
+                $periodicity->label()
+            ),
+            $merchant,
+            [
+                'reservation_id' => bin2hex($reservation->getId()),
+                'space_code' => $space->getCode(),
+                'amount' => $price,
+            ]
+        );
 
         return $reservation;
     }

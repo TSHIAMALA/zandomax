@@ -20,12 +20,30 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class MerchantController extends AbstractController
 {
     #[Route('', name: 'index')]
-    public function index(MerchantRepository $merchantRepository): Response
+    public function index(
+        MerchantRepository $merchantRepository,
+        \App\Repository\PaymentRepository $paymentRepository
+    ): Response
     {
         $merchants = $merchantRepository->findBy(['isDeleted' => false]);
 
+        // Vérifier pour chaque marchand s'il a un paiement validé
+        $merchantsWithPaymentStatus = [];
+        foreach ($merchants as $merchant) {
+            $payments = $paymentRepository->findBy(['merchant' => $merchant]);
+            $hasValidatedPayment = false;
+            foreach ($payments as $payment) {
+                if (in_array($payment->getStatus()->value, ['paid', 'completed'])) {
+                    $hasValidatedPayment = true;
+                    break;
+                }
+            }
+            $merchantsWithPaymentStatus[$merchant->getId()] = $hasValidatedPayment;
+        }
+
         return $this->render('market_admin/merchants/index.html.twig', [
             'merchants' => $merchants,
+            'merchantsWithPaymentStatus' => $merchantsWithPaymentStatus,
         ]);
     }
 
@@ -57,7 +75,8 @@ class MerchantController extends AbstractController
         MerchantRepository $merchantRepository,
         SpaceReservationRepository $reservationRepository,
         ContractRepository $contractRepository,
-        InvoiceRepository $invoiceRepository
+        InvoiceRepository $invoiceRepository,
+        \App\Repository\PaymentRepository $paymentRepository
     ): Response {
         $merchant = $merchantRepository->find(hex2bin($id));
         
@@ -69,12 +88,24 @@ class MerchantController extends AbstractController
         $reservations = $reservationRepository->findBy(['merchant' => $merchant], ['createdAt' => 'DESC']);
         $contracts = $contractRepository->findBy(['merchant' => $merchant], ['createdAt' => 'DESC']);
         $invoices = $invoiceRepository->findBy(['merchant' => $merchant], ['createdAt' => 'DESC']);
+        $payments = $paymentRepository->findBy(['merchant' => $merchant], ['createdAt' => 'DESC']);
+
+        // Vérifier si le marchand a un paiement validé
+        $hasValidatedPayment = false;
+        foreach ($payments as $payment) {
+            if (in_array($payment->getStatus()->value, ['paid', 'completed'])) {
+                $hasValidatedPayment = true;
+                break;
+            }
+        }
 
         return $this->render('market_admin/merchants/show.html.twig', [
             'merchant' => $merchant,
             'reservations' => $reservations,
             'contracts' => $contracts,
             'invoices' => $invoices,
+            'payments' => $payments,
+            'hasValidatedPayment' => $hasValidatedPayment,
         ]);
     }
 
@@ -137,6 +168,8 @@ class MerchantController extends AbstractController
     public function validate(
         string $id, 
         MerchantRepository $merchantRepository, 
+        \App\Repository\PaymentRepository $paymentRepository,
+        \App\Service\NotificationService $notificationService,
         EntityManagerInterface $em
     ): Response {
         $merchant = $merchantRepository->find(hex2bin($id));
@@ -145,8 +178,32 @@ class MerchantController extends AbstractController
             throw $this->createNotFoundException('Marchand non trouvé');
         }
         
+        // Vérifier si le marchand a un paiement validé
+        $payments = $paymentRepository->findBy(['merchant' => $merchant]);
+        $hasValidatedPayment = false;
+        foreach ($payments as $payment) {
+            if (in_array($payment->getStatus()->value, ['paid', 'completed'])) {
+                $hasValidatedPayment = true;
+                break;
+            }
+        }
+        
+        if (!$hasValidatedPayment) {
+            $this->addFlash('error', 'Impossible de valider ce marchand : aucun paiement validé trouvé. Le marchand doit d\'abord effectuer un paiement.');
+            return $this->redirectToRoute('market_admin_merchants_show', ['id' => $id]);
+        }
+        
         $merchant->setStatus(\App\Enum\MerchantStatus::ACTIVE);
         $em->flush();
+        
+        // Envoyer une notification au marchand
+        $notificationService->createMerchantNotification(
+            $merchant,
+            'account_activated',
+            'Compte activé',
+            'Félicitations ! Votre compte a été activé. Vous avez maintenant accès à tous les services du marché.',
+            ['activated_at' => (new \DateTime())->format('Y-m-d H:i:s')]
+        );
         
         $this->addFlash('success', 'Marchand validé avec succès');
         

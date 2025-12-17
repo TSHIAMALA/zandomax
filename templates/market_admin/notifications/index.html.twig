@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Notifications - Administration{% endblock %}
+{% block header %}Notifications{% endblock %}
+{% block subtitle %}Historique des notifications{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-sm">
+    <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+        <h3 class="text-lg font-semibold text-gray-800">Toutes les notifications</h3>
+        <form method="post" action="{{ path('market_admin_notifications_mark_all_read') }}" class="inline">
+            <button type="submit" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <i class="fas fa-check-double mr-2"></i>Tout marquer comme lu
+            </button>
+        </form>
+    </div>
+    
+    {% if notifications|length > 0 %}
+    <div class="divide-y divide-gray-100">
+        {% for notification in notifications %}
+        <div class="p-4 hover:bg-gray-50 {{ not notification.isRead ? 'bg-blue-50' : '' }}">
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0">
+                    {% if notification.type == 'new_reservation' %}
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-calendar-plus text-blue-600"></i>
+                        </div>
+                    {% elseif notification.type == 'new_payment' %}
+                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-credit-card text-green-600"></i>
+                        </div>
+                    {% elseif notification.type == 'new_merchant' %}
+                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user-plus text-purple-600"></i>
+                        </div>
+                    {% elseif notification.type == 'payment_pending' %}
+                        <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-clock text-yellow-600"></i>
+                        </div>
+                    {% elseif notification.type == 'contract_signed' %}
+                        <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-file-signature text-indigo-600"></i>
+                        </div>
+                    {% else %}
+                        <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-bell text-gray-600"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm font-semibold text-gray-900">{{ notification.title }}</p>
+                        {% if not notification.isRead %}
+                            <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">Nouveau</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">{{ notification.message }}</p>
+                    <div class="flex items-center mt-2 text-xs text-gray-500">
+                        <i class="fas fa-clock mr-1"></i>
+                        {{ notification.createdAt|date('d/m/Y à H:i') }}
+                        {% if notification.merchant %}
+                            <span class="mx-2">•</span>
+                            <i class="fas fa-user mr-1"></i>
+                            {{ notification.merchant.firstname }} {{ notification.merchant.lastname }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="flex-shrink-0">
+                    {% if notification.metadata.reservation_id is defined %}
+                        <a href="{{ path('market_admin_reservations_show', {id: notification.metadata.reservation_id}) }}" 
+                           class="text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-eye mr-1"></i>Voir
+                        </a>
+                    {% elseif notification.metadata.payment_id is defined %}
+                        <a href="{{ path('market_admin_payments_show', {id: notification.metadata.payment_id}) }}" 
+                           class="text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-eye mr-1"></i>Voir
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="p-8 text-center">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-bell-slash text-gray-400 text-2xl"></i>
+        </div>
+        <p class="text-gray-500">Aucune notification</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

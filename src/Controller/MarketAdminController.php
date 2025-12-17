@@ -164,69 +164,7 @@ class MarketAdminController extends AbstractController
         ]);
     }
 
-    #[Route('/payments', name: 'payments_index')]
-    public function paymentsIndex(Request $request): Response
-    {
-        $page = max(1, (int) $request->query->get('page', 1));
-        $limit = 20;
-        $offset = ($page - 1) * $limit;
 
-        $status = $request->query->get('status');
-        $type = $request->query->get('type');
-
-        $qb = $this->paymentRepository->createQueryBuilder('p')
-            ->leftJoin('p.merchant', 'm')
-            ->leftJoin('p.contract', 'c')
-            ->addSelect('m', 'c');
-
-        if ($status) {
-            $qb->andWhere('p.status = :status')
-               ->setParameter('status', $status);
-        }
-
-        if ($type) {
-            $qb->andWhere('p.type = :type')
-               ->setParameter('type', $type);
-        }
-
-        $totalCount = (clone $qb)->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
-
-        $payments = $qb
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->orderBy('p.createdAt', 'DESC')
-            ->getQuery()
-            ->getResult();
-
-        // Calculate summary statistics
-        $totalAmount = $this->paymentRepository->createQueryBuilder('p')
-            ->select('SUM(p.amount)')
-            ->where('p.status = :completed')
-            ->setParameter('completed', 'completed')
-            ->getQuery()
-            ->getSingleScalarResult() ?? 0;
-
-        $pendingAmount = $this->paymentRepository->createQueryBuilder('p')
-            ->select('SUM(p.amount)')
-            ->where('p.status = :pending')
-            ->setParameter('pending', 'pending')
-            ->getQuery()
-            ->getSingleScalarResult() ?? 0;
-
-        return $this->render('market_admin/payments/index.html.twig', [
-            'payments' => $payments,
-            'currentPage' => $page,
-            'totalPages' => ceil($totalCount / $limit),
-            'filters' => [
-                'status' => $status,
-                'type' => $type,
-            ],
-            'summary' => [
-                'totalCollected' => $totalAmount,
-                'pending' => $pendingAmount,
-            ],
-        ]);
-    }
 
     #[Route('/reservations', name: 'reservations_index')]
     public function reservationsIndex(Request $request): Response

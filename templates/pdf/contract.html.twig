@@ -32,8 +32,16 @@
             <span class="label">Le Locataire :</span> {{ contract.merchant.firstname }} {{ contract.merchant.lastname }}
         </div>
         <div class="row">
-            <span class="label">ID Marchand :</span> {{ contract.merchant.id }}
+            <span class="label">ID Marchand :</span> {{ contract.merchant.id|bin2hex|upper }}
         </div>
+        <div class="row">
+            <span class="label">Téléphone :</span> {{ contract.merchant.phone }}
+        </div>
+        {% if contract.merchant.email %}
+        <div class="row">
+            <span class="label">Email :</span> {{ contract.merchant.email }}
+        </div>
+        {% endif %}
     </div>
 
     <div class="section">
@@ -48,8 +56,9 @@
 
     <div class="section">
         <div class="section-title">3. CONDITIONS FINANCIÈRES</div>
-        <div class="row"><span class="label">Loyer :</span> {{ contract.rentAmount }} {{ contract.billingCycle.value }}</div>
-        <div class="row"><span class="label">Garantie Locative :</span> {{ contract.guaranteeAmount }}</div>
+        <div class="row"><span class="label">Loyer :</span> {{ contract.rentAmount|number_format(0, ',', ' ') }} CDF / {{ contract.billingCycle.value }}</div>
+        <div class="row"><span class="label">Garantie Locative :</span> {{ contract.guaranteeAmount|number_format(0, ',', ' ') }} CDF</div>
+        <div class="row"><span class="label">Total à payer :</span> {{ (contract.rentAmount + contract.guaranteeAmount)|number_format(0, ',', ' ') }} CDF</div>
     </div>
 
     <div class="section">

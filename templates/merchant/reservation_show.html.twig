@@ -1,0 +1,182 @@
+{% extends 'merchant/base.html.twig' %}
+
+{% block title %}Réservation {{ reservation.space.code }} - ZANDO Market{% endblock %}
+{% block header %}Détails de la Réservation{% endblock %}
+{% block subtitle %}{{ reservation.space.code }} - {{ reservation.space.zone }}{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+    <a href="{{ path('merchant_reservations') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+        <i class="fas fa-arrow-left mr-2"></i>
+        Retour aux réservations
+    </a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Informations principales -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Statut -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-800">Statut de la réservation</h3>
+                {% if reservation.status.value == 'confirmed' or reservation.status.value == 'approved' %}
+                    <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full font-semibold">
+                        <i class="fas fa-check-circle mr-2"></i>Confirmée
+                    </span>
+                {% elseif reservation.status.value == 'pending' or reservation.status.value == 'pending_admin' %}
+                    <span class="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full font-semibold">
+                        <i class="fas fa-clock mr-2"></i>En attente
+                    </span>
+                {% elseif reservation.status.value == 'rejected' %}
+                    <span class="px-4 py-2 bg-red-100 text-red-800 rounded-full font-semibold">
+                        <i class="fas fa-times-circle mr-2"></i>Rejetée
+                    </span>
+                {% elseif reservation.status.value == 'cancelled' %}
+                    <span class="px-4 py-2 bg-gray-100 text-gray-800 rounded-full font-semibold">
+                        <i class="fas fa-ban mr-2"></i>Annulée
+                    </span>
+                {% else %}
+                    <span class="px-4 py-2 bg-gray-100 text-gray-800 rounded-full font-semibold">
+                        {{ reservation.status.value }}
+                    </span>
+                {% endif %}
+            </div>
+
+            {% if reservation.status.value == 'rejected' and reservation.rejectionReason %}
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                <p class="text-sm text-red-700">
+                    <strong>Motif du rejet :</strong> {{ reservation.rejectionReason }}
+                </p>
+            </div>
+            {% endif %}
+
+            {% if reservation.status.value == 'pending_admin' %}
+            <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg">
+                <p class="text-sm text-yellow-700">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Votre réservation est en cours d'examen par l'administrateur. Vous serez notifié dès qu'elle sera traitée.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Détails de l'espace -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                <i class="fas fa-store mr-2 text-blue-600"></i>
+                Informations de l'espace
+            </h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-gray-500">Code</p>
+                    <p class="font-semibold text-gray-800">{{ reservation.space.code }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Zone</p>
+                    <p class="font-semibold text-gray-800">{{ reservation.space.zone }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Catégorie</p>
+                    <p class="font-semibold text-gray-800">{{ reservation.space.spaceCategory.name }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Type</p>
+                    <p class="font-semibold text-gray-800">{{ reservation.space.spaceType.label }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Détails de la réservation -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                <i class="fas fa-calendar-alt mr-2 text-purple-600"></i>
+                Détails de la réservation
+            </h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-gray-500">Périodicité</p>
+                    <p class="font-semibold text-gray-800">{{ reservation.periodicity.label }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Durée</p>
+                    <p class="font-semibold text-gray-800">{{ reservation.duration }} période(s)</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Date de demande</p>
+                    <p class="font-semibold text-gray-800">{{ reservation.createdAt|date('d/m/Y à H:i') }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Moyen de paiement</p>
+                    <p class="font-semibold text-gray-800">
+                        {% if reservation.paymentMethod %}
+                            {{ reservation.paymentMethod.label }}
+                        {% else %}
+                            Non spécifié
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Résumé financier -->
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                <i class="fas fa-money-bill-wave mr-2 text-green-600"></i>
+                Résumé financier
+            </h3>
+            
+            <div class="space-y-4">
+                {% if reservation.unitPrice %}
+                <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+                    <span class="text-gray-600">Prix unitaire</span>
+                    <span class="font-semibold text-gray-800">{{ reservation.unitPrice|number_format(0, ',', ' ') }} {{ reservation.currency.code ?? 'CDF' }}</span>
+                </div>
+                {% endif %}
+                
+                <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+                    <span class="text-gray-600">Durée</span>
+                    <span class="font-semibold text-gray-800">× {{ reservation.duration }}</span>
+                </div>
+                
+                <div class="flex justify-between items-center pt-2">
+                    <span class="text-lg font-bold text-gray-800">Total</span>
+                    <span class="text-xl font-bold text-green-600">
+                        {% if reservation.firstPaymentAmount %}
+                            {{ reservation.firstPaymentAmount|number_format(0, ',', ' ') }} {{ reservation.currency.code ?? 'CDF' }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            {% if hasPaidPayment %}
+            <div class="mt-6 pt-4 border-t border-gray-200">
+                <div class="w-full text-center px-4 py-3 bg-green-100 text-green-800 rounded-lg font-semibold">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    Paiement effectué
+                </div>
+            </div>
+            {% elseif hasPendingPayment %}
+            <div class="mt-6 pt-4 border-t border-gray-200">
+                <div class="w-full text-center px-4 py-3 bg-yellow-100 text-yellow-800 rounded-lg font-semibold">
+                    <i class="fas fa-clock mr-2"></i>
+                    Paiement en attente de validation
+                </div>
+            </div>
+            {% elseif reservation.status.value == 'approved' or reservation.status.value == 'confirmed' %}
+            <div class="mt-6 pt-4 border-t border-gray-200">
+                <a href="{{ path('merchant_reservation_pay', {'id': reservation.id|bin2hex}) }}" class="w-full block text-center px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold">
+                    <i class="fas fa-credit-card mr-2"></i>
+                    Procéder au paiement
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

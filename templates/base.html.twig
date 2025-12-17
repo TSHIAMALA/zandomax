@@ -203,10 +203,26 @@
                         <p class="text-xs md:text-sm text-gray-500 hidden sm:block">{% block subtitle %}Vue d'ensemble de votre marché{% endblock %}</p>
                     </div>
                     <div class="flex items-center space-x-2 md:space-x-4">
-                        <button class="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition">
-                            <i class="fas fa-bell text-base md:text-xl"></i>
-                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                        </button>
+                        <div class="relative" id="notification-container">
+                            <button onclick="toggleNotifications()" class="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition">
+                                <i class="fas fa-bell text-base md:text-xl"></i>
+                                <span id="notification-badge" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+                            </button>
+                            
+                            <!-- Dropdown des notifications -->
+                            <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                                <div class="p-3 border-b border-gray-200 flex justify-between items-center">
+                                    <h3 class="font-semibold text-gray-800">Notifications</h3>
+                                    <button onclick="markAllAsRead()" class="text-xs text-blue-600 hover:text-blue-800">Tout marquer lu</button>
+                                </div>
+                                <div id="notification-list" class="max-h-80 overflow-y-auto">
+                                    <div class="p-4 text-center text-gray-500 text-sm">Chargement...</div>
+                                </div>
+                                <div class="p-3 border-t border-gray-200 text-center">
+                                    <a href="{{ path('market_admin_notifications_index') }}" class="text-sm text-blue-600 hover:text-blue-800">Voir toutes les notifications</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -254,6 +270,97 @@
             overlay.classList.toggle('show');
         }
         
+        // Notifications
+        let notificationDropdownOpen = false;
+        
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notification-dropdown');
+            notificationDropdownOpen = !notificationDropdownOpen;
+            dropdown.classList.toggle('hidden');
+            if (notificationDropdownOpen) {
+                loadNotifications();
+            }
+        }
+        
+        function loadNotifications() {
+            fetch('{{ path('market_admin_notifications_unread') }}')
+                .then(response => response.json())
+                .then(data => {
+                    updateNotificationBadge(data.count);
+                    renderNotifications(data.notifications);
+                })
+                .catch(err => console.error('Erreur chargement notifications:', err));
+        }
+        
+        function updateNotificationBadge(count) {
+            const badge = document.getElementById('notification-badge');
+            if (count > 0) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+        
+        function renderNotifications(notifications) {
+            const list = document.getElementById('notification-list');
+            if (notifications.length === 0) {
+                list.innerHTML = '<div class="p-4 text-center text-gray-500 text-sm">Aucune notification</div>';
+                return;
+            }
+            
+            let html = '';
+            notifications.forEach(n => {
+                const icon = getNotificationIcon(n.type);
+                html += `
+                    <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer" onclick="markAsRead('${n.id}')">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-8 h-8 ${icon.bg} rounded-full flex items-center justify-center">
+                                <i class="${icon.icon} ${icon.color} text-sm"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800">${n.title}</p>
+                                <p class="text-xs text-gray-500 truncate">${n.message}</p>
+                                <p class="text-xs text-gray-400 mt-1">${n.createdAt}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+        
+        function getNotificationIcon(type) {
+            const icons = {
+                'new_reservation': { icon: 'fas fa-calendar-plus', color: 'text-blue-600', bg: 'bg-blue-100' },
+                'new_payment': { icon: 'fas fa-credit-card', color: 'text-green-600', bg: 'bg-green-100' },
+                'new_merchant': { icon: 'fas fa-user-plus', color: 'text-purple-600', bg: 'bg-purple-100' },
+                'payment_pending': { icon: 'fas fa-clock', color: 'text-yellow-600', bg: 'bg-yellow-100' },
+                'contract_signed': { icon: 'fas fa-file-signature', color: 'text-indigo-600', bg: 'bg-indigo-100' },
+            };
+            return icons[type] || { icon: 'fas fa-bell', color: 'text-gray-600', bg: 'bg-gray-100' };
+        }
+        
+        function markAsRead(id) {
+            fetch(`/admin/notifications/${id}/read`, { method: 'POST' })
+                .then(() => loadNotifications())
+                .catch(err => console.error('Erreur:', err));
+        }
+        
+        function markAllAsRead() {
+            fetch('{{ path('market_admin_notifications_mark_all_read') }}', { method: 'POST' })
+                .then(() => loadNotifications())
+                .catch(err => console.error('Erreur:', err));
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('notification-container');
+            if (container && !container.contains(e.target)) {
+                document.getElementById('notification-dropdown').classList.add('hidden');
+                notificationDropdownOpen = false;
+            }
+        });
+        
         // Close sidebar when clicking on a link (mobile)
         document.addEventListener('DOMContentLoaded', function() {
             const sidebarLinks = document.querySelectorAll('.sidebar-link');
@@ -264,6 +371,12 @@
                     }
                 });
             });
+            
+            // Load notification count on page load
+            fetch('{{ path('market_admin_notifications_unread') }}')
+                .then(response => response.json())
+                .then(data => updateNotificationBadge(data.count))
+                .catch(err => console.error('Erreur:', err));
         });
     </script>
     {% block javascripts %}{% endblock %}

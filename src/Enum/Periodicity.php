@@ -22,4 +22,9 @@ enum Periodicity: string
             self::YEAR => 'Année',
         };
     }
+
+    public function getLabel(): string
+    {
+        return $this->label();
+    }
 }

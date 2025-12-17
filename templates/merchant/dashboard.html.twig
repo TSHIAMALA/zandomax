@@ -11,7 +11,34 @@
 
 {% block content %}
 
-{# Notification de validation en attente #}
+{# Notifications du marchand (affichées une seule fois) #}
+{% if notifications is defined and notifications|length > 0 %}
+    {% for notification in notifications %}
+        {% if notification.type == 'account_activated' %}
+        <div class="mb-3 md:mb-4 bg-green-50 border-l-4 border-green-400 p-3 md:p-4 rounded-r-lg shadow-sm">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle text-green-400 text-lg md:text-xl mr-3"></i>
+                <div>
+                    <h3 class="text-xs md:text-sm font-semibold text-green-800">{{ notification.title }}</h3>
+                    <p class="text-xs text-green-700">{{ notification.message }}</p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="mb-3 md:mb-4 bg-blue-50 border-l-4 border-blue-400 p-3 md:p-4 rounded-r-lg shadow-sm">
+            <div class="flex items-center">
+                <i class="fas fa-bell text-blue-400 text-lg md:text-xl mr-3"></i>
+                <div>
+                    <h3 class="text-xs md:text-sm font-semibold text-blue-800">{{ notification.title }}</h3>
+                    <p class="text-xs text-blue-700">{{ notification.message }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{# Notification de validation en attente - affiché uniquement si le compte n'est pas encore actif #}
 {% if merchant.status.value == 'pending_validation' %}
 <div class="mb-3 md:mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-3 md:p-4 rounded-r-lg shadow-sm">
     <div class="flex items-start">
@@ -34,16 +61,6 @@
                 <i class="fas fa-store mr-1"></i>
                 Voir les espaces disponibles
             </a>
-        </div>
-    </div>
-</div>
-{% elseif merchant.status.value == 'active' %}
-<div class="mb-3 md:mb-4 bg-green-50 border-l-4 border-green-400 p-2 md:p-3 rounded-r-lg">
-    <div class="flex items-center">
-        <i class="fas fa-check-circle text-green-400 text-base md:text-lg mr-2"></i>
-        <div>
-            <h3 class="text-xs md:text-sm font-semibold text-green-800">Compte activé</h3>
-            <p class="text-xs text-green-700">Votre compte est actif. Vous avez accès à tous les services.</p>
         </div>
     </div>
 </div>

@@ -36,6 +36,33 @@
                     <span class="text-sm font-semibold text-green-600">Disponible</span>
                 </div>
             </div>
+
+            <!-- Tarifs disponibles -->
+            {% if pricingRules|length > 0 %}
+            <div class="mt-6 pt-4 border-t border-gray-200">
+                <h4 class="text-sm font-semibold text-gray-800 mb-3">
+                    <i class="fas fa-money-bill-wave mr-2 text-green-600"></i>
+                    Tarifs disponibles
+                </h4>
+                <div class="space-y-2">
+                    {% for rule in pricingRules %}
+                    <div class="flex justify-between items-center text-sm bg-gray-50 p-2 rounded">
+                        <span class="text-gray-600">{{ rule.periodicity.label }}</span>
+                        <span class="font-bold text-green-600">{{ rule.price|number_format(0, ',', ' ') }} {{ rule.currency.code ?? 'CDF' }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="mt-6 pt-4 border-t border-gray-200">
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded-r">
+                    <p class="text-xs text-yellow-700">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Les tarifs seront communiqués par l'administrateur après votre demande.
+                    </p>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 
@@ -51,40 +78,80 @@
                         <i class="fas fa-calendar-alt mr-2 text-blue-600"></i>
                         Périodicité
                     </label>
-                    <select name="periodicity" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <select name="periodicity" id="periodicity" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Sélectionnez une périodicité</option>
-                        <option value="day">Journalier</option>
-                        <option value="week">Hebdomadaire</option>
-                        <option value="month">Mensuel</option>
-                        <option value="quarter">Trimestriel</option>
-                        <option value="semester">Semestriel</option>
-                        <option value="year">Annuel</option>
+                        {% if pricingRules|length > 0 %}
+                            {% for rule in pricingRules %}
+                            <option value="{{ rule.periodicity.value }}" data-price="{{ rule.price }}" data-currency="{{ rule.currency.code ?? 'CDF' }}" data-label="{{ rule.periodicity.label }}">
+                                {{ rule.periodicity.label }} - {{ rule.price|number_format(0, ',', ' ') }} {{ rule.currency.code ?? 'CDF' }}
+                            </option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="day" data-price="0" data-currency="CDF" data-label="Jour">Journalier</option>
+                            <option value="week" data-price="0" data-currency="CDF" data-label="Semaine">Hebdomadaire</option>
+                            <option value="month" data-price="0" data-currency="CDF" data-label="Mois">Mensuel</option>
+                            <option value="quarter" data-price="0" data-currency="CDF" data-label="Trimestre">Trimestriel</option>
+                            <option value="semester" data-price="0" data-currency="CDF" data-label="Semestre">Semestriel</option>
+                            <option value="year" data-price="0" data-currency="CDF" data-label="Année">Annuel</option>
+                        {% endif %}
                     </select>
                 </div>
 
-                <!-- Durée -->
+                <!-- Prix unitaire affiché (seulement si prix configuré) -->
+                <div id="unitPriceDisplay" class="hidden bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-blue-700">Prix unitaire :</span>
+                        <span id="unitPriceValue" class="text-lg font-bold text-blue-800">0 CDF</span>
+                    </div>
+                </div>
+
+                <!-- Durée avec label dynamique -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         <i class="fas fa-clock mr-2 text-purple-600"></i>
-                        Durée
+                        Durée <span id="durationLabel" class="text-gray-500">(nombre de périodes)</span>
                     </label>
-                    <input type="number" name="duration" min="1" max="365" required 
-                           autocomplete="off"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                           placeholder="Entrez la durée (ex: 3)">
-                    <p class="text-xs text-gray-500 mt-1">Nombre de périodes (ex: 3 mois, 2 semaines, etc.)</p>
+                    <div class="flex items-center space-x-3">
+                        <input type="number" name="duration" id="duration" min="1" max="365" required 
+                               autocomplete="off"
+                               class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Ex: 3">
+                        <span id="periodLabel" class="text-gray-600 font-medium min-w-[100px]">période(s)</span>
+                    </div>
+                    <p id="durationHint" class="text-xs text-gray-500 mt-1">Sélectionnez d'abord une périodicité</p>
                 </div>
 
-                <!-- Montant du premier paiement -->
+                <!-- Montant total calculé -->
+                <div id="totalAmountDisplay" class="hidden bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-green-700">Montant total estimé :</span>
+                        <span id="totalAmountValue" class="text-xl font-bold text-green-800">0 CDF</span>
+                    </div>
+                </div>
+
+                <!-- Message si pas de prix configuré -->
+                <div id="noPriceMessage" class="hidden bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-info-circle text-yellow-500 mr-3"></i>
+                        <span class="text-sm text-yellow-700">Le montant sera calculé et communiqué par l'administrateur après validation de votre demande.</span>
+                    </div>
+                </div>
+
+                <!-- Moyen de paiement -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-money-bill-wave mr-2 text-green-600"></i>
-                        Montant du premier paiement (optionnel)
+                        <i class="fas fa-credit-card mr-2 text-indigo-600"></i>
+                        Moyen de paiement préféré
                     </label>
-                    <input type="number" name="first_payment_amount" step="0.01" min="0"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                           placeholder="Montant en CDF">
-                    <p class="text-xs text-gray-500 mt-1">Laissez vide si vous payez le montant total</p>
+                    <select name="payment_method" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Sélectionnez un moyen de paiement</option>
+                        <option value="cash">💵 Espèces</option>
+                        <option value="airtel_money">📱 Airtel Money</option>
+                        <option value="mpesa">📱 M-Pesa</option>
+                        <option value="orange_money">📱 Orange Money</option>
+                        <option value="bank_transfer">🏦 Virement bancaire</option>
+                        <option value="credit_card">💳 Carte bancaire</option>
+                    </select>
                 </div>
 
                 <!-- Notes additionnelles -->
@@ -107,7 +174,7 @@
                             <ul class="text-sm text-blue-700 space-y-1">
                                 <li>• Votre réservation sera soumise à validation par l'administrateur</li>
                                 <li>• Vous recevrez une notification une fois la réservation approuvée</li>
-                                <li>• Le paiement devra être effectué dans les 48h suivant l'approbation</li>
+                                <li>• Le paiement devra être effectué selon le moyen choisi</li>
                             </ul>
                         </div>
                     </div>
@@ -128,5 +195,89 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const periodicitySelect = document.getElementById('periodicity');
+    const durationInput = document.getElementById('duration');
+    const unitPriceDisplay = document.getElementById('unitPriceDisplay');
+    const unitPriceValue = document.getElementById('unitPriceValue');
+    const totalAmountDisplay = document.getElementById('totalAmountDisplay');
+    const totalAmountValue = document.getElementById('totalAmountValue');
+    const periodLabel = document.getElementById('periodLabel');
+    const durationHint = document.getElementById('durationHint');
+    const noPriceMessage = document.getElementById('noPriceMessage');
+
+    let currentPrice = 0;
+    let currentCurrency = 'CDF';
+
+    const periodLabels = {
+        'day': 'jour(s)',
+        'week': 'semaine(s)',
+        'month': 'mois',
+        'quarter': 'trimestre(s)',
+        'semester': 'semestre(s)',
+        'year': 'année(s)'
+    };
+
+    const periodExamples = {
+        'day': 'Ex: 7 jours = 1 semaine',
+        'week': 'Ex: 4 semaines ≈ 1 mois',
+        'month': 'Ex: 3 mois = 1 trimestre',
+        'quarter': 'Ex: 2 trimestres = 6 mois',
+        'semester': 'Ex: 2 semestres = 1 an',
+        'year': 'Ex: 1 an = 12 mois'
+    };
+
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    }
+
+    function updatePriceDisplay() {
+        const selectedOption = periodicitySelect.options[periodicitySelect.selectedIndex];
+        
+        if (selectedOption && selectedOption.value) {
+            currentPrice = parseFloat(selectedOption.dataset.price) || 0;
+            currentCurrency = selectedOption.dataset.currency || 'CDF';
+            
+            // Mettre à jour le label de la durée
+            periodLabel.textContent = periodLabels[selectedOption.value] || 'période(s)';
+            durationHint.textContent = periodExamples[selectedOption.value] || '';
+            
+            if (currentPrice > 0) {
+                unitPriceDisplay.classList.remove('hidden');
+                unitPriceValue.textContent = formatNumber(currentPrice) + ' ' + currentCurrency;
+                noPriceMessage.classList.add('hidden');
+                updateTotalAmount();
+            } else {
+                unitPriceDisplay.classList.add('hidden');
+                totalAmountDisplay.classList.add('hidden');
+                noPriceMessage.classList.remove('hidden');
+            }
+        } else {
+            unitPriceDisplay.classList.add('hidden');
+            totalAmountDisplay.classList.add('hidden');
+            noPriceMessage.classList.add('hidden');
+            periodLabel.textContent = 'période(s)';
+            durationHint.textContent = 'Sélectionnez d\'abord une périodicité';
+        }
+    }
+
+    function updateTotalAmount() {
+        const duration = parseInt(durationInput.value) || 0;
+        
+        if (duration > 0 && currentPrice > 0) {
+            const total = currentPrice * duration;
+            totalAmountDisplay.classList.remove('hidden');
+            totalAmountValue.textContent = formatNumber(total) + ' ' + currentCurrency;
+        } else {
+            totalAmountDisplay.classList.add('hidden');
+        }
+    }
+
+    periodicitySelect.addEventListener('change', updatePriceDisplay);
+    durationInput.addEventListener('input', updateTotalAmount);
+});
+</script>
 
 {% endblock %}
